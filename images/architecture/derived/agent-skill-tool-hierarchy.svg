@@ -1,0 +1,36 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" fill="#F8FAFC"/>
+  <text x="72" y="88" fill="#0F172A" font-family="Arial, sans-serif" font-size="36" font-weight="700">Agent - Skill - Tool Hierarchy</text>
+  <text x="72" y="122" fill="#475569" font-family="Arial, sans-serif" font-size="18">Architecture review diagram for packaged workflow behavior between orchestration and execution.</text>
+
+  <rect x="72" y="180" width="1056" height="120" rx="18" fill="#E0F2FE" stroke="#0284C7" stroke-width="3"/>
+  <text x="108" y="228" fill="#0C4A6E" font-family="Arial, sans-serif" font-size="28" font-weight="700">Agent</text>
+  <text x="108" y="264" fill="#0F172A" font-family="Arial, sans-serif" font-size="18">Owns reasoning, planning, memory, and cross-skill orchestration.</text>
+  <text x="108" y="292" fill="#334155" font-family="Arial, sans-serif" font-size="16">Selects the right skill for the current goal and evaluates progress across runs, threads, tasks, and outputs.</text>
+
+  <rect x="72" y="332" width="1056" height="148" rx="18" fill="#EEF2FF" stroke="#4F46E5" stroke-width="3"/>
+  <text x="108" y="380" fill="#312E81" font-family="Arial, sans-serif" font-size="28" font-weight="700">Skill</text>
+  <text x="108" y="416" fill="#0F172A" font-family="Arial, sans-serif" font-size="18">Owns domain workflow, guardrails, sequencing, and output shaping.</text>
+  <text x="108" y="444" fill="#334155" font-family="Arial, sans-serif" font-size="16">Reusable examples: renewal analysis, support triage, acquisition risk review, proposal drafting.</text>
+
+  <rect x="72" y="512" width="330" height="132" rx="18" fill="#ECFDF5" stroke="#059669" stroke-width="3"/>
+  <text x="100" y="560" fill="#065F46" font-family="Arial, sans-serif" font-size="26" font-weight="700">Tool</text>
+  <text x="100" y="596" fill="#0F172A" font-family="Arial, sans-serif" font-size="17">Atomic callable capability.</text>
+  <text x="100" y="622" fill="#334155" font-family="Arial, sans-serif" font-size="15">Example: CRM lookup</text>
+
+  <rect x="435" y="512" width="330" height="132" rx="18" fill="#ECFDF5" stroke="#059669" stroke-width="3"/>
+  <text x="463" y="560" fill="#065F46" font-family="Arial, sans-serif" font-size="26" font-weight="700">Tool</text>
+  <text x="463" y="596" fill="#0F172A" font-family="Arial, sans-serif" font-size="17">No business-goal awareness.</text>
+  <text x="463" y="622" fill="#334155" font-family="Arial, sans-serif" font-size="15">Example: document search</text>
+
+  <rect x="798" y="512" width="330" height="132" rx="18" fill="#ECFDF5" stroke="#059669" stroke-width="3"/>
+  <text x="826" y="560" fill="#065F46" font-family="Arial, sans-serif" font-size="26" font-weight="700">Tool</text>
+  <text x="826" y="596" fill="#0F172A" font-family="Arial, sans-serif" font-size="17">Strict input-output execution.</text>
+  <text x="826" y="622" fill="#334155" font-family="Arial, sans-serif" font-size="15">Example: MCP action</text>
+
+  <path d="M600 300V332" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M600 480V512" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M237 480V512" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M963 480V512" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <path d="M237 496H963" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+</svg>
