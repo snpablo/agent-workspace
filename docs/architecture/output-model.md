@@ -19,6 +19,7 @@ interface Output {
   summary?: string;
   sections: OutputSection[];
   knowledgeSourceLinks: OutputKnowledgeSourceLink[];
+  publishedKnowledgeSourceIds?: string[];
   actionLinks: OutputActionLink[];
   metadata: Record<string, unknown>;
   version: number;
@@ -33,8 +34,30 @@ interface Output {
 - `status`: defines lifecycle and UI behavior
 - `sections`: the structured body of the output
 - `knowledgeSourceLinks`: traceability for claims
+- `publishedKnowledgeSourceIds`: knowledge sources derived from or published from this output
 - `actionLinks`: what can happen next
 - `metadata`: output-type-specific fields
+
+## Output Publication
+
+An output should not literally change identity into a knowledge source.
+
+Instead:
+
+- an output may remain an `Output`
+- that output may be published as, indexed into, or derived into one or more `Knowledge Sources`
+
+This preserves provenance and prevents the model from collapsing the roles of:
+
+- durable work product
+- grounding/reference material
+
+Recommended linkage:
+
+- `Output.publishedKnowledgeSourceIds[]`
+- `KnowledgeSource.derivedFromOutputId?`
+
+This is especially useful when a draft, report, or plan later becomes permanent internal reference material such as a wiki entry, PDF, or indexed knowledge asset.
 
 ## Output Type Registry
 
@@ -122,6 +145,7 @@ interface OutputSection {
 3. Knowledge source linkage should be first-class, not a text-only citation pattern.
 4. Outputs should be versioned.
 5. Outputs should remain editable by humans after agent generation.
+6. Outputs may be published into knowledge sources without losing their own identity as outputs.
 
 ## Minimal Example
 

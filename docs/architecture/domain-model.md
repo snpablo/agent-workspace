@@ -147,6 +147,7 @@ Owns:
 
 - source reference
 - source type
+- optional derived output provenance
 - summary
 - provenance
 - citations or excerpts
@@ -243,6 +244,7 @@ Owns:
 - agent reference
 - skill references
 - thread reference
+- optional trigger action reference
 - tool calls
 - status
 - produced outputs and actions
@@ -269,6 +271,7 @@ Workspace
 
 Work Item
   |- Business Context
+  |- Knowledge Sources
   |- Outputs
   |- Tasks
   |- Actions
@@ -292,6 +295,12 @@ Agent
 Skill
   |- uses Tools
   |- shapes Outputs
+
+Run
+  |- may be triggered by Action
+
+Agent Activity
+  |- derived from Runs, Tasks, Actions, and Messages
 ```
 
 ## Persistence Decisions
@@ -327,6 +336,7 @@ Derived or projected concepts:
 - A `Skill` is not a `Tool`.
 - A `Run` is not the same thing as a `Thread`; it is an execution over a thread.
 - A `Knowledge Source` does not become truth by being collected; it needs provenance and review.
+- An `Output` may publish into a `Knowledge Source`, but the two objects remain distinct.
 - An `Action` is distinct from a `Task`: actions are business next steps, while tasks are work units.
 - Cross-workspace references are links, not transfers of ownership.
 

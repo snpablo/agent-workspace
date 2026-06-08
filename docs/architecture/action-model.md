@@ -16,11 +16,30 @@ interface Action {
   status: "proposed" | "approved" | "queued" | "executed" | "failed" | "canceled";
   sourceOutputId?: string;
   sourceSectionId?: string;
+  executionRunId?: string;
   assigneeId?: string;
   targetRef?: string;
   metadata: Record<string, unknown>;
 }
 ```
+
+## Action And Run Relationship
+
+An action may trigger execution, but not every action does.
+
+Examples:
+
+- an approval action may remain human-only
+- an export action may trigger a run
+- a CRM update action may trigger a run
+- a follow-up call action may only assign work to a person
+
+Recommended rule:
+
+- `Action.executionRunId?` is optional
+- `Run.triggerActionId?` should be allowed in the run model when a run is action-driven
+
+This keeps the model flexible while preserving traceability for operational pipelines.
 
 ## Common Action Families
 
@@ -44,6 +63,8 @@ Example:
 - `Task`: finance validates pricing assumptions
 
 An action may generate one or more tasks, but the concepts should remain distinct.
+
+When an action shifts into active execution, its status should reflect that state and point to the run responsible for the execution path.
 
 ## Open Questions
 

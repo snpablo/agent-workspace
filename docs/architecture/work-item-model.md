@@ -95,7 +95,8 @@ The default ownership model should be:
 - one output belongs to one owning work item by default
 - reuse across work items should happen through references, copies, or forks rather than shared mutable ownership
 
+Knowledge sources may attach directly to the work item when they provide broad case context rather than support for one specific output section.
+
 ## Open Questions
 
-- Should knowledge sources attach directly to work items in addition to outputs?
 - Which work item fields should be standardized across workspace types versus left to metadata?

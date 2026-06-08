@@ -14,6 +14,7 @@ interface KnowledgeSource {
   type: string;
   title?: string;
   sourceRef: string;
+  derivedFromOutputId?: string;
   summary?: string;
   provenance: {
     collectedBy?: string;
@@ -42,6 +43,21 @@ interface KnowledgeSource {
 3. Knowledge sources may be summarized, but the original source reference should remain available.
 4. Knowledge source status should reflect confidence and review state.
 5. Knowledge sources should be reusable across outputs where permissions allow.
+6. Knowledge sources may be derived from outputs, but they remain distinct objects with their own lifecycle.
+
+## Relationship To Work Items And Outputs
+
+Knowledge sources may attach at more than one level:
+
+- `Work Item` level for case-wide grounding context
+- `Output` level for claim-level grounding and traceability
+
+This allows the architecture to distinguish between:
+
+- general case context
+- specific support for a section, conclusion, or recommendation
+
+When a knowledge source is created from an output, the relationship should be explicit through `derivedFromOutputId`.
 
 ## Why This Matters
 
