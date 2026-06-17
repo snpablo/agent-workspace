@@ -14,8 +14,7 @@ The core idea is:
 - outputs are grounded in `Knowledge Sources`
 - actions and tasks move work forward
 
-This is intentionally not a single-purpose decision application. The goal is to define a platform that can express decision work, research, planning, and operational workflows using Microsoft-familiar agent terms.
-
+This is intentionally not a single-purpose decision application. The goal is to define a platform that can express decision work, research, planning, and operational workflows.
 ## Core Thesis
 
 The durable thing the user keeps is not the chat transcript and not the raw model response. It is the output.
