@@ -4,7 +4,7 @@ This file defines the working assumptions for agents contributing to this reposi
 
 ## Mission
 
-Design an `Agent Workspace Platform` whose core abstractions are durable, reusable, and aligned with Microsoft’s current agent vocabulary as of **June 2, 2026** through **June 8, 2026**.
+Design an `Agent Workspace Platform` whose core abstractions are durable, reusable, and stable across workspace types and agent implementations.
 
 The architecture should support multiple workspace types, output types, and agent roles without forcing domain-specific language into the foundation.
 
@@ -81,7 +81,7 @@ When a meaningful architecture fork is resolved, capture it in both places:
 
 - keep docs concrete and explicit
 - prefer examples over vague prose
-- use Microsoft-aligned agent terms
+- use consistent platform terms
 - separate platform objects from workspace configuration
 - call out unresolved questions directly
 - prefer ADRs over leaving settled decisions as lingering open questions

@@ -40,4 +40,3 @@ Supporting objects around it include:
 - [Output Model](../architecture/output-model.md)
 - [Domain Model](../architecture/domain-model.md)
 - [UI Domain Mapping](../architecture/ui-domain-mapping.md)
-- [Microsoft References](../architecture/resources.md)

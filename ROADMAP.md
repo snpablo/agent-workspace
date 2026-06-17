@@ -30,7 +30,7 @@ Core references:
 ## What Is Completed
 
 - core model objects are defined and documented
-- Microsoft-aligned terminology is in place
+- shared platform terminology is in place
 - the `Agent -> Skill -> Tool` hierarchy is explicit
 - primary-output and cross-workspace reference rules are documented
 - shared workspace visual system rules are documented

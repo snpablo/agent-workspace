@@ -12,7 +12,7 @@ The architecture initially flattened packaged workflow behavior and atomic execu
 - reusable domain workflow behavior
 - narrow callable execution
 
-Microsoft’s agent ecosystem also uses both `Skill` and `Tool` in meaningful ways. Treating them as synonyms weakened the model.
+Treating `Skill` and `Tool` as synonyms weakened the model.
 
 ## Decision
 
@@ -36,4 +36,3 @@ Agents select skills. Skills use tools.
 - [Agent Model](../architecture/agent-model.md)
 - [Skill Model](../architecture/skill-model.md)
 - [Domain Model](../architecture/domain-model.md)
-- [Microsoft References](../architecture/resources.md)

@@ -129,11 +129,3 @@ The mapping is intentionally approximate in a few places:
 - `Run` history may appear as dedicated inspection detail even when it is not exposed in the main shell
 
 That looseness is expected. The domain model should stay stable even when the UI composition varies by workspace type.
-
-## Microsoft References
-
-- [How Microsoft 365 Copilot Pages works](https://support.microsoft.com/en-US/Microsoft-365-Copilot/how-microsoft-365-copilot-pages-works)
-- [Get started with Microsoft Loop](https://support.microsoft.com/en-us/office/get-started-with-microsoft-loop-9f4d8d4f-dfc6-4518-9ef6-069408c21f0c)
-- [View agent activity in Microsoft 365 Copilot](https://learn.microsoft.com/en-us/microsoft-agent-365/observe-agents-microsoft-365-copilot)
-- [Custom engine agents for Microsoft 365 overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-custom-engine-agent)
-- [Microsoft References](resources.md)

@@ -4,7 +4,7 @@
 
 The output is the durable result that survives beyond a thread or a run.
 
-In Microsoft product terms, a persistent editable `Page` is one important output experience. More generally, the platform needs a broader `Output` model that can cover reports, drafts, plans, analyses, and other durable results.
+A persistent editable `Page` is one important output experience. More generally, the platform needs a broader `Output` model that can cover reports, drafts, plans, analyses, and other durable results.
 
 ## Base Shape
 
@@ -171,10 +171,3 @@ interface OutputSection {
 - Which sections should allow machine-generated structure versus rich manual editing?
 - When should an output split into multiple linked outputs instead of becoming too large?
 - When should an output be rendered as a `Page` versus another output experience?
-
-## Microsoft References
-
-- [How Microsoft 365 Copilot Pages works](https://support.microsoft.com/en-US/Microsoft-365-Copilot/how-microsoft-365-copilot-pages-works)
-- [Get started with Microsoft Loop](https://support.microsoft.com/en-us/office/get-started-with-microsoft-loop-9f4d8d4f-dfc6-4518-9ef6-069408c21f0c)
-- [View agent activity in Microsoft 365 Copilot](https://learn.microsoft.com/en-us/microsoft-agent-365/observe-agents-microsoft-365-copilot)
-- [Microsoft References](resources.md)

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Define the core nouns of the platform and give each one a clear ownership boundary and lifecycle using Microsoft-aligned agent terminology.
+Define the core nouns of the platform and give each one a clear ownership boundary and lifecycle using consistent platform terminology.
 
 ## Core Objects
 
@@ -368,11 +368,3 @@ In practice, most decision and operations workspaces should end up with a primar
 - Does every workspace require exactly one primary work item?
 - Should tasks attach directly to output sections, or only to outputs at the top level?
 - Which capabilities deserve first-class `Skill` objects rather than embedded workflow policy?
-
-## Microsoft References
-
-- [Agents hub](https://learn.microsoft.com/en-us/agents/)
-- [Threads, runs, and messages in Foundry Agent Service](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/threads-runs-messages)
-- [Set up your environment for Azure AI Foundry Agent Service](https://learn.microsoft.com/en-us/azure/ai-services/agents/environment-setup)
-- [View agent activity in Microsoft 365 Copilot](https://learn.microsoft.com/en-us/microsoft-agent-365/observe-agents-microsoft-365-copilot)
-- [Microsoft References](resources.md)

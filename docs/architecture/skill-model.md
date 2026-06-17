@@ -108,9 +108,3 @@ Tool
 - Which skills should be first-class objects versus embedded workflow policy?
 - Can one run span multiple skills, or should skill changes create explicit run boundaries?
 - How should skill-level memory differ from agent-level memory?
-
-## Microsoft References
-
-- [Custom engine agents for Microsoft 365 overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-custom-engine-agent)
-- [What are tools in Foundry Agent Service?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/tool-catalog)
-- [Microsoft References](resources.md)

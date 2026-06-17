@@ -1,6 +1,6 @@
 # Architecture Index
 
-This folder captures the current architecture baseline for the `Agent Workspace Platform`, tuned to Microsoft’s Build-era vocabulary announced on **June 2, 2026** and reviewed against current Microsoft documentation on **June 8, 2026**.
+This folder captures the current architecture baseline for the `Agent Workspace Platform`.
 
 The documents are ordered from core domain concepts outward into workspace composition and vertical proof points.
 
@@ -22,7 +22,6 @@ Use these docs for the current architecture model. Use `docs/adr/` for durable d
 - [Skill Model](skill-model.md): packaged domain workflow behavior between agents and tools
 - [Knowledge Source Model](knowledge-source-model.md): grounding and support for claims and recommendations
 - [Action Model](action-model.md): executable or reviewable next steps
-- [Microsoft References](resources.md): source material for the terminology and architecture alignment
 
 ## Vertical Proofs
 
@@ -54,9 +53,8 @@ Use these docs for the current architecture model. Use `docs/adr/` for durable d
 10. [Skill Model](skill-model.md)
 11. [Knowledge Source Model](knowledge-source-model.md)
 12. [Action Model](action-model.md)
-13. [Microsoft References](resources.md)
-14. the vertical workspace docs
-15. [UI Domain Mapping](ui-domain-mapping.md)
+13. the vertical workspace docs
+14. [UI Domain Mapping](ui-domain-mapping.md)
 
 ## Interpretation Note
 

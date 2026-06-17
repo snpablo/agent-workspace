@@ -73,9 +73,3 @@ The user should be able to answer:
 - Should knowledge source links support weights or confidence scores?
 - How should conflicting knowledge sources be represented?
 - Which knowledge source types can be edited versus only annotated?
-
-## Microsoft References
-
-- [What are tools in Foundry Agent Service?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/tool-catalog)
-- [Custom engine agents for Microsoft 365 overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-custom-engine-agent)
-- [Microsoft References](resources.md)

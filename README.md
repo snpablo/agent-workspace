@@ -59,7 +59,6 @@ docs/
     knowledge-source-model.md
     action-model.md
     ui-domain-mapping.md
-    resources.md
   adr/
 verticals/
   decision-workspace.md

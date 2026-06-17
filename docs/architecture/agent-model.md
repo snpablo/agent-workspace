@@ -139,12 +139,4 @@ These are platform-friendly roles because they recur across workspace types.
 - How should agent memory be represented: per workspace, per work item, per thread, or per run?
 - Which agent actions require human approval before tool execution?
 
-## Microsoft References
-
-- [Microsoft Build 2026: Be yourself at work](https://blogs.microsoft.com/blog/2026/06/02/microsoft-build-2026-be-yourself-at-work/)
-- [Agents hub](https://learn.microsoft.com/en-us/agents/)
-- [Threads, runs, and messages in Foundry Agent Service](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/threads-runs-messages)
-- [What are tools in Foundry Agent Service?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/tool-catalog)
-- [Custom engine agents for Microsoft 365 overview](https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/overview-custom-engine-agent)
 - [Skill Model](skill-model.md)
-- [Microsoft References](resources.md)
