@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/thread.schema.json",
+  "title": "Thread",
+  "type": "object",
+  "required": ["id", "workspaceId", "status"],
+  "properties": {
+    "id": { "type": "string" },
+    "workspaceId": { "type": "string" },
+    "status": { "type": "string" },
+    "workItemId": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/run.schema.json",
+  "title": "Run",
+  "type": "object",
+  "required": ["id", "workspaceId", "status", "startedAt"],
+  "properties": {
+    "id": { "type": "string" },
+    "workspaceId": { "type": "string" },
+    "playbookId": { "type": "string" },
+    "skillIds": { "type": "array", "items": { "type": "string" } },
+    "toolIds": { "type": "array", "items": { "type": "string" } },
+    "agentSessionId": { "type": "string" },
+    "status": {
+      "enum": ["pending", "executing", "waiting", "completed", "failed"]
+    },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "endedAt": { "type": "string", "format": "date-time" },
+    "eventIds": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

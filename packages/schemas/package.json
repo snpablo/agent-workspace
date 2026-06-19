@@ -1,0 +1,26 @@
+{
+  "name": "@awp/schemas",
+  "version": "0.0.1",
+  "description": "JSON schemas for Agent Workspace Platform",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "schemas",
+    "index.js",
+    "index.d.ts"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./schemas": {
+      "default": "./schemas"
+    }
+  },
+  "keywords": [
+    "agent-workspace",
+    "schemas",
+    "json-schema"
+  ]
+}

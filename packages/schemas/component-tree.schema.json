@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/component-tree.schema.json",
+  "title": "ComponentTree",
+  "type": "object",
+  "required": ["workspace", "zones", "components", "bindings"],
+  "properties": {
+    "workspace": { "type": "object" },
+    "zones": { "type": "array", "items": { "type": "object" } },
+    "components": { "type": "array", "items": { "type": "object" } },
+    "bindings": { "type": "array", "items": { "type": "object" } }
+  },
+  "additionalProperties": false
+}

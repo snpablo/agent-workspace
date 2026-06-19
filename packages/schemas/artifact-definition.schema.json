@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/artifact-definition.schema.json",
+  "title": "ArtifactDefinition",
+  "type": "object",
+  "required": ["id", "type", "version", "displayName"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "displayName": { "type": "string" },
+    "sections": { "type": "array", "items": { "type": "object" } },
+    "relationships": { "type": "array", "items": { "type": "object" } },
+    "actions": { "type": "array", "items": { "type": "object" } }
+  },
+  "additionalProperties": false
+}

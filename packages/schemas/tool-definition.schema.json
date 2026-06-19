@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/tool-definition.schema.json",
+  "title": "ToolDefinition",
+  "type": "object",
+  "required": ["id", "type", "version"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 }
+  },
+  "additionalProperties": false
+}

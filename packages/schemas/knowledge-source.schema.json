@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/knowledge-source.schema.json",
+  "title": "KnowledgeSource",
+  "type": "object",
+  "required": ["id", "type", "workspaceId", "title"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "workspaceId": { "type": "string" },
+    "title": { "type": "string" },
+    "uri": { "type": "string" }
+  },
+  "additionalProperties": false
+}

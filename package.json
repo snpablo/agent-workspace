@@ -1,0 +1,16 @@
+{
+  "name": "agent-workspace-platform",
+  "version": "0.0.1",
+  "description": "Agent Workspace Platform - metadata-driven collaborative AI workspaces",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "json-schema-to-typescript": "^13.0.0"
+  }
+}

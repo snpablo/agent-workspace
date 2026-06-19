@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-workspace.dev/schemas/workspace-state.schema.json",
+  "title": "WorkspaceState",
+  "type": "object",
+  "required": [
+    "workspaceId",
+    "businessState",
+    "selectionState",
+    "navigationState",
+    "artifactState",
+    "agentState",
+    "actionState",
+    "activityState",
+    "layoutState"
+  ],
+  "properties": {
+    "workspaceId": {
+      "type": "string"
+    },
+    "businessState": {
+      "type": "object"
+    },
+    "selectionState": {
+      "type": "object"
+    },
+    "navigationState": {
+      "type": "object"
+    },
+    "artifactState": {
+      "type": "object"
+    },
+    "agentState": {
+      "type": "object"
+    },
+    "actionState": {
+      "type": "object"
+    },
+    "activityState": {
+      "type": "object"
+    },
+    "layoutState": {
+      "type": "object"
+    }
+  }
+}

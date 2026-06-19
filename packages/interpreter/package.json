@@ -1,0 +1,27 @@
+{
+  "name": "@awp/interpreter",
+  "version": "0.0.1",
+  "description": "Workspace interpreter for Agent Workspace Platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@awp/schemas": "workspace:*",
+    "@awp/types": "workspace:*",
+    "@awp/definitions": "workspace:*"
+  },
+  "optionalDependencies": {},
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "agent-workspace",
+    "interpreter",
+    "component-tree"
+  ]
+}
