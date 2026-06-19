@@ -143,6 +143,31 @@ Schedule types:
 
 ---
 
+## Schedule Scope Clarification
+
+**Schedules are project-level, not agent-level.**
+
+- Schedules are defined at `project/schedules/` level
+- Multiple agents can reference the same schedule
+- Agent schedules (if agent-specific) are rare and should be modeled as project schedules
+- This avoids duplication and keeps scheduling logic centralized and discoverable
+
+**Example: Multiple agents using same schedule**
+
+```yaml
+# project/schedules/daily-reports.yaml
+kind: schedule
+id: daily-reports
+action:
+  agents:
+    - id: financial-reporter    # Multiple agents triggered by same schedule
+    - id: operations-reporter
+  input:
+    task: Generate daily report
+```
+
+Each agent executes independently but uses the same trigger logic.
+
 ## Channel Use Cases
 
 1. **Notifications:** Send run results to Slack/email
