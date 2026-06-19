@@ -169,7 +169,7 @@ constraints:
 
 - **Project** - Organizing container for context, participants, and work
 - **Agent** - Autonomous or semi-autonomous actor performing work
-- **Tool** - Interface to external capabilities, APIs, or functions
+- **Tool** - Capability that an Agent can invoke (first-class platform concept)
 - **Skill** - Reusable know-how composed from Tools or other Skills
 - **Channel** - Message send/receive point (email, Slack, HTTP, etc.)
 - **Schedule** - Trigger definition for automated work
@@ -180,17 +180,31 @@ constraints:
 - **Sandbox** - Isolated execution environment for Agents
 - **Eval** - Evaluation or assessment of outputs
 
+### Tool Implementation (Not Platform Vocabulary)
+
+Tools are first-class platform concepts. What backs a tool is an implementation detail:
+
+- **API endpoints** - HTTP/REST, GraphQL, webhooks
+- **Connectors** - Database, SaaS, data source connectors
+- **MCP servers** - Claude Model Context Protocol implementations
+- **Native code** - Python, JavaScript, Go functions
+- **Platform services** - Built-in platform capabilities
+
+These are mechanisms by which tools work, NOT platform root concepts.
+
+From the Agent's perspective: invoke Tool. The platform handles the backing mechanism transparently.
+
 ### Relationships
 
 ```text
 Project
   ├─ Agents (perform work in the project)
-  ├─ Tools (available to agents)
-  ├─ Skills (available to agents)
-  ├─ Schedules (trigger work)
-  ├─ Channels (receive/send)
-  ├─ Resources (provide context)
-  ├─ Artifacts (preserve outcomes)
+  ├─ Tools (capabilities available to agents)
+  ├─ Skills (reusable know-how available to agents)
+  ├─ Schedules (automated triggers)
+  ├─ Channels (communication interfaces)
+  ├─ Resources (shared context data)
+  ├─ Artifacts (durable outputs)
   ├─ Runs (execution history)
   ├─ Threads (collaboration history)
   └─ Participants (humans and agents)
@@ -198,29 +212,35 @@ Project
 Agent
   ├─ uses Tools
   ├─ uses Skills
-  ├─ creates Runs
+  ├─ creates Runs (each tool/skill invocation is a run)
   ├─ creates Artifacts
   ├─ participates in Threads
   └─ accesses Resources
 
 Tool
-  └─ exposes capability (API, function, external service)
+  ├─ has implementation backing (not platform vocabulary)
+  │   ├─ API endpoint
+  │   ├─ Connector (database, SaaS, data source)
+  │   ├─ MCP server
+  │   ├─ Native code (function)
+  │   └─ Platform service
+  ├─ exposes input schema
+  └─ produces output
 
 Skill
   ├─ uses Tools
   ├─ uses other Skills
-  └─ defines know-how
+  └─ provides reusable know-how
 
 Run
   ├─ Agent executing
-  ├─ invokes Tools
-  ├─ invokes Skills
-  └─ produces Artifacts or updates Resources
+  ├─ invokes Tool or Skill (creates sub-run)
+  └─ produces output or Artifact
 
 Thread
   ├─ message history
   ├─ Agents and Humans participating
-  └─ may link to Artifacts or Runs
+  └─ linked to Artifacts and Runs
 ```
 
 ## Canonical Vocabulary

@@ -169,6 +169,50 @@ const artifact = await getArtifact(run.artifacts[0]);
 - **Better positioning**: Aligns with how enterprise AI platforms work
 - **Easier hiring**: Engineers familiar with agent frameworks need less training
 
+## Tool Model Clarification
+
+### Tools Are First-Class
+
+Tools are a first-class platform concept. Agents have Tools.
+
+What backs a Tool is **not platform vocabulary**:
+
+| Backing Mechanism | Status | Why |
+|---|---|---|
+| API endpoints | Implementation detail | Not platform root; use Tool |
+| Connectors | Implementation detail | Not platform root; use Tool |
+| MCP servers | Implementation detail | Not platform root; use Tool |
+| Native code | Implementation detail | Not platform root; use Tool |
+| Platform services | Implementation detail | Not platform root; use Tool |
+
+### What NOT to Use as Platform Vocabulary
+
+These are implementation mechanisms, not concepts:
+
+- ❌ `Connector` (→ use `Tool`)
+- ❌ `MCPServer` (→ use `Tool`)
+- ❌ `Provider` (not a platform concept)
+- ❌ `Integration` (→ use `Tool`)
+- ❌ `APIAdapter` (not a platform concept)
+- ❌ `WebhookReceiver` (→ use `Tool`)
+- ❌ `Endpoint` (implementation detail of Tool)
+
+### Examples: Tool Backing is Transparent
+
+```yaml
+# All of these are Tools from Agent perspective
+tools:
+  - search-api-tool      # Backed by HTTP API
+  - database-query-tool  # Backed by database connector
+  - mcp-document-tool    # Backed by MCP server
+  - calc-tool            # Backed by native Python function
+  - artifact-tool        # Backed by platform service
+```
+
+From the Agent's perspective: "I invoke Tool X with these inputs, I get these outputs."
+
+How Tool X works (HTTP, MCP, connector, code, service) is the platform's concern, not the Agent's.
+
 ## Terminology Examples
 
 ### Example 1: Decision Analysis

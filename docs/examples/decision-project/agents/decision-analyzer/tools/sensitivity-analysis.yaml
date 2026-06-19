@@ -1,0 +1,77 @@
+tool:
+  id: sensitivity-analysis-v1
+  name: Sensitivity Analysis
+  type: function
+  version: 1
+  description: Perform sensitivity analysis on financial models and assumptions
+
+implementation:
+  type: function
+  language: python
+  module: analysis_tools
+  function: sensitivity_analysis
+  environment:
+    NUMPY_RANDOM_SEED: "42"
+
+schema:
+  inputs:
+    type: object
+    properties:
+      model:
+        type: object
+        description: Financial model with parameters
+        properties:
+          base_investment: { type: number }
+          annual_revenue: { type: number }
+          cost_of_capital: { type: number }
+          years: { type: integer }
+      sensitivity_parameters:
+        type: array
+        description: Which parameters to test
+        items:
+          type: object
+          properties:
+            parameter: { type: string }
+            range:
+              type: object
+              properties:
+                min: { type: number }
+                max: { type: number }
+                steps: { type: integer }
+    required: [model, sensitivity_parameters]
+
+  outputs:
+    type: object
+    properties:
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            parameter: { type: string }
+            tested_values:
+              type: array
+              items: { type: number }
+            outcomes:
+              type: array
+              items:
+                type: object
+                properties:
+                  npv: { type: number }
+                  roi: { type: number }
+                  payback: { type: number }
+      sensitivity_score:
+        type: object
+        description: Sensitivity of outcome to each parameter
+        additionalProperties: { type: number }
+      recommendations:
+        type: array
+        items: { type: string }
+
+timeout_seconds: 20
+retry_policy:
+  max_attempts: 1
+
+metadata:
+  computation_intensive: true
+  typical_computation_time_ms: 5000

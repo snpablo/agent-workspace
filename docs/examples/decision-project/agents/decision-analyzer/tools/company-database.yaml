@@ -1,0 +1,55 @@
+tool:
+  id: company-database-v1
+  name: Company Database
+  type: connector
+  version: 1
+  description: Access company financial data and project information from internal database
+
+implementation:
+  type: connector
+  connector_type: postgres
+  connection:
+    host_env: DB_HOST
+    port_env: DB_PORT
+    database: company_data
+    credentials_env: DB_CONNECTION_STRING
+
+schema:
+  inputs:
+    type: object
+    properties:
+      table:
+        type: string
+        enum: [projects, financials, precedents, divisions]
+        description: Table to query
+      filters:
+        type: object
+        description: Filter conditions
+      limit:
+        type: integer
+        default: 100
+        description: Max rows to return
+    required: [table]
+
+  outputs:
+    type: object
+    properties:
+      rows:
+        type: array
+        items:
+          type: object
+          description: Row data matching query
+      row_count:
+        type: integer
+      query_time_ms:
+        type: integer
+
+timeout_seconds: 15
+retry_policy:
+  max_attempts: 3
+  backoff_seconds: 1
+
+metadata:
+  internal_only: true
+  update_frequency: real-time
+  backup_enabled: true

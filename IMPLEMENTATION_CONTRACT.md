@@ -64,22 +64,78 @@ Implementation MUST treat these as deprecated/historical:
 
 ### Tool Definition
 
+Tools are first-class platform concepts. Tools are what Agents invoke.
+
+What backs a Tool is an implementation detail transparent to the Agent.
+
 ```typescript
 interface ToolDefinition {
   id: string;
   name: string;
   version: number;
   description?: string;
+  
+  // What the Agent sees (platform contract)
   schema: {
-    inputs: JSONSchema;
-    outputs: JSONSchema;
+    inputs: JSONSchema;  // What the Tool accepts
+    outputs: JSONSchema; // What the Tool produces
   };
+  
+  // How it's implemented (not platform vocabulary)
+  // Not exposed to Agent, handled by platform
   implementation: {
-    type: 'http' | 'function' | 'process' | 'custom';
-    endpoint?: string;
+    type: 'http' | 'connector' | 'mcp' | 'function' | 'platform_service';
+    
+    // Type-specific configuration
+    endpoint?: string;        // For HTTP
+    connector_type?: string;  // For connectors (postgres, mysql, slack, etc.)
+    server?: string;          // For MCP
+    module?: string;          // For native code
+    service?: string;         // For platform services
+    
+    // Common
+    auth?: AuthConfig;
+    timeout_seconds?: number;
+    retry_policy?: RetryPolicy;
   };
 }
 ```
+
+### Tool Implementation Types (Not Platform Vocabulary)
+
+These are implementation mechanisms, not platform concepts:
+
+- **API endpoints** - HTTP/REST, GraphQL, webhooks
+  - Backed by: external or internal APIs
+  - Config: endpoint, method, auth, headers
+
+- **Connectors** - Database, SaaS, data source connectors
+  - Backed by: connector libraries/services
+  - Config: connector_type, connection params, query/operation
+
+- **MCP servers** - Claude Model Context Protocol
+  - Backed by: MCP protocol servers
+  - Config: server, capabilities, protocol_version
+
+- **Native code** - Python, JavaScript, Go functions
+  - Backed by: compiled or interpreted code
+  - Config: module, function, environment, language
+
+- **Platform services** - Built-in platform capabilities
+  - Backed by: platform runtime
+  - Config: service name, operation, parameters
+
+All are transparent to the Agent. The Agent invokes the Tool with schema-defined inputs and receives schema-defined outputs.
+
+**Do NOT use as platform vocabulary:**
+- `Connector` (use `Tool`)
+- `MCPServer` (use `Tool`)
+- `Provider` (not a platform concept)
+- `Integration` (use `Tool`)
+- `APIAdapter` (not a platform concept)
+- `WebhookReceiver` (use `Tool`)
+
+All of these are implementation details of how Tools work.
 
 ### Skill Definition
 

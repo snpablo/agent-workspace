@@ -1,0 +1,59 @@
+tool:
+  id: market-data-v1
+  name: Market Data API
+  type: api
+  version: 1
+  description: Access market data and benchmarks
+
+implementation:
+  type: http
+  method: POST
+  endpoint: https://api.marketdata.example.com/v1/query
+  auth:
+    type: bearer
+    token_env: MARKET_DATA_API_KEY
+
+schema:
+  inputs:
+    type: object
+    properties:
+      data_type:
+        type: string
+        enum: [stock_prices, industry_benchmarks, comparable_deals, economic_data]
+        description: Type of market data to retrieve
+      query:
+        type: string
+        description: Specific data query
+      time_period:
+        type: string
+        description: Time period for historical data
+    required: [data_type, query]
+
+  outputs:
+    type: object
+    properties:
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            data_point: { type: string }
+            value: { type: number }
+            date: { type: string }
+            source: { type: string }
+      summary:
+        type: string
+        description: Natural language summary of results
+      confidence:
+        type: number
+        description: Confidence score (0-1)
+
+timeout_seconds: 45
+retry_policy:
+  max_attempts: 2
+  backoff_seconds: 3
+
+metadata:
+  cost_per_call: 0.005
+  rate_limit: 50_per_minute
+  update_frequency: daily

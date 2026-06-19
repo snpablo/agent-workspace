@@ -275,55 +275,223 @@ agents/decision-analyzer/tools/
     └── tool.yaml
 ```
 
-### tool.yaml
+### tool.yaml - Platform View
+
+A Tool is what Agents invoke. Its implementation (backing mechanism) is transparent to Agents:
 
 ```yaml
 tool:
   id: search-tool-v1
   name: Search Tool
-  type: http
   version: 1
   description: Search the internet for information
 
-implementation:
-  type: http
-  method: POST
-  endpoint: https://api.search.example.com/v1/search
-  auth:
-    type: bearer
-    token_env: SEARCH_API_KEY
+  # What the Agent sees (platform contract)
+  schema:
+    inputs:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Search query
+        limit:
+          type: integer
+          default: 10
+          description: Max results
+      required: [query]
+    
+    outputs:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              url: { type: string }
+              snippet: { type: string }
+        total_results: { type: integer }
 
-schema:
-  inputs:
-    type: object
-    properties:
-      query:
-        type: string
-        description: Search query
-      limit:
-        type: integer
-        default: 10
-        description: Max results to return
-    required: [query]
-  
-  outputs:
-    type: object
-    properties:
-      results:
-        type: array
-        items:
-          type: object
-          properties:
-            title: { type: string }
-            url: { type: string }
-            snippet: { type: string }
-      total_results: { type: integer }
+  # How it's implemented (not platform vocabulary)
+  implementation:
+    type: http
+    method: POST
+    endpoint: https://api.search.example.com/v1/search
+    auth:
+      type: bearer
+      token_env: SEARCH_API_KEY
 
-timeout_seconds: 30
-retry_policy:
-  max_attempts: 3
-  backoff_seconds: 2
+  # Execution constraints
+  timeout_seconds: 30
+  retry_policy:
+    max_attempts: 3
+    backoff_seconds: 2
+
+  metadata:
+    cost_per_call: 0.001
+    rate_limit: 100_per_minute
 ```
+
+### Tool Implementation Types
+
+Tools can be backed by different implementation mechanisms. All appear the same to Agents:
+
+#### API Endpoint Tool
+
+```yaml
+tool:
+  id: search-tool
+  name: Search Tool
+  description: Query search API
+  
+  implementation:
+    type: http
+    method: POST
+    endpoint: https://api.search.example.com/v1/search
+    auth:
+      type: bearer
+      token_env: SEARCH_API_KEY
+    headers:
+      Content-Type: application/json
+  
+  schema:
+    inputs: { ... }
+    outputs: { ... }
+```
+
+#### Connector Tool
+
+```yaml
+tool:
+  id: customer-lookup
+  name: Customer Lookup
+  description: Query customer database
+  
+  implementation:
+    type: connector
+    connector_type: postgres
+    connection:
+      host: db.example.com
+      database: customers
+      credentials_env: DB_CONNECTION_STRING
+    query: |
+      SELECT * FROM customers WHERE id = ?
+  
+  schema:
+    inputs:
+      type: object
+      properties:
+        customer_id:
+          type: string
+    outputs:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+```
+
+#### Native Code Tool
+
+```yaml
+tool:
+  id: financial-calc
+  name: Financial Calculator
+  description: Calculate financial metrics
+  
+  implementation:
+    type: function
+    language: python
+    module: financial_tools
+    function: calculate_metrics
+    environment:
+      RATE_DISCOUNT: "0.1"
+  
+  schema:
+    inputs:
+      type: object
+      properties:
+        investment: { type: number }
+        cash_flows: 
+          type: array
+          items: { type: number }
+    outputs:
+      type: object
+      properties:
+        roi: { type: number }
+        npv: { type: number }
+        payback: { type: number }
+```
+
+#### MCP Server Tool
+
+```yaml
+tool:
+  id: document-retrieval
+  name: Document Retrieval
+  description: Retrieve and search documents via MCP
+  
+  implementation:
+    type: mcp
+    server: claude-document-server
+    protocol_version: 1.0
+    capabilities: [retrieve, search, summarize]
+  
+  schema:
+    inputs:
+      type: object
+      properties:
+        query: { type: string }
+        document_type: { type: string }
+    outputs:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              content: { type: string }
+              relevance_score: { type: number }
+```
+
+#### Platform Service Tool
+
+```yaml
+tool:
+  id: artifact-create
+  name: Create Artifact
+  description: Create a durable artifact in the project
+  
+  implementation:
+    type: platform_service
+    service: artifact_manager
+    operation: create
+  
+  schema:
+    inputs:
+      type: object
+      properties:
+        artifact_type: { type: string }
+        content: { type: object }
+        metadata: { type: object }
+    outputs:
+      type: object
+      properties:
+        artifact_id: { type: string }
+        version: { type: number }
+        created_at: { type: string }
+```
+
+### Key Principle
+
+**From Agent perspective**: invoke Tool with inputs, get outputs.
+
+**Implementation details** (API, connector, MCP, code, service) are transparent.
+
+Platform handles routing, error handling, retry logic regardless of backing type.
 
 ## Skill Package Structure
 

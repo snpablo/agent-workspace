@@ -40,11 +40,31 @@ tools:
     name: Search Tool
     path: tools/search-tool.yaml
     required: true
+    description: Search the internet for information
 
   - id: financial-analysis
     name: Financial Analysis Tool
     path: tools/financial-analysis.yaml
     required: true
+    description: Calculate financial metrics
+
+  - id: market-data
+    name: Market Data API
+    path: tools/market-data.yaml
+    required: false
+    description: Access market data and benchmarks
+
+  - id: company-database
+    name: Company Database
+    path: tools/company-database.yaml
+    required: false
+    description: Query internal company financial data
+
+  - id: sensitivity-analysis
+    name: Sensitivity Analysis
+    path: tools/sensitivity-analysis.yaml
+    required: false
+    description: Perform sensitivity analysis on models
 
 skills:
   - id: financial-analysis
