@@ -727,6 +727,26 @@ Everything flows from this model. Nothing else is needed.
 
 ---
 
+## Architecture Decision Records (ADRs)
+
+This architecture is formalized through Architecture Decision Records. See `docs/architecture/adr/` for detailed rationale on each decision:
+
+| ADR | Decision | Status |
+|-----|----------|--------|
+| [ADR-001](adr/ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md) | Project as Primary Container | Accepted |
+| [ADR-002](adr/ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) | Package-First Architecture | Accepted |
+| [ADR-003](adr/ADR-003-YAML-ROOTED-PACKAGES.md) | YAML-Rooted Packages | Accepted |
+| [ADR-004](adr/ADR-004-INSTRUCTIONS-EMBEDDED-IN-YAML.md) | Instructions Embedded in YAML | Accepted |
+| [ADR-005](adr/ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs | Accepted |
+| [ADR-006](adr/ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability Model | Accepted |
+| [ADR-007](adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules as First-Class | Accepted |
+| [ADR-008](adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (12 Concepts) | Accepted |
+| [ADR-009](adr/ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing | Accepted |
+
+Read the ADRs to understand the reasoning behind each architectural decision.
+
+---
+
 ## References
 
 This document is authoritative. All other documentation should reference it.
