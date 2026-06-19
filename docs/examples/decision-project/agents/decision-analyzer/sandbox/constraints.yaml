@@ -1,0 +1,47 @@
+sandbox:
+  id: decision-analyzer-sandbox
+  version: 1
+
+resources:
+  max_cpu_cores: 2
+  max_memory_gb: 4
+  max_disk_gb: 10
+  max_network_requests_per_minute: 60
+
+execution:
+  max_iterations: 10
+  timeout_seconds: 300
+  max_function_calls: 50
+
+tokens:
+  max_input_tokens: 8000
+  max_output_tokens: 4000
+  max_total_tokens: 10000
+
+cost:
+  max_cost_per_run: 1.00
+  cost_tracking_enabled: true
+
+tools:
+  allowed_types: [http, function]
+  forbidden_endpoints: []
+  rate_limiting:
+    search_tool:
+      calls_per_minute: 30
+      calls_per_hour: 500
+
+permissions:
+  can_read_resources: true
+  can_create_artifacts: true
+  can_modify_artifacts: false
+  can_access_internet: true
+  can_execute_code: false
+
+safety:
+  content_filtering_enabled: true
+  profanity_filter_enabled: true
+  pii_protection_enabled: false
+
+metadata:
+  environment: production
+  created: 2026-06-01

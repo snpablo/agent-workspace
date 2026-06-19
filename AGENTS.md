@@ -25,6 +25,144 @@ Resources provide context.
 - Industry-standard vocabulary (Agent, Tool, Skill, Run, Thread)
 - Generic platform over domain-specific implementations
 
+## Filesystem-First Package Structure
+
+The platform is organized around filesystem-first declarative packages.
+
+### Project Package
+
+A Project is a directory with a `project.yaml` file at the root:
+
+```
+my-project/
+  project.yaml                    # Project metadata and configuration
+  agents/                         # Agent definitions
+    decision-analyzer/
+      agent.yaml
+      tools/
+      skills/
+  resources/                      # Shared context data
+    guidelines.md
+    company-policy.yaml
+  artifacts/                      # Output types and examples
+    decision-analysis/
+      schema.json
+  threads/                        # Discussion/collaboration archives
+  runs/                           # Execution history
+  schedules/                      # Automated triggers
+    daily-review.yaml
+```
+
+### Agent Package
+
+An Agent is a directory with an `agent.yaml` file at the root:
+
+```
+agents/decision-analyzer/
+  agent.yaml                      # Agent definition, instructions, configuration
+  tools/                          # Tool definitions available to this Agent
+    search-tool.yaml
+    analysis-tool.yaml
+  skills/                         # Skill definitions (compose Tools)
+    financial-analysis.yaml
+  channels/                       # Communication interfaces
+    slack.yaml
+    email.yaml
+  schedules/                      # Triggers for this Agent
+    daily-analysis.yaml
+  evals/                          # Evaluation definitions
+    output-quality.yaml
+  sandbox/                        # Execution environment config
+    resources.yaml
+    constraints.yaml
+```
+
+### Tool and Skill Packages
+
+Tools and Skills follow the same pattern:
+
+```
+agents/decision-analyzer/
+  tools/
+    search/
+      tool.yaml                   # Tool definition and configuration
+  skills/
+    financial-analysis/
+      skill.yaml                  # Skill definition, instructions
+      tools/                      # References to tools used
+        tool-reference.yaml
+```
+
+### YAML Structure Principles
+
+- All instructions go in the YAML file under an `instructions` field
+- No separate .md files for instructions
+- YAML is the single source of truth for each package
+- Files are organized by type and relationship
+- Directories group related definitions
+
+Example `project.yaml`:
+
+```yaml
+project:
+  id: decision-analysis-v1
+  name: Decision Analysis Project
+  version: 1
+
+agents:
+  - name: decision-analyzer
+    path: agents/decision-analyzer
+    
+resources:
+  - name: company-guidelines
+    path: resources/company-policy.yaml
+    
+artifact_types:
+  - type: decision-analysis
+    schema: artifacts/decision-analysis/schema.json
+    
+permissions:
+  - role: analyst
+    can: ['run_agents', 'review_artifacts']
+```
+
+Example `agent.yaml`:
+
+```yaml
+agent:
+  id: decision-analyzer-v1
+  name: Decision Analyzer
+  type: autonomous
+  version: 1
+
+instructions: |
+  You are an expert decision analyst.
+  Your role is to evaluate strategic decisions.
+  
+  Process:
+  1. Gather context from available resources
+  2. Analyze options using financial and strategic tools
+  3. Produce a structured decision analysis
+  
+  Be thorough and cite sources for all claims.
+
+tools:
+  - name: search-tool
+    path: tools/search-tool.yaml
+  - name: analysis-tool
+    path: tools/analysis-tool.yaml
+
+skills:
+  - name: financial-analysis
+    path: skills/financial-analysis.yaml
+
+constraints:
+  max_iterations: 10
+  timeout: 300
+  sandbox:
+    path: sandbox/resources.yaml
+```
+
 ## Core Model
 
 ### Top-Level Nouns

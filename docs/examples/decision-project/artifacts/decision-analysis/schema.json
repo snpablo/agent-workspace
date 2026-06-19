@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Decision Analysis",
+  "type": "object",
+  "description": "Structured analysis of a strategic business decision",
+  "properties": {
+    "decision_statement": {
+      "type": "string",
+      "description": "Clear statement of the decision to be made"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "background": { "type": "string" },
+        "current_situation": { "type": "string" },
+        "key_constraints": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "options": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "pros": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "cons": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["name", "description"]
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "properties": {
+        "financial": {
+          "type": "object",
+          "properties": {
+            "roi_by_option": {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            },
+            "payback_period": {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            },
+            "npv": {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            },
+            "summary": { "type": "string" }
+          }
+        },
+        "strategic": {
+          "type": "object",
+          "properties": {
+            "alignment_with_goals": { "type": "string" },
+            "competitive_impact": { "type": "string" },
+            "risk_assessment": { "type": "string" }
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "risk": { "type": "string" },
+              "probability": { "type": "string", "enum": ["low", "medium", "high"] },
+              "impact": { "type": "string", "enum": ["low", "medium", "high"] },
+              "mitigation": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "properties": {
+        "recommended_option": { "type": "string" },
+        "rationale": { "type": "string" },
+        "key_success_factors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "next_steps": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["recommended_option", "rationale"]
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "analysis_date": { "type": "string", "format": "date-time" },
+        "analyzed_by": { "type": "string" },
+        "data_sources": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidence_level": { "type": "string", "enum": ["low", "medium", "high"] },
+        "review_status": { "type": "string", "enum": ["draft", "pending_review", "approved"] }
+      }
+    }
+  },
+  "required": ["decision_statement", "options", "analysis", "recommendation"]
+}

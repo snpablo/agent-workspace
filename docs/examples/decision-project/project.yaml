@@ -1,0 +1,46 @@
+project:
+  id: decision-analysis-v1
+  name: Decision Analysis Project
+  type: decision
+  version: 1
+  description: |
+    Analyze strategic decisions using an autonomous agent.
+    The agent evaluates options, performs financial analysis,
+    and produces a structured decision artifact.
+  created: 2026-06-01
+  updated: 2026-06-19
+
+agents:
+  - id: decision-analyzer
+    name: Decision Analyzer
+    description: Analyzes decision options and produces analysis
+    path: agents/decision-analyzer
+    enabled: true
+
+resources:
+  - id: guidelines
+    name: Company Guidelines
+    path: resources/company-guidelines.md
+    type: document
+
+artifact_types:
+  - type: decision-analysis
+    name: Decision Analysis
+    description: Structured analysis of decision options
+    schema: artifacts/decision-analysis/schema.json
+
+schedules:
+  - id: daily-analysis
+    name: Daily Decision Analysis
+    path: schedules/daily-analysis.yaml
+    agent: decision-analyzer
+
+permissions:
+  - role: analyst
+    can: ['run_agents', 'review_artifacts']
+  - role: viewer
+    can: ['view_artifacts']
+
+metadata:
+  tags: [decision, analysis, autonomous-agent]
+  contact: decision-team@example.com

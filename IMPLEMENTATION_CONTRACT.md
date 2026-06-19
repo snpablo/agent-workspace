@@ -340,7 +340,91 @@ Implementation MUST handle migration from old vocabulary where necessary:
 
 Normalization SHOULD track all migrations with reason for diagnostics.
 
-## 9. Extensibility Points
+## 9. Filesystem Structure Contract
+
+### Project Package Structure
+
+Projects MUST be directories with `project.yaml` at the root:
+
+```
+project/
+├── project.yaml              # Project definition
+├── agents/                   # Agent subdirectories
+│   └── agent-name/
+│       └── agent.yaml
+├── resources/                # Resource files (documents, data)
+├── artifacts/                # Artifact type schemas
+├── schedules/                # Project-level schedules
+├── runs/                     # Execution history (runtime output)
+└── threads/                  # Collaboration threads (runtime output)
+```
+
+The `project.yaml` file defines:
+- Project identity (id, name, version)
+- Agents available in project (by path reference)
+- Resources available to agents
+- Artifact types defined for project
+- Schedules for automation
+- Permissions and policies
+
+### Agent Package Structure
+
+Agents MUST be directories with `agent.yaml` at the root:
+
+```
+agents/agent-name/
+├── agent.yaml               # Agent definition
+├── tools/                   # Tool definitions
+│   └── tool-name/
+│       └── tool.yaml
+├── skills/                  # Skill definitions
+│   └── skill-name/
+│       └── skill.yaml
+├── channels/                # Channel configurations
+├── schedules/               # Agent-specific schedules
+├── evals/                   # Evaluation definitions
+└── sandbox/                 # Execution environment config
+```
+
+The `agent.yaml` file defines:
+- Agent identity (id, name, type, version)
+- Instructions (in `instructions` field)
+- Tools available to agent
+- Skills available to agent
+- Constraints and sandbox config
+
+### YAML as Single Source of Truth
+
+- All instructions MUST be in YAML `instructions` field
+- No separate .md files for instructions
+- YAML files are the canonical definition
+- All metadata (version, description, etc.) in YAML
+- No split between definition and documentation
+
+### Reference Resolution
+
+- References between packages use relative file paths
+- Tools referenced in agent.yaml use path: `tools/tool-name/tool.yaml`
+- Skills referenced in agent.yaml use path: `skills/skill-name/skill.yaml`
+- Paths are relative to agent directory
+- Resolver follows path references to load definitions
+
+### Filesystem Represents Complete Structure
+
+- Walking filesystem shows all concepts (Projects, Agents, Tools, Skills)
+- No hidden or external registries required
+- Directory structure is discovery mechanism
+- All configuration is in YAML files
+
+### Portability Principles
+
+- Copy a project directory, it works
+- No external state required (except Tools that reference external APIs)
+- Projects can move between locations without updating paths
+- Version control (git) is persistence layer
+- No database or registry needed
+
+## 11. Extensibility Points
 
 Implementation MUST allow:
 
@@ -352,7 +436,7 @@ Implementation MUST allow:
 
 But MUST NOT allow creating new platform root concepts through extensions.
 
-## 10. Documentation Requirements
+## 12. Documentation Requirements
 
 All implementation MUST include:
 
@@ -362,7 +446,7 @@ All implementation MUST include:
 - Examples using industry-standard terminology
 - References to AGENTS.md and ARCHITECTURE_FREEZE.md
 
-## 11. Code Organization
+## 13. Code Organization
 
 Implementation MUST organize by platform concept:
 
@@ -379,7 +463,7 @@ packages/
 
 NOT by vertical domain or application.
 
-## 12. Default Conflict Resolution
+## 14. Default Conflict Resolution
 
 If a legacy doc or code conflicts with this contract:
 

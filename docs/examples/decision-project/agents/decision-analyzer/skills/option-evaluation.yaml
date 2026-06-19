@@ -1,0 +1,75 @@
+skill:
+  id: option-evaluation-skill-v1
+  name: Option Evaluation
+  version: 1
+  description: Evaluate and compare decision options across multiple dimensions
+
+instructions: |
+  You are evaluating and comparing strategic options.
+
+  Your task:
+  - Evaluate each option across key dimensions
+  - Identify pros and cons for each option
+  - Use financial analysis to compare options
+  - Assess strategic fit and alignment with company goals
+  - Identify key risks and mitigation strategies
+  - Provide clear recommendation with rationale
+
+  Process:
+  1. Define evaluation criteria
+  2. Score each option against criteria
+  3. Perform financial analysis using the financial-analysis skill
+  4. Search for case studies and precedents
+  5. Synthesize findings into recommendation
+
+  Structure your analysis clearly:
+  - Executive summary
+  - Option summaries
+  - Comparative analysis
+  - Financial analysis
+  - Risk assessment
+  - Recommendation with rationale
+
+tools:
+  - id: search-tool
+    name: Search Tool
+    path: ../tools/search-tool.yaml
+
+skills:
+  - id: financial-analysis
+    name: Financial Analysis
+    path: financial-analysis.yaml
+
+output_schema:
+  type: object
+  properties:
+    evaluation_criteria:
+      type: array
+      items:
+        type: object
+        properties:
+          criteria: { type: string }
+          weight: { type: number }
+    option_scores:
+      type: array
+      items:
+        type: object
+        properties:
+          option: { type: string }
+          scores: { type: object }
+          weighted_score: { type: number }
+    financial_comparison:
+      type: object
+      description: Financial metrics by option
+    recommendation:
+      type: object
+      properties:
+        recommended_option: { type: string }
+        rationale: { type: string }
+        key_risks: { type: array }
+        next_steps: { type: array }
+
+metadata:
+  complexity: very-high
+  typical_duration_seconds: 120
+  typical_cost: 0.25

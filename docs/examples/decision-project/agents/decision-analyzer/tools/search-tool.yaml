@@ -1,0 +1,54 @@
+tool:
+  id: search-tool-v1
+  name: Search Tool
+  type: http
+  version: 1
+  description: Search the internet for information and market data
+
+implementation:
+  type: http
+  method: POST
+  endpoint: https://api.search.example.com/v1/search
+  auth:
+    type: bearer
+    token_env: SEARCH_API_KEY
+
+schema:
+  inputs:
+    type: object
+    properties:
+      query:
+        type: string
+        description: Search query
+      limit:
+        type: integer
+        default: 10
+        description: Maximum number of results
+      sources:
+        type: array
+        items: { type: string }
+        description: Restrict to specific sources
+    required: [query]
+
+  outputs:
+    type: object
+    properties:
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            title: { type: string }
+            url: { type: string }
+            snippet: { type: string }
+            source: { type: string }
+      total_results: { type: integer }
+
+timeout_seconds: 30
+retry_policy:
+  max_attempts: 3
+  backoff_seconds: 2
+
+metadata:
+  cost_per_call: 0.001
+  rate_limit: 100_per_minute

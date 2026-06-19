@@ -1,0 +1,58 @@
+tool:
+  id: financial-analysis-tool-v1
+  name: Financial Analysis Tool
+  type: function
+  version: 1
+  description: Calculate financial metrics and analyze financial implications
+
+implementation:
+  type: function
+  module: financial_tools
+  function: analyze_financials
+
+schema:
+  inputs:
+    type: object
+    properties:
+      initial_investment:
+        type: number
+        description: Initial capital required
+      annual_cash_flow:
+        type: array
+        items: { type: number }
+        description: Annual cash flows for each year
+      discount_rate:
+        type: number
+        default: 0.1
+        description: Discount rate for NPV calculation
+      analysis_type:
+        type: string
+        enum: [roi, npv, payback, full]
+        default: full
+        description: Type of analysis to perform
+    required: [initial_investment, annual_cash_flow]
+
+  outputs:
+    type: object
+    properties:
+      roi_percentage:
+        type: number
+        description: Return on Investment percentage
+      npv:
+        type: number
+        description: Net Present Value
+      payback_period:
+        type: number
+        description: Payback period in years
+      irr:
+        type: number
+        description: Internal Rate of Return
+      summary:
+        type: string
+        description: Text summary of analysis
+
+timeout_seconds: 10
+
+metadata:
+  cost_per_call: 0
+  computation_time_ms: 50

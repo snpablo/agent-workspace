@@ -238,6 +238,29 @@ A Thread captures collaboration:
 - Linked to Runs (discussing execution)
 - Part of Project history
 
+## Filesystem-First Organization
+
+The platform organizes Projects and Agents as filesystem packages:
+
+```
+my-project/
+├── project.yaml              # Project definition
+├── agents/
+│   └── my-agent/
+│       ├── agent.yaml        # Agent definition and instructions
+│       ├── tools/            # Tool definitions
+│       └── skills/           # Skill definitions
+├── resources/                # Shared context (guidelines, data)
+├── artifacts/                # Artifact type schemas
+└── schedules/                # Automated triggers
+```
+
+Each first-class concept (Project, Agent, Tool, Skill) is a directory with a YAML file at the root.
+
+**Key principle**: Instructions live in the YAML file under an `instructions` field, not in separate markdown files.
+
+See [FILESYSTEM_STRUCTURE.md](FILESYSTEM_STRUCTURE.md) for complete details and examples in [docs/examples/](docs/examples/).
+
 ## Design Heuristics
 
 When adding concepts to the platform:

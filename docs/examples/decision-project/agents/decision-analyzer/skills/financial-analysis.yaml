@@ -1,0 +1,59 @@
+skill:
+  id: financial-analysis-skill-v1
+  name: Financial Analysis
+  version: 1
+  description: Analyze financial implications and calculate key financial metrics
+
+instructions: |
+  You are performing financial analysis for a business decision.
+
+  Your task:
+  - Analyze the financial implications of each option
+  - Calculate key financial metrics (ROI, payback, NPV, IRR)
+  - Identify financial risks and opportunities
+  - Compare options on financial basis
+  - Produce structured financial analysis
+
+  Steps:
+  1. Gather financial data for each option
+  2. Search for comparable transactions and benchmarks
+  3. Use the financial-analysis tool to run calculations
+  4. Analyze the results and identify patterns
+  5. Provide financial recommendations
+
+  Be precise with numbers. Show your work and cite sources.
+
+tools:
+  - id: financial-analysis
+    name: Financial Analysis Tool
+    path: ../tools/financial-analysis.yaml
+
+  - id: search-tool
+    name: Search Tool
+    path: ../tools/search-tool.yaml
+
+skills: []
+
+output_schema:
+  type: object
+  properties:
+    financial_summary:
+      type: object
+      properties:
+        roi_percentage: { type: number }
+        npv: { type: number }
+        payback_years: { type: number }
+        irr: { type: number }
+    financial_risks:
+      type: array
+      items: { type: string }
+    industry_benchmarks:
+      type: object
+      description: Key benchmarks from comparable deals
+    recommendation:
+      type: string
+
+metadata:
+  complexity: high
+  typical_duration_seconds: 60
+  typical_cost: 0.10
