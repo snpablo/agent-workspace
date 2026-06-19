@@ -1,0 +1,23 @@
+{
+  "name": "@awp/runtime",
+  "version": "1.0.0",
+  "description": "Agent Platform runtime - Project execution and state management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@awp/types": "*",
+    "@awp/loader": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": ["agent", "runtime", "project", "execution", "state"],
+  "author": "DecisionForge LLC",
+  "license": "Apache-2.0"
+}
