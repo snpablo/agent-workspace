@@ -290,29 +290,3 @@ export interface ValidationResult {
   warnings?: string[];
 }
 
-// Deprecated type aliases for backward compatibility (marked for removal)
-
-/**
- * @deprecated Use Tool instead
- */
-export type ToolDefinition = Tool;
-
-/**
- * @deprecated Use Skill instead
- */
-export type SkillDefinition = Skill;
-
-/**
- * @deprecated Use Agent instead
- */
-export type AgentDefinition = Agent;
-
-/**
- * @deprecated Use Project instead
- */
-export type ProjectDefinition = Project;
-
-/**
- * @deprecated Use ArtifactType instead
- */
-export type ArtifactDefinition = ArtifactType;

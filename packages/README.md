@@ -1,226 +1,281 @@
-# Agent Workspace Platform - Implementation Packages
+# Agent Platform - Implementation Packages
 
-This directory contains the implementation of the Agent Workspace Platform core packages:
+This directory contains the implementation of the Agent Platform core packages:
 
-- **@awp/schemas** - JSON schemas for all platform objects
-- **@awp/types** - TypeScript type definitions
-- **@awp/definitions** - Definition builders and validators
-- **@awp/interpreter** - Workspace interpreter for definition → component tree transformation
+- **@awp/types** - TypeScript type definitions for all platform concepts
+- **@awp/schemas** - JSON schemas for runtime persistence
+- **@awp/loader** - Filesystem package discovery and loading
+- **@awp/tools** - Tool execution with pluggable providers
+- **@awp/runtime** - Project runtime and execution engine
+- **@awp/interpreter** - Package interpretation and normalization (if needed)
 
 ## Architecture Overview
 
 ```
-WorkspaceDefinition (YAML/JSON)
+Package Definitions (YAML/JSON files)
         ↓
-Workspace Interpreter
-    ├─ Normalization (legacy format migration)
-    ├─ Validation (schema and constraint checking)
-    ├─ Binding Resolution (component and view selection)
-    ├─ Policy Evaluation
-    ├─ Layout Resolution
-    └─ Component Tree Generation
+Package Loader (@awp/loader)
+    ├─ Filesystem discovery
+    ├─ YAML parsing
+    ├─ Reference resolution
+    └─ Registry creation
         ↓
-ComponentTree (normalized, resolved, ready to render)
+Project Runtime (@awp/runtime)
+    ├─ Project initialization
+    ├─ Agent loading (with tools/skills)
+    ├─ Run execution (tools/skills/agents/schedules)
+    ├─ Artifact versioning
+    └─ Thread collaboration
         ↓
-Workspace Runtime (manages state, execution, collaboration)
-        ↓
-Workspace Shell (renders zones and components)
+Persistence Layer
+    ├─ InMemoryProjectRepository (testing)
+    ├─ FileProjectRepository (local development)
+    └─ DatabaseProjectRepository (production)
 ```
 
-## Implementation Status
-
-### Completed
-
-- ✅ Schema inventory formalization (@awp/schemas)
-- ✅ Type system definition (@awp/types)
-- ✅ Definition builders and validators (@awp/definitions)
-- ✅ Core interpreter with normalization pipeline (@awp/interpreter)
-- ✅ Canonical component and view registries
-
-### Next Steps
-
-- Runtime state management (@awp/runtime)
-- Workspace shell components and zone rendering
-- Persistence and audit layers
-- Vertical workspace implementations
-
-## Quick Start
-
-### Building All Packages
-
-```bash
-yarn install
-yarn workspace @awp/schemas build
-yarn workspace @awp/types build
-yarn workspace @awp/definitions build
-yarn workspace @awp/interpreter build
-```
-
-### Using the Interpreter
-
-```typescript
-import { WorkspaceInterpreter } from '@awp/interpreter';
-import { WorkspaceDefinitionBuilder } from '@awp/definitions';
-
-// Build or load a workspace definition
-const definition = new WorkspaceDefinitionBuilder('my-workspace', 'decision', 1)
-  .displayName('My Workspace')
-  .addZone('header', 'Header')
-  .addZone('queue', 'Queue')
-  .addZone('artifact', 'ArtifactSurface')
-  .addBinding('queue', 'work_item', 'queue_view')
-  .addBinding('artifact', 'artifact', 'editor_view')
-  .addArtifact('decision-analysis', true)
-  .build();
-
-// Interpret the definition
-const interpreter = new WorkspaceInterpreter();
-const result = interpreter.interpret(definition);
-
-if (result.success) {
-  console.log('Component Tree:', result.componentTree);
-} else {
-  console.error('Errors:', result.errors);
-}
-```
-
-## Package Details
-
-### @awp/schemas
-
-Provides access to canonical JSON schemas for all platform objects.
-
-**Exports:**
-- Definition schemas: `workspaceDefinition`, `artifactDefinition`, `playbookDefinition`, `agentDefinition`, etc.
-- Runtime schemas: `workspaceInstance`, `workItem`, `artifactInstance`, `run`, etc.
-- Interpreter schemas: `componentTree`
+## Core Packages
 
 ### @awp/types
 
-TypeScript type definitions organized into three categories:
+TypeScript type definitions for all platform concepts:
 
-**Definitions** (`src/definitions.ts`)
-- `WorkspaceDefinition` - Declarative workspace composition
-- `ArtifactDefinition` - Artifact type definition
-- `PlaybookDefinition` - Process/orchestration definition
-- `AgentDefinition` - Agent role and capabilities
-- `SkillDefinition` - Reusable capability
-- `ToolDefinition` - Callable tool or function
+**Definitions** (`src/definitions.ts`) - Filesystem packages:
+- `Tool` - Interface to external capability
+- `Skill` - Reusable know-how
+- `Agent` - Actor definition
+- `Project` - Organizing container
+- `Channel` - Communication interface
+- `Schedule` - Automation trigger
+- `Resource` - Shared context
+- `Sandbox` - Execution constraints
 
-**Runtime** (`src/runtime.ts`)
-- `WorkspaceInstance` - Live workspace
-- `WorkItem` - Queue item and business anchor
-- `ArtifactInstance` - Artifact with versioning
-- `Run` - Finite execution instance
-- `Event` - Activity record
-- `AgentSession` - Long-lived agent context
-- `WorkspaceState` - Runtime state model
+**Runtime** (`src/runtime.ts`) - Executable state:
+- `ProjectContext` - Project runtime state
+- `Run` - Execution record
+- `Artifact` - Versioned outcome
+- `Thread` - Collaboration
+- `Event` - Audit trail
+- `Participant` - Humans and agents
 
-**Interpreter** (`src/interpreter.ts`)
-- `ComponentTree` - Interpreter output
-- `ComponentDefinition` - UI component definition
-- `ViewDefinition` - Component variant for object kind
-- `InterpretationResult` - Interpretation outcome
+### @awp/schemas
 
-### @awp/definitions
+JSON schemas for runtime persistence:
 
-Fluent builders and validators for creating and validating definitions.
+- `project.schema.json` - Project container
+- `artifact.schema.json` - Versioned outcomes
+- `run.schema.json` - Execution records
+- `thread.schema.json` - Collaboration
+- `event.schema.json` - Audit trail
+- `participant.schema.json` - Actors
+- `resource.schema.json` - Context data
 
-**Builders:**
-- `WorkspaceDefinitionBuilder` - Build workspace definitions
-- `ArtifactDefinitionBuilder` - Build artifact definitions
-- `PlaybookDefinitionBuilder` - Build playbook definitions
-- `AgentDefinitionBuilder` - Build agent definitions
-- `SkillDefinitionBuilder` - Build skill definitions
-- `ToolDefinitionBuilder` - Build tool definitions
+### @awp/loader
 
-**Validators:**
-- `DefinitionValidator` - Validates definitions against schemas and constraints
+Filesystem package discovery and management:
 
-**Examples:**
-- `decision-workspace.ts` - Decision workspace definition
-- `partner-workspace.ts` - Partner operations workspace definition
-- `artifact-examples.ts` - Common artifact types
+**Main Classes:**
+- `PackageLoader` - Discovers and loads YAML packages
+- `PackageRegistry` - Manages packages and resolves references
+- `AgentLoader` - Loads agent packages with capabilities
+
+**Specialized Registries:**
+- `ToolRegistry` - Manages tools
+- `SkillRegistry` - Manages skills with dependencies
+- `ChannelRegistry` - Manages channels
+- `ScheduleRegistry` - Manages schedules
+
+### @awp/tools
+
+Tool execution with pluggable provider pattern:
+
+**Provider Types:**
+- `ApiToolProvider` - HTTP/REST APIs
+- `ConnectorToolProvider` - Database/SaaS connectors
+- `McpToolProvider` - MCP servers
+- `NativeToolProvider` - Native code (Python/JS)
+- `PlatformServiceToolProvider` - Built-in services
+
+**Main Class:**
+- `ToolRegistry` - Manages tools and routes to providers
+
+### @awp/runtime
+
+Project runtime and execution engine:
+
+**Main Classes:**
+- `ProjectRuntime` - Orchestrates project execution
+- `InMemoryProjectRepository` - In-memory persistence
+- `FileProjectRepository` - File-based persistence
+
+**Services:**
+- Initialize projects
+- Execute runs (tools, skills, agents, schedules)
+- Create artifacts and threads
+- Manage participants
+- Track events
 
 ### @awp/interpreter
 
-Transforms workspace definitions into component trees.
+Package interpretation and transformation (if needed for complex scenarios):
 
-**Main Classes:**
-- `WorkspaceInterpreter` - Main interpreter orchestrating the pipeline
-- `ComponentRegistry` - Manages component definitions
-- `ViewRegistry` - Manages view definitions
-- `NormalizationContext` - Tracks schema migrations
+- Normalizes package definitions
+- Validates references
+- Produces executable configurations
 
-**Interpretation Pipeline:**
+## Filesystem Package Structure
 
-1. **Normalization** - Migrates legacy formats to canonical form
-   - `top-level.id` → `workspace.id`
-   - `workspaceType` → `workspace.type`
-   - `componentBindings` → `bindings`
-   - `task` → `work_item`
-   - `Output` → `Artifact`
+### Project Package
 
-2. **Validation** - Checks schema compliance and constraints
+```
+my-project/
+  project.yaml                    # Project metadata
+  agents/
+    analyzer/
+      agent.yaml                  # Agent definition
+      tools/
+        search.yaml
+        database.yaml
+      skills/
+        analysis.yaml
+      channels/
+        slack.yaml
+      schedules/
+        daily-run.yaml
+      sandbox/
+        sandbox.yaml
+  resources/
+    guidelines.md
+    company-policy.yaml
+```
 
-3. **Binding Resolution** - Resolves zone/objectKind/view to components
+### Package Format (YAML)
 
-4. **Policy Evaluation** - Applies policies and permissions (TODO)
+```yaml
+kind: agent|tool|skill|project|...
+id: unique-identifier
+name: Display Name
+version: 1.0.0
+description: What this does
 
-5. **Component Tree Generation** - Produces normalized output
+# Type-specific fields
+instructions: |
+  Agent instructions or tool description
+model: claude-opus
+role: strategic-analyst
 
-## Architectural Principles
+# References
+tools:
+  - id: tool-id
+skills:
+  - id: skill-id
+agents:
+  - id: agent-id
 
-### Definition/Runtime Separation
+# Implementation
+implementation:
+  type: http|mcp|connector|function|platform_service
+  # type-specific config...
+```
 
-Definitions are declarative, versioned, and reusable. Runtime objects are live, mutable, and persistent.
+## Integration Example
 
-### Canonical Vocabulary
+```typescript
+import { PackageLoader } from '@awp/loader';
+import { ProjectRuntime } from '@awp/runtime';
+import { FileProjectRepository } from '@awp/runtime';
 
-The platform enforces a canonical vocabulary via the implementation contract:
-- `ArtifactDefinition` + `ArtifactInstance` (not `Output`)
-- `WorkItem` (not queue root `Task`)
-- `AgentSession` (not transient conversation)
+// 1. Load packages
+const loader = new PackageLoader({ rootPath: './my-project' });
+const discovery = await loader.discover();
+const registry = new PackageRegistry(discovery.packages);
 
-### Metadata-Driven Composition
+// 2. Create runtime with persistence
+const fileRepo = new FileProjectRepository('./projects');
+const runtime = new ProjectRuntime(registry, fileRepo);
 
-Workspace experiences are composed from definitions without hard-coded domain logic. The same runtime renders all vertical workspaces.
+// 3. Initialize project
+const context = await runtime.initializeProject({
+  project: registry.get('my-project') as Project,
+  participants: [{ id: 'user-001', type: 'human', role: 'owner' }],
+});
 
-### Domain-Neutral Interpreter
+// 4. Execute agent
+const result = await runtime.executeRun(context.project.id, {
+  targetKind: 'agent',
+  targetId: 'analyzer',
+  triggeredBy: 'user-001',
+  input: { task: 'Analyze this' },
+});
 
-The interpreter remains generic across all workspace types. Vertical-specific behavior lives in definitions, not the platform core.
+// 5. Create artifact
+const artifact = await runtime.createArtifact(context.project.id, {
+  id: 'analysis-001',
+  type: 'analysis',
+  content: result.run.output,
+  createdBy: 'agent-analyzer',
+});
 
-## Testing Guidance
+// Project is automatically persisted
+```
 
-Each package includes example definitions and builders that can be used for:
-- Unit testing the builders
-- Integration testing the validator
-- End-to-end testing the interpreter
+## Package Status
 
-The `packages/definitions/examples/` directory provides reference implementations for:
-- Decision Workspace
-- Partner Workspace
-- Common artifact types
+| Package | Status | Purpose |
+|---------|--------|---------|
+| @awp/types | ✅ Complete | Type definitions |
+| @awp/schemas | ✅ Complete | JSON schemas |
+| @awp/loader | ✅ Complete | Package discovery |
+| @awp/tools | ✅ Complete | Tool execution |
+| @awp/runtime | ✅ Complete | Runtime engine |
+| @awp/interpreter | ⏳ Optional | Package interpretation |
 
-## Design Decisions
+## Key Concepts
 
-### Schema Validation
+### Project
+The organizing container for all work. Owns agents, resources, artifacts, threads, runs, schedules, and participants.
 
-The validator uses a simplified approach for core constraint checking. For full JSON Schema validation, integration with AJV or similar is recommended at the persistence layer.
+### Agent
+Autonomous actor definition with instructions, tools, skills, and constraints. Executed via the runtime.
 
-### Component Registry
+### Tool
+Interface to external capability (API, MCP server, database connector, function, or platform service). Providers handle execution.
 
-Components and views are registered with the interpreter at initialization. Custom registries can be provided via interpreter options.
+### Skill
+Reusable know-how composed from tools and other skills. Enables capability composition.
 
-### Normalization Tracking
+### Run
+Execution record for any work (tool invocation, skill composition, agent action, schedule trigger).
 
-All schema migrations are tracked with reason and provenance. This enables diagnostics, migration planning, and version tracking.
+### Artifact
+Versioned, durable outcome with full history. Immutable versions, mutable current state.
 
-## Future Work
+### Thread
+Collaboration context. Humans and agents discuss artifacts, runs, or specific topics.
 
-1. **Policy System** - Full policy evaluation engine for visibility and execution constraints
-2. **Permission System** - Authorization and access control
-3. **Runtime State** - Complete workspace state management model
-4. **Shell Components** - Reference implementations of canonical zones
-5. **Persistence Layer** - Storage adapters for definitions and instances
-6. **Audit Trail** - Event-based audit logging and replay
+### Resource
+Shared context data (documents, config, guidelines) available to all agents in a project.
+
+## Design Principles
+
+- **Filesystem-First**: Packages are filesystem directories with YAML definitions
+- **No Definition/Instance Split**: Definitions are YAML, runtime state is ProjectContext
+- **Provider Pattern**: Tool backing mechanisms are pluggable
+- **Project-Centric**: Everything organized around projects
+- **Artifact-Centric**: Outcomes are first-class and versioned
+- **Event-Driven**: All activity produces audit trail events
+- **Type-Safe**: Full TypeScript support throughout
+
+## Next Steps
+
+- Integrate with shell/UI for visualization
+- Implement real agent executor (LLM integration)
+- Add database persistence for production
+- Implement schedule execution engine
+- Add more tool provider types
+
+## Documentation
+
+- [RUNTIME_ARCHITECTURE.md](../RUNTIME_ARCHITECTURE.md) - Runtime design
+- [AGENT_PACKAGE_MODEL.md](../AGENT_PACKAGE_MODEL.md) - Agent packages
+- [TOOL_EXECUTION_MODEL.md](../TOOL_EXECUTION_MODEL.md) - Tool execution
+- [PERSISTENCE_REVIEW.md](../PERSISTENCE_REVIEW.md) - Storage design

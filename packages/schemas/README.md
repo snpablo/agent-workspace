@@ -1,52 +1,36 @@
 # @awp/schemas
 
-JSON schemas for Agent Workspace Platform.
+JSON schemas for Agent Platform.
 
-This package provides canonical JSON Schema definitions for all platform objects, organized into three categories: definitions, runtime, and interpreter schemas.
+This package provides canonical JSON Schema definitions for platform concepts: Project, Agent, Tool, Skill, Channel, Schedule, Resource, Artifact, Thread, Run, and Event.
 
 ## Usage
 
 ```typescript
-import { workspaceDefinition, artifactDefinition, componentTree } from '@awp/schemas';
+import { project, artifact, run, thread } from '@awp/schemas';
 
 // Use schemas for validation with AJV or similar
 const ajv = new Ajv();
-const validate = ajv.compile(workspaceDefinition);
-const valid = validate(myWorkspaceData);
+const validate = ajv.compile(project);
+const valid = validate(myProjectData);
 ```
 
 ## Schema Inventory
 
-### Definition Schemas
+### Schemas
 
-These define the declarative, portable blueprint for workspace composition and capabilities.
+- **project.schema.json** - Project container and organization
+- **artifact.schema.json** - Versioned outcomes and durable results
+- **run.schema.json** - Execution records (tool/skill/agent/schedule)
+- **thread.schema.json** - Collaboration context and discussion
+- **event.schema.json** - Audit trail and activity records
+- **participant.schema.json** - Humans and agents in projects
+- **resource.schema.json** - Shared context data
 
-- **workspace-definition.schema.json** - Complete workspace type and shell composition
-- **artifact-definition.schema.json** - Durable artifact type definition
-- **playbook-definition.schema.json** - Process/orchestration definition
-- **agent-definition.schema.json** - Agent role and capabilities
-- **skill-definition.schema.json** - Reusable capability for agents/playbooks
-- **tool-definition.schema.json** - Bounded callable capability
+### Supporting Schemas
 
-### Runtime Schemas
-
-These define the live or persisted instances that exist during workspace execution.
-
-- **workspace-instance.schema.json** - Live workspace and its state
-- **work-item.schema.json** - Queue item and business anchor
-- **artifact-instance.schema.json** - Artifact with versioning
-- **knowledge-source.schema.json** - Grounding source for artifacts
-- **action.schema.json** - Executable or reviewable next step
-- **thread.schema.json** - Conversation context
-- **run.schema.json** - Finite execution instance
-- **playbook-instance.schema.json** - Running playbook instance
-- **agent-session.schema.json** - Long-lived agent context
-- **event.schema.json** - Canonical activity record
-- **participant.schema.json** - Human or agent actor
-
-### Interpreter & Shell Schemas
-
-These define the output of the interpreter and shell composition.
+- **permissions.schema.json** - Access control
+- **policies.schema.json** - Project policies
 
 - **component-tree.schema.json** - Normalized interpreter output
 - **workspace-state.schema.json** - Runtime state model

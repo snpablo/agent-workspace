@@ -212,23 +212,3 @@ export interface ProjectState {
   metadata?: Record<string, any>;
 }
 
-/**
- * Deprecated type aliases for backward compatibility
- * These are provided for migration purposes only.
- * Use the new types above.
- */
-
-/**
- * @deprecated Use Artifact instead
- */
-export type ArtifactInstance = Artifact;
-
-/**
- * @deprecated Use ProjectState instead (runtime state, no definition/instance split)
- */
-export type WorkspaceInstance = ProjectState;
-
-/**
- * @deprecated Use Run instead
- */
-export type PlaybookInstance = Run;
