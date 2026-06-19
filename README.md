@@ -1,329 +1,283 @@
-# Agent Workspace Platform (AWP)
+# Agent Platform
 
-Agent Workspace Platform, or `AWP`, is a metadata-driven platform for building collaborative AI workspaces.
+A metadata-driven platform for building AI agent systems that support human-agent collaboration.
 
-It is not a single application for one workflow. It is a reusable platform for defining workspace types, interpreting those definitions into UI and runtime behavior, and supporting durable human-agent collaboration around business work.
+It is not a single application for one use case. It is a reusable platform for defining agent capabilities, orchestrating execution, and supporting durable collaboration around shared outcomes.
 
-## What AWP Is
+## What This Platform Is
 
-An Agent Workspace Platform is a system that lets teams define workspaces declaratively instead of hard-coding a new application for every domain.
+A system that lets teams build agent systems declaratively without hard-coding for each domain.
 
-In AWP:
+In this platform:
 
-- work happens inside a durable `Workspace`
-- each workspace is organized around a `WorkItem`
-- agents and humans collaborate through shared state
-- durable results are preserved as `Artifacts`
-- actions, runs, threads, and knowledge sources remain inspectable
-- the experience is composed from definitions, not bespoke page logic
+- work happens in **Projects** (organizing containers)
+- **Agents** perform work (autonomous or semi-autonomous actors)
+- **Tools** and **Skills** enable capabilities (external APIs or composed know-how)
+- durable results are preserved as **Artifacts** (versioned, auditable outcomes)
+- **Runs** record execution (who did what, when, why)
+- **Threads** capture collaboration (humans and agents discussing)
+- **Resources** provide context (data, documents, credentials)
+- **Schedules** trigger work (automated or event-driven)
 
 The central architecture is:
 
 ```text
-WorkspaceDefinition
+Agent Definition (Tool, Skill, Agent, Project config)
         ↓
-Workspace Interpreter
+Platform Interpreter
         ↓
-Workspace Runtime
+Agent Runtime
         ↓
-Workspace Shell
+Execution + Collaboration
 ```
 
 ## Why It Exists
 
-Most agent products stop at chat, prompt orchestration, or workflow automation. AWP exists to support a more durable model of work:
+Most agent products focus narrowly on chatbots, prompt orchestration, or single-threaded automation. This platform exists to support durable, observable, collaborative work:
 
-- business work is larger than a single prompt
-- the thing users keep is usually not the conversation, but the resulting artifact
-- review, approval, traceability, and follow-up actions need first-class treatment
-- different teams need different workspace shapes, but should not require separate applications
+- agent work is larger than a single inference
+- users care about outcomes (Artifacts), not execution logs
+- collaboration, review, and audit trails need first-class support
+- different teams need different agent configurations, but should not require separate code
+- agents should be observable, versioned, and composable
 
-AWP is meant to support operational, analytical, and review-heavy workflows through one platform model.
+The platform supports operational, analytical, and review-heavy work with Agents, Humans, and AI as first-class participants.
 
 ## Core Principles
 
-- `Workspace-centric`: work happens inside durable collaboration containers.
-- `Artifact-centric`: the durable result of work is an artifact, not a chat transcript.
-- `Human + agent collaboration`: both people and agents operate through shared workspace state.
-- `Metadata-driven composition`: workspace experiences are assembled from definitions.
-- `Definition/runtime separation`: definitions describe work; runtimes execute work.
-- `Declarative workspace definitions`: new workspace types are definition packages, not new apps.
-- `Durable state and versioning`: artifacts, definitions, runs, and actions can be persisted and audited.
+- **Project-centric**: work happens inside organizing containers with participants, context, and outcomes
+- **Agent-driven**: agents are explicit, first-class actors with observable execution
+- **Artifact-centric**: durable results are versioned and auditable
+- **Tool-oriented**: capabilities are composed from Tools and Skills
+- **Metadata-driven**: projects, agents, and execution are configured declaratively
+- **Industry-standard vocabulary**: aligns with how agent platforms discuss these concepts
+- **Durable collaboration**: runs, threads, artifacts can be persisted and audited
 
 ## Platform Layers
 
 ```text
-Applications
+Applications (built on the platform)
         ↓
-Workspace Definition Packages
+Agent & Project Definitions (what agents do, how projects are organized)
         ↓
-Workspace Interpreter
+Platform Interpreter (validate, normalize, resolve)
         ↓
-Workspace Runtime
+Agent Runtime (execute agents, manage state, record runs)
         ↓
-Persistence
+Persistence Layer (store artifacts, runs, threads, resources)
         ↓
-Infrastructure
+Infrastructure (hosting, networking, storage)
 ```
 
-What each layer does:
+Each layer:
 
-- `Applications`: product surfaces built on top of the platform
-- `Workspace Definition Packages`: declarative workspace, artifact, playbook, and agent definitions
-- `Workspace Interpreter`: validates definitions and turns them into component trees and bindings
-- `Workspace Runtime`: manages live state, execution, activity, and collaboration
-- `Persistence`: stores definitions, instances, artifacts, runs, actions, and events
-- `Infrastructure`: the underlying hosting, storage, and service environment
+- **Applications**: product experiences built using the platform
+- **Agent & Project Definitions**: declarative Tool, Skill, Agent, and Project configurations
+- **Platform Interpreter**: validates definitions, resolves references, produces executable configurations
+- **Agent Runtime**: executes agents, manages project state, records Runs and events
+- **Persistence**: stores Artifacts, Runs, Threads, Resources, and audit trails
+- **Infrastructure**: compute, storage, networking, integration points
 
 ## First-Class Concepts
 
-The current documentation treats these as first-class platform objects:
+Platform objects organized by lifecycle:
 
-- `WorkspaceDefinition`
-- `WorkspaceInstance`
-- `WorkItem`
-- `ArtifactDefinition`
-- `ArtifactInstance`
-- `KnowledgeSource`
-- `Action`
-- `Thread`
-- `Run`
-- `PlaybookDefinition`
-- `PlaybookInstance`
-- `AgentDefinition`
-- `AgentSession`
-- `SkillDefinition`
-- `ToolDefinition`
-- `Participant`
-- `Event`
-- `WorkspaceState`
-- shell `Zones`
-- `Bindings`
-- `Policies`
-- `Permissions`
+### Definitions (declarative, versioned, reusable)
 
-## Definition Vs Runtime
+- **Tool** - Interface to external capability (API, function, service)
+- **Skill** - Reusable know-how (composes Tools and Skills)
+- **Agent** - Actor definition (instructions, Tools, Skills, constraints)
+- **Project** - Organizing container (Agents, Channels, Resources, Artifact types)
 
-AWP separates what a workspace is from what is happening inside it.
+### Runtime (executable, persistable, observable)
 
-Definition-side objects:
+- **Project** - Live instance of project container
+- **Run** - Execution record (Agent action, trigger, invocation of Tool/Skill)
+- **Artifact** - Durable outcome with versioning and provenance
+- **Thread** - Conversation or discussion (Humans and Agents)
+- **Resource** - Context data (documents, configs, credentials)
+- **Participant** - Human or Agent actor
+- **Event** - Activity record (Run event, Artifact created, Thread message, etc.)
+- **Sandbox** - Isolated execution environment
 
-- `WorkspaceDefinition`
-- `ArtifactDefinition`
-- `PlaybookDefinition`
-- `AgentDefinition`
-- `SkillDefinition`
-- `ToolDefinition`
+### Supporting Concepts
 
-Runtime-side objects:
+- **Channel** - Send/receive interface (Slack, email, HTTP, webhook)
+- **Schedule** - Trigger definition (time-based, event-based, manual)
 
-- `WorkspaceInstance`
-- `WorkItem`
-- `ArtifactInstance`
-- `KnowledgeSource`
-- `Action`
-- `Thread`
-- `Run`
-- `PlaybookInstance`
-- `AgentSession`
-- `Event`
-- `Participant`
+## Vocabulary Alignment
 
-This separation matters because:
+This platform aligns with industry standard agent platform terminology:
 
-- definitions can be versioned and reused
-- runtimes can execute and persist live work independently
-- one runtime can render many workspace types
+| Concept | Term |
+|---------|------|
+| Organizing container | **Project** |
+| Autonomous actor | **Agent** |
+| External capability | **Tool** |
+| Composed know-how | **Skill** |
+| Durable outcome | **Artifact** |
+| Execution record | **Run** |
+| Collaboration history | **Thread** |
+| Context data | **Resource** |
+| Automated trigger | **Schedule** |
+| Communication interface | **Channel** |
+| Evaluation | **Eval** |
+| Execution isolation | **Sandbox** |
 
-## Workspace Definition Language (WDL)
+This vocabulary makes the platform:
+- More accessible to people familiar with agent frameworks
+- Less custom jargon to learn
+- Easier to integrate with other systems
+- More aligned with emerging industry standards
 
-`WDL` is the declarative format for describing workspace experiences.
-
-At a minimum, a workspace definition describes:
-
-- workspace identity and version
-- zones in the workspace shell
-- bindings from zones to object kinds
-- artifact types
-- action types
-- playbook references
-- policies and permissions
-
-Minimal example:
-
-```yaml
-workspace:
-  id: partner-operations-v1
-  type: partner
-  version: 1
-  displayName: Partner Operations Workspace
-  layout: operational
-
-zones:
-  - key: queue
-    component: queue_view
-  - key: artifact_surface
-    component: artifact_surface
-
-bindings:
-  - zone: queue
-    objectKind: work_item
-    view: renewal_queue
-  - zone: artifact_surface
-    objectKind: artifact
-    view: renewal_analysis
-
-artifacts:
-  - type: renewal-analysis
-
-actions:
-  - type: schedule-call
-
-playbooks:
-  - type: renewal-review
-
-policies: []
-permissions: []
-```
-
-The interpreter is expected to validate, normalize, and resolve this metadata into a runtime-ready component tree.
-
-## Workspace Shell
-
-The canonical workspace shell is composed from zones such as:
-
-- `Header`
-- `Queue`
-- `Assistant Surface`
-- `Artifact Surface`
-- `Knowledge Panel`
-- `Agent Panel`
-- `Action Panel`
-- `Activity Timeline`
-- `Modal Surface`
-
-The shell must be able to render multiple workspace types without hard-coded domain pages.
-
-## Vertical Workspace Examples
-
-The repository includes vertical examples that pressure-test the same platform against different business domains:
-
-- [Decision Workspace](docs/verticals/decision-workspace.md)
-- [Partner Workspace](docs/verticals/partner-workspace.md)
-- [HR Workspace](docs/verticals/hr-workspace.md)
-- [Finance Workspace](docs/verticals/finance-workspace.md)
-
-These examples are intended to prove:
-
-- one platform can support both operational and review-heavy work
-- vertical language can stay in definitions instead of the platform core
-- the same runtime can render different workspace types
-
-## Repository Structure
+## Project Structure
 
 ```text
-packages/                          # Core implementation packages (Phase 1)
-  schemas/                         # @awp/schemas - JSON Schema definitions
-  types/                           # @awp/types - TypeScript types
-  definitions/                     # @awp/definitions - Builders & validators
-  interpreter/                     # @awp/interpreter - Definition transformer
-  README.md                        # Package overview
+packages/                          # Core implementation
+  schemas/                         # JSON Schema definitions
+  types/                           # TypeScript type system
+  definitions/                     # Builders and validators
+  interpreter/                     # Definition interpreter
+  runtime/                         # Agent runtime (Phase 2)
+  shell/                           # Collaboration UI (Phase 3)
 
 docs/
-  README.md
-  architecture/
-    diagrams/
-    workspace-shell.md
-    canonical-domain-model.md
-  images/
-    diagrams/
-    originals/
-  posters/
-  specification/v1/
-  verticals/
+  specification/                   # Technical specification
+  architecture/                    # Architecture diagrams
+  verticals/                       # Use case examples
 
-schemas/                           # Legacy schema location (mirrored in packages/schemas)
-  *.schema.json
-
-AGENTS.md                          # Starting context for agents
-ARCHITECTURE_FREEZE.md             # Frozen architectural decisions
-CANONICAL_MODEL.md                 # Object boundaries and semantics
+AGENTS.md                          # Starting context
+ARCHITECTURE_FREEZE.md             # Architectural decisions
 IMPLEMENTATION_CONTRACT.md         # Implementation obligations
-SCHEMA_INVENTORY.md                # Schema definitions and inventory
-ROADMAP.md                         # Implementation roadmap
-IMPLEMENTATION_GUIDE.md            # Architecture integration guide (NEW)
-IMPLEMENTATION_SUMMARY.md          # Completion status and metrics (NEW)
+SCHEMA_INVENTORY.md                # Schema catalog
 README.md                          # This file
-LICENSE
 ```
-
-Recommended reading order for a first pass:
-
-1. [docs/README.md](docs/README.md)
-2. [docs/specification/v1/README.md](docs/specification/v1/README.md)
-3. [docs/specification/v1/metamodel.md](docs/specification/v1/metamodel.md)
-4. [docs/specification/v1/interpreter.md](docs/specification/v1/interpreter.md)
-5. [docs/specification/v1/runtime-state.md](docs/specification/v1/runtime-state.md)
-6. [docs/architecture/README.md](docs/architecture/README.md)
-7. [docs/verticals/README.md](docs/verticals/README.md)
-8. [CANONICAL_MODEL.md](CANONICAL_MODEL.md)
-9. [IMPLEMENTATION_CONTRACT.md](IMPLEMENTATION_CONTRACT.md)
-10. [schemas/workspace-definition.schema.json](schemas/workspace-definition.schema.json)
 
 ## Implementation Status
 
 ### Phase 1: Core Packages ✅ COMPLETE
 
-Implemented the four foundational packages forming the architectural center of gravity:
+- `@awp/schemas` - Definitions for Tool, Skill, Agent, Project, Run, Artifact, Thread
+- `@awp/types` - TypeScript interfaces
+- `@awp/definitions` - Builders and validators
+- `@awp/interpreter` - Definition → executable configuration
 
-- **@awp/schemas** - 20 canonical JSON schemas
-- **@awp/types** - 50+ TypeScript type interfaces
-- **@awp/definitions** - Fluent builders and validators
-- **@awp/interpreter** - Definition → ComponentTree transformation
+### Phase 2: Runtime (Next)
 
-See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for completion details.
+- `@awp/runtime` - Agent execution, Run recording, State management
+- Artifact versioning and audit
+- Thread and collaboration support
 
-### Phase 2: Runtime State (In Progress)
+### Phase 3: Shell UI (Planned)
 
-- `@awp/runtime` - Workspace state management
-- State persistence and serialization
-- Event model and event sourcing
+- `@awp/shell` - Collaboration interface
+- Project visualization
+- Run inspection and Artifact review
 
-### Phase 3: Workspace Shell (Planned)
+### Phase 4: Reference Implementations (Planned)
 
-- `@awp/shell` - Reference shell implementation
-- Zone and component rendering
-- State binding and reactivity
+- Example Projects for common domains
+- Tool and Skill integrations
+- Deployment templates
 
-### Phase 4: Vertical Applications (Planned)
+See [ROADMAP.md](ROADMAP.md) for detailed phase breakdown.
 
-- Decision Workspace
-- Partner Workspace  
-- HR Workspace
-- Finance Workspace
+## Key Concepts
+
+### Project
+
+A Project organizes context for collaborative work:
+
+- **Agents** that participate
+- **Tools** and **Skills** they can use
+- **Resources** (context data)
+- **Channels** (communication interfaces)
+- **Schedules** (automated triggers)
+- **Artifacts** (outcomes)
+- **Runs** (execution history)
+- **Threads** (discussions)
+- **Participants** (humans and agents)
+
+### Agent
+
+An Agent is an autonomous or semi-autonomous actor:
+
+- Defined by **Tools**, **Skills**, and **Instructions**
+- Executes **Runs** (creating Artifacts or updating Resources)
+- Participates in **Threads** (with Humans or other Agents)
+- Observable and auditable (all actions recorded)
+
+### Run
+
+A Run is an execution record:
+
+- Who executed (Agent)
+- What was invoked (Tool, Skill, or Agent action)
+- When it happened (timestamp)
+- What was produced (Artifact, state change)
+- Why it happened (trigger, context)
+
+Runs are immutable and provide complete audit trail.
+
+### Artifact
+
+An Artifact is a durable outcome:
+
+- Created by Runs
+- Versioned (full history preserved)
+- Auditable (who created it, when, why)
+- Collaborative (Humans and Agents can review and modify)
+- Typed (different Projects have different Artifact types)
+
+### Thread
+
+A Thread captures collaboration:
+
+- Conversation between Humans and Agents
+- Linked to Artifacts (discussing outcomes)
+- Linked to Runs (discussing execution)
+- Part of Project history
+
+## Design Heuristics
+
+When adding concepts to the platform:
+
+1. Does it apply across multiple Project types?
+2. Does it have a distinct lifecycle?
+3. Does it require separate persistence?
+4. Does it require separate permissions?
+5. Does it require distinct UI treatment?
+
+Keep concepts in configuration/definitions when they are:
+
+- Project-specific
+- Agent-specific
+- Tool-specific
+- Domain language
+- Temporary implementation detail
+
+Keep concepts in the platform core only when they appear across all Projects and use cases.
 
 ## Key References
 
-**Implementation Guides**
-- [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - Phase 1 completion status and metrics
-- [Implementation Guide](IMPLEMENTATION_GUIDE.md) - Architecture integration and design patterns
-- [Packages README](packages/README.md) - Overview of all packages
+**Getting Started**
+- [AGENTS.md](AGENTS.md) - Conceptual model and vocabulary
+- [ROADMAP.md](ROADMAP.md) - Implementation phases
+- [packages/README.md](packages/README.md) - Package overview
 
 **Architecture & Design**
-- [AGENTS.md](AGENTS.md) - Starting context for agents
-- [Architecture Freeze](ARCHITECTURE_FREEZE.md) - Frozen architectural decisions
-- [Canonical Model](CANONICAL_MODEL.md) - Object boundaries and semantics
-- [Implementation Contract](IMPLEMENTATION_CONTRACT.md) - Implementation obligations
-- [Schema Inventory](SCHEMA_INVENTORY.md) - Complete schema definitions
+- [ARCHITECTURE_FREEZE.md](ARCHITECTURE_FREEZE.md) - Frozen decisions
+- [IMPLEMENTATION_CONTRACT.md](IMPLEMENTATION_CONTRACT.md) - Implementation requirements
+- [SCHEMA_INVENTORY.md](SCHEMA_INVENTORY.md) - Complete schema catalog
+
+**Implementation**
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Phase 1 completion
+- [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) - Architecture integration
 
 **Specification**
-- [Docs Overview](docs/README.md)
-- [Specification v1](docs/specification/v1/README.md)
-- [Typed Metamodel](docs/specification/v1/metamodel.md)
-- [Interpreter Spec](docs/specification/v1/interpreter.md)
-- [Runtime State](docs/specification/v1/runtime-state.md)
-- [Architecture Overview](docs/architecture/README.md)
-- [Vertical Workspaces](docs/verticals/README.md)
+- [docs/specification/](docs/specification/) - Technical specification
+- [docs/architecture/](docs/architecture/) - Architecture and design
+- [docs/verticals/](docs/verticals/) - Use case examples
 
 ## License
 

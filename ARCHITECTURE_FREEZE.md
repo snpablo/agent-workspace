@@ -1,96 +1,198 @@
 # Architecture Freeze
 
-This file marks the end of architecture discovery and consolidation for the current repository phase.
+This file marks the end of architecture discovery for the current phase.
 
-The architecture is now frozen enough to support schema-first implementation work.
+The architecture is frozen with industry-standard agent platform vocabulary.
 
 ## Frozen Decisions
 
-The following decisions are frozen for the next implementation phase:
+### Canonical Vocabulary
 
-- `Artifact` is the canonical durable-result term.
-- `Output` is a historical term and should not appear in active examples or new implementation work.
-- `WorkItem` is the canonical queue and business-anchor abstraction.
-- `Task` is a specialization of `WorkItem`, not a platform root.
-- event names use the canonical `<object>.<verb>` pattern.
-- workspace definitions use the canonical nested WDL shape:
-  - `workspace`
-  - `zones`
-  - `bindings`
-  - `artifacts`
-  - `actions`
-  - `playbooks`
-  - `policies`
-  - `permissions`
-- `Run` is a finite execution instance.
-- `AgentSession` is a long-lived participation context that may span multiple runs.
-- `PlaybookDefinition` is orchestration/process definition.
-- `SkillDefinition` is a reusable capability.
-- vertical workspaces are `WorkspaceDefinitions` rendered by one runtime.
+The following terms are canonical and must be used consistently:
+
+**Organizing & Configuration**
+- `Project` - organizing container (replaces "Workspace")
+- `Tool` - external capability definition (API, function, service)
+- `Skill` - reusable know-how (composes Tools and Skills)
+- `Agent` - autonomous or semi-autonomous actor
+- `Schedule` - trigger definition (time-based, event-based)
+- `Channel` - send/receive interface (Slack, email, HTTP)
+- `Resource` - context data (documents, credentials, configs)
+
+**Execution & Outcomes**
+- `Run` - execution record (finite, immutable, auditable)
+- `Artifact` - durable outcome (versioned, collaborative)
+- `Thread` - conversation or discussion context
+- `Sandbox` - isolated execution environment
+- `Eval` - evaluation or assessment
+
+**Relationships**
+- Agents execute in Projects
+- Agents use Tools and Skills
+- Runs record Agent execution
+- Artifacts preserve outcomes
+- Threads capture collaboration
+- Resources provide context
+- Schedules trigger work
+
+### Deprecated Terms
+
+The following historical terms are deprecated and should not appear in new implementation work:
+
+- `Workspace` → use `Project`
+- `WorkItem` → removed (use Agent to perform work in Projects)
+- `Playbook` → use Agent definition + Schedule
+- `Definition/Instance` pattern → use Tool/Skill (definitions) and Run/Agent (instances)
+- `Capability` → use Tool or Skill
+- `Workflow` → use Agent behavior or Schedule
+- `Integration` → use Tool
+- `WorkspaceDefinition` → use Project definition or Agent definition
+
+### Event Naming
+
+Events follow `<object>.<verb>` pattern:
+- `Agent.executed`
+- `Run.created`
+- `Artifact.created`
+- `Artifact.versioned`
+- `Thread.message_added`
+- etc.
+
+### Project Composition
+
+Projects expose these top-level configurations:
+
+```yaml
+Project:
+  id: string
+  type: string
+  version: integer
+  displayName: string
+  agents:
+    - Agent definitions available in this project
+  tools:
+    - Tool definitions available to agents
+  skills:
+    - Skill definitions available to agents
+  channels:
+    - Channel integrations for this project
+  schedules:
+    - Automated triggers
+  resources:
+    - Shared context data
+  artifact_types:
+    - Artifact types created in this project
+  permissions:
+    - Access and authorization rules
+  policies:
+    - Behavioral constraints
+```
+
+### Core Abstractions
+
+**Run**
+- Finite execution instance
+- Immutable record
+- References Agent, Tool/Skill invoked
+- Records outcome (Artifact, state change)
+- Auditable with full provenance
+
+**Artifact**
+- Durable outcome of work
+- Versioned and timestamped
+- Auditable (who, when, why)
+- Collaborative (Humans and Agents can review/modify)
+- Typed per Project
+
+**Agent**
+- Autonomous or semi-autonomous actor
+- Has Tools, Skills, and Instructions
+- Creates Runs and Artifacts
+- Participates in Threads
+- Observable execution
+
+**Thread**
+- Conversation between Humans and Agents
+- Linked to Artifacts and Runs for context
+- Part of Project collaboration history
 
 ## Architecture Evolution Notes
 
-The project explored several alternative terms and structures during discovery.
+The v1 architecture transitions from custom "Workspace" vocabulary to industry-standard "Project/Agent/Tool/Skill" vocabulary.
 
-The v1 specification adopts a single canonical vocabulary and model.
+This change:
+- Aligns with how agent platforms (LangGraph, AutoGen, etc.) describe these concepts
+- Reduces cognitive load for people familiar with agent frameworks
+- Makes integration with other systems easier
+- Better reflects industry standards
 
-Earlier terminology is retained only where necessary to explain design evolution and is not part of the normative specification.
+Earlier terminology in historical docs is retained for context but not normative.
 
 Reference documents:
 
 - [CANONICAL_MODEL.md](CANONICAL_MODEL.md)
-- [DECISIONS.md](DECISIONS.md)
 - [IMPLEMENTATION_CONTRACT.md](IMPLEMENTATION_CONTRACT.md)
 - [SCHEMA_INVENTORY.md](SCHEMA_INVENTORY.md)
 
 ## Implementation Scope For Next Phase
 
-The next phase is implementation preparation, not product feature work.
+The next phase is establishing runtime infrastructure.
 
 In scope:
 
-- schema refinement and stabilization
-- type generation or authoring from schemas
-- definition package setup
-- interpreter scaffolding
-- runtime state modeling
-- workspace shell scaffolding
-- vertical definitions expressed through canonical WDL
+- Schema updates for new vocabulary
+- Type system for Tool, Skill, Agent, Project, Run, Artifact, Thread
+- Interpreter for Agent and Project definitions
+- Runtime for executing Agents and recording Runs
+- Collaboration support (Threads, Participants)
+- Artifact versioning and audit
 
 Out of scope:
 
-- domain-specific runtime forks
-- separate applications for Decision, Finance, HR, or Partner
-- ad hoc object models that bypass schemas
-- runtime feature implementation beyond architecture-backed scaffolding
+- Domain-specific runtime behavior
+- Separate applications for different project types
+- Advanced scheduling features
+- Custom UI components
 
 ## Explicit Non-Goals
 
-The following are explicit non-goals for this phase:
+The following are non-goals for this phase:
 
-- production runtime behavior
-- provider-specific integration work
-- infrastructure setup
-- marketplace implementation
+- production-grade Agent execution
+- provider-specific integrations beyond basic Tool support
+- infrastructure setup and deployment
 - fully realized UI application code
-- schema drift away from the canonical model
+- Machine learning model hosting
+- Cost optimization
 
 ## Next Packages To Implement
 
-The next packages should be created in this order:
+Implementation order:
 
-1. `packages/schemas`
-2. `packages/types`
-3. `packages/definitions`
-4. `packages/interpreter`
-5. `packages/runtime`
-6. `packages/state`
-7. `packages/components`
+1. `packages/schemas` - Tool, Skill, Agent, Project, Run, Artifact, Thread
+2. `packages/types` - TypeScript interfaces
+3. `packages/definitions` - Builders for definitions
+4. `packages/interpreter` - Interpret definitions to runtime configs
+5. `packages/runtime` - Execute Agents, record Runs
+6. `packages/sdk` - Client SDK for Agent development
+7. `packages/shell` - Collaboration and inspection UI
 
-## Final Constraint
+## Final Constraints
+
+**Generic Over Specific**
 
 Prefer fewer, more generic platform abstractions.
 
-Do not introduce new platform root concepts when an existing abstraction can be specialized.
+Do not introduce new platform root concepts when specialization suffices.
 
-Decision Workspace, Finance Workspace, HR Workspace, and Partner Workspace MUST remain `WorkspaceDefinitions` rendered by one runtime.
+**One Runtime**
+
+All Project types must work with a single runtime and Agent execution model.
+
+Do not create separate platforms or runtimes for different domains.
+
+**Standards Alignment**
+
+Use industry-standard vocabulary (Agent, Tool, Skill, Run) rather than inventing domain-specific terms.
+
+This makes the platform more accessible and easier to integrate.

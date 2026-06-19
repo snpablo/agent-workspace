@@ -6,122 +6,148 @@ Assume no prior project knowledge.
 
 Read this file first.
 
-## Project Thesis
+## Platform Thesis
 
-Definitions describe work.
-Interpreters compose experiences.
-Runtimes execute work.
-Artifacts preserve work.
-Humans and agents collaborate through shared state.
+Agents perform work in Projects.
+Tools and Skills enable agent capabilities.
+Artifacts preserve outcomes.
+Humans and agents collaborate through shared Threads and Runs.
+Schedules trigger work.
+Resources provide context.
 
 ## Architectural Principles
 
-- Workspace-centric
-- Artifact-centric
-- Metadata-driven composition
-- Definition/runtime separation
-- Durable state
-- Declarative workspace definitions
-- Generic platform abstractions over domain-specific implementations
+- Project-centric (organizing context)
+- Artifact-centric (preserving outcomes)
+- Agent-driven (explicit execution actors)
+- Tool-oriented (connecting to capabilities)
+- Durable collaboration (versioned, auditable)
+- Industry-standard vocabulary (Agent, Tool, Skill, Run, Thread)
+- Generic platform over domain-specific implementations
 
-## Architectural Center of Gravity
+## Core Model
+
+### Top-Level Nouns
+
+- **Project** - Organizing container for context, participants, and work
+- **Agent** - Autonomous or semi-autonomous actor performing work
+- **Tool** - Interface to external capabilities, APIs, or functions
+- **Skill** - Reusable know-how composed from Tools or other Skills
+- **Channel** - Message send/receive point (email, Slack, HTTP, etc.)
+- **Schedule** - Trigger definition for automated work
+- **Artifact** - Durable output with versioning and provenance
+- **Thread** - Conversation or discussion context
+- **Run** - Execution record (Agent action, tool invocation, skill execution)
+- **Resource** - Context data for Agents (documents, configs, credentials)
+- **Sandbox** - Isolated execution environment for Agents
+- **Eval** - Evaluation or assessment of outputs
+
+### Relationships
 
 ```text
-WorkspaceDefinition
-        ↓
-Workspace Interpreter
-        ↓
-ComponentTree
+Project
+  ├─ Agents (perform work in the project)
+  ├─ Tools (available to agents)
+  ├─ Skills (available to agents)
+  ├─ Schedules (trigger work)
+  ├─ Channels (receive/send)
+  ├─ Resources (provide context)
+  ├─ Artifacts (preserve outcomes)
+  ├─ Runs (execution history)
+  ├─ Threads (collaboration history)
+  └─ Participants (humans and agents)
+
+Agent
+  ├─ uses Tools
+  ├─ uses Skills
+  ├─ creates Runs
+  ├─ creates Artifacts
+  ├─ participates in Threads
+  └─ accesses Resources
+
+Tool
+  └─ exposes capability (API, function, external service)
+
+Skill
+  ├─ uses Tools
+  ├─ uses other Skills
+  └─ defines know-how
+
+Run
+  ├─ Agent executing
+  ├─ invokes Tools
+  ├─ invokes Skills
+  └─ produces Artifacts or updates Resources
+
+Thread
+  ├─ message history
+  ├─ Agents and Humans participating
+  └─ may link to Artifacts or Runs
 ```
-
-Everything else exists to support this flow.
-
-The interpreter input is a `WorkspaceDefinition`.
-
-The interpreter output is a `ComponentTree`.
-
-## First-Class Objects
-
-### Definition Objects
-
-- `WorkspaceDefinition`
-- `ArtifactDefinition`
-- `PlaybookDefinition`
-- `AgentDefinition`
-- `SkillDefinition`
-- `ToolDefinition`
-
-Definition objects are declarative, versioned, and portable.
-
-### Runtime Objects
-
-- `WorkspaceInstance`
-- `WorkItem`
-- `ArtifactInstance`
-- `KnowledgeSource`
-- `Action`
-- `Thread`
-- `Run`
-- `Event`
-- `Participant`
-- `AgentSession`
-- `PlaybookInstance`
-
-Runtime objects are executable and persistable.
 
 ## Canonical Vocabulary
 
-### Durable Result
+### Durable Outcome
 
-Canonical term: `Artifact`
+Canonical term: **Artifact**
 
-### Queue Abstraction
+Artifacts are versioned, timestamped, and auditable.
 
-Canonical term: `WorkItem`
+### Execution Record
 
-`Task` is a specialization of `WorkItem` and is not a platform root.
+Canonical term: **Run**
+
+Runs record what happened, who did it, and what was produced.
+
+### Execution Actor
+
+Canonical term: **Agent**
+
+Agents are explicit first-class actors (human or autonomous).
+
+### Reusable Capability
+
+Canonical terms: **Tool** (external), **Skill** (composed)
+
+Tools connect to external capabilities.
+Skills compose Tools and other Skills into reusable know-how.
 
 ## Architecture
 
 ```text
-WorkspaceDefinition
-        ↓
-Workspace Interpreter
-        ↓
-Workspace Runtime
-        ↓
-Workspace Shell
-        ↓
-Artifacts + Actions + Collaboration
+Project (organizing context)
+    ↓
+Agent (performs work)
+    ↓
+Tools + Skills (enable capabilities)
+    ↓
+Run (execution record)
+    ↓
+Artifacts + Threads (outcomes + collaboration)
 ```
 
 The key architectural boundary is:
 
 ```text
-Definition
-        ↓
-Interpreter
-        ↓
-Runtime
+Tool/Skill Definition
+    ↓
+Agent Invocation
+    ↓
+Run (execution + effects)
 ```
 
-The same runtime should render multiple workspace types from definitions.
+One generic platform supports many project types and use cases.
 
-## Workspace Shell
+## Project Interface
 
-The canonical shell consists of these zones:
+Projects expose these to participants:
 
-- `Header`
-- `Queue`
-- `AssistantSurface`
-- `ArtifactSurface`
-- `KnowledgePanel`
-- `AgentPanel`
-- `ActionPanel`
-- `ActivityTimeline`
-- `ModalSurface`
-
-Workspace definitions bind object kinds and views into these zones.
+- **Channels** - Where work is requested or reported
+- **Artifacts** - What was produced
+- **Runs** - How it was done (audit trail)
+- **Threads** - Discussion and context
+- **Resources** - Shared context data
+- **Schedules** - Automated triggers
 
 ## Constraints
 
@@ -129,40 +155,40 @@ Do not introduce new platform root concepts without explicit approval.
 
 Prefer specialization over new abstractions.
 
-Do not build separate applications for:
+Do not hard-code vertical-specific behavior:
 
-- Decision Workspace
-- Finance Workspace
-- HR Workspace
-- Partner Workspace
+- Decision-making Projects
+- Partner management Projects
+- HR/Finance Projects
 
-These are `WorkspaceDefinitions` rendered by one runtime.
+These are Projects with different Agents, Tools, Skills, and Artifact types.
 
 Vertical language should live in:
 
-- `WorkspaceDefinitions`
-- `ArtifactDefinitions`
-- `PlaybookDefinitions`
-- configuration metadata
+- Tool configurations
+- Skill definitions
+- Agent instructions
+- Artifact schemas
+- Channel integrations
 
 and not in platform foundations.
 
 ## Implementation Order
 
-1. `Schemas`
-2. `Types`
-3. `Definitions`
-4. `Interpreter`
-5. `Runtime State`
-6. `Workspace Shell`
-7. `Vertical Definitions`
-8. `Reference Implementation`
+1. Schemas (Tool, Skill, Artifact, Run, Agent, Project)
+2. Types (TypeScript interfaces for all concepts)
+3. Interpreters (transform definitions to executable)
+4. Runtime (execute Agents, Runs, manage state)
+5. SDK (client library for Agents)
+6. Shell UI (render Projects and collaboration)
+7. Tool integrations (connect external capabilities)
+8. Reference implementations (example Projects)
 
 If work is ambiguous, prefer progress in this order.
 
 ## Working Rules
 
-Treat the following as the architectural source of truth:
+Treat the following as architectural source of truth:
 
 - `README.md`
 - `ARCHITECTURE_FREEZE.md`
@@ -171,48 +197,47 @@ Treat the following as the architectural source of truth:
 - `docs/`
 - `schemas/`
 
-Prefer schema-backed definitions over ad hoc object shapes.
+Keep the platform domain-neutral.
 
-Keep the interpreter domain-neutral.
+Keep Agent execution explicit and observable.
 
-Keep runtime state explicit and durable where appropriate.
+Keep Artifacts first-class and durable.
 
-Avoid hard-coding vertical-specific screens or logic.
-
-Capture reusable platform concepts before introducing workflow-specific language.
+Capture reusable platform concepts before introducing project-specific language.
 
 ## Design Heuristics
 
 When deciding whether something belongs in the platform:
 
-1. Does it appear across multiple workspace types?
-2. Does it have a distinct lifecycle?
+1. Does it apply across multiple project types?
+2. Does it have a distinct lifecycle (creation, execution, completion)?
 3. Does it require separate persistence?
 4. Does it require separate permissions?
 5. Does it require distinct UI treatment?
 
 Keep a concept out of the platform core when it is primarily:
 
-- a vertical term
-- a workflow variant
-- a view concern
-- a prompt concern
-- a temporary implementation detail
+- project-specific vocabulary
+- agent-specific behavior
+- tool-specific integration
+- temporary implementation detail
+- view or presentation concern
 
 ## Current Intent
 
-The architecture is considered frozen enough to begin implementation.
+The vocabulary is being aligned with industry standard agent platform patterns.
 
-The immediate goal is not to invent new platform concepts.
+The architecture emphasizes:
+- Agents as first-class execution actors
+- Tools and Skills as capability composition
+- Artifacts as durable, versioned outcomes
+- Runs as observable execution records
+- Projects as organizing containers (not custom "Workspace" terminology)
 
-The immediate goal is to implement:
+The immediate goal is to implement the core model using industry-standard vocabulary that aligns with how agents and autonomous systems are discussed across platforms.
 
-```text
-WorkspaceDefinition
-        ↓
-Workspace Interpreter
-        ↓
-ComponentTree
-```
-
-and build the runtime and workspace shell around those shared abstractions.
+This makes the platform:
+- More accessible to people familiar with agent frameworks
+- Less custom jargon to learn
+- Easier to integrate with other systems
+- More aligned with emerging standards

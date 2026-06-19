@@ -1,84 +1,132 @@
 # Roadmap
 
-Implementation progress toward a metadata-driven collaborative AI workspace platform.
+Implementation progress toward a platform for building AI agent systems with human-agent collaboration.
 
 ## Phase 1: Core Packages ✅ COMPLETE
 
-Successfully implemented the four foundational packages forming the "Definition → Interpreter → ComponentTree" architectural center:
+Successfully implemented the four foundational packages:
 
-- ✅ `packages/schemas` - 20 canonical JSON schemas
+- ✅ `packages/schemas` - Tool, Skill, Agent, Project, Run, Artifact, Thread definitions
 - ✅ `packages/types` - 50+ TypeScript type interfaces  
-- ✅ `packages/definitions` - Fluent builders and validators with examples
-- ✅ `packages/interpreter` - Complete transformation pipeline with normalization
+- ✅ `packages/definitions` - Builders and validators
+- ✅ `packages/interpreter` - Definition validation and normalization
 
-**Status:** Phase 1 is architecture-validated. The frozen model holds under implementation.
+**Status:** Phase 1 is complete with industry-standard vocabulary (Project, Agent, Tool, Skill, Run, Artifact, Thread).
 
-See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for completion details.
+See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) and [VOCABULARY_TRANSITION.md](VOCABULARY_TRANSITION.md) for details.
 
-## Phase 2: Runtime State (Next)
+## Phase 2: Agent Runtime (Next)
 
-The next phase builds on the validated foundation to implement runtime state management.
+Build Agent execution and Run recording:
 
 ### `packages/runtime`
 
-- Implement `WorkspaceState` and sub-state models
-- State persistence and serialization  
-- Event model and event sourcing
-- Audit trails and versioning
-- Participant and session lifecycle
+- Execute Agents with Tool and Skill invocation
+- Record Runs (finite, immutable execution records)
+- Manage Sandboxes (isolated execution environments)
+- Generate Events for all activity
+- Support Artifact creation and versioning
+- Thread management for collaboration
+
+**Scope:**
+- Agent execution engine
+- Run state machine
+- Artifact versioning
+- Thread and Event recording
+- Permission enforcement
+- Audit logging
 
 **Dependencies:** Phase 1 packages
 
 **Success Criteria:**
-- Complete state model implementation
-- Persistence layer integration  
-- Event sourcing and audit trails working
-- Tested with Phase 1 definitions
+- Agents execute Runs in Projects
+- Artifacts created by Runs are versioned and auditable
+- Threads capture human-agent collaboration
+- Complete audit trail of all activity
+- Full test coverage with example Agents
 
-## Phase 3: Workspace Shell
+## Phase 3: SDK & Integrations
 
-Implement reference shell using Phase 1 and Phase 2:
+Provide Agent development and Tool integration:
+
+### `packages/sdk`
+
+- Agent client library
+- Tool/Skill definition helpers
+- Project client
+- Run inspection
+- Artifact management
+
+### Tool Integrations
+
+- HTTP/API Tools
+- Function-based Tools
+- Service connectors (Slack, email, etc.)
+- Database access
+
+**Dependencies:** Phase 1, 2 packages
+
+**Success Criteria:**
+- Easy to develop new Agents
+- Easy to create Tools
+- Examples for common integrations
+
+## Phase 4: Collaboration UI
+
+Build reference UI for Project collaboration:
 
 ### `packages/shell`
 
-- Zone and component rendering
-- State binding and reactivity
-- User interaction handling
-- Responsive layout management
-- Modal and overlay support
-
-**Dependencies:** Phase 1, Phase 2 packages
-
-**Success Criteria:**
-- All 9 canonical zones rendering
-- State binding working end-to-end
-- Example workspace fully interactive
-
-## Phase 4: Vertical Applications
-
-Build verticals using only definitions (no platform code changes):
-
-- Decision Workspace
-- Partner Workspace
-- HR Workspace  
-- Finance Workspace
+- Project dashboard
+- Run inspection and debugging
+- Artifact review and versioning
+- Thread/discussion interface
+- Agent status and logs
+- Resource management
 
 **Dependencies:** Phase 1, 2, 3 packages
 
-**Constraint:** All verticals must work with shared platform (no vertical forks).
+**Success Criteria:**
+- View running Projects and Agents
+- Inspect Runs and Artifacts
+- Participate in Threads
+- Full audit trail visible
+- Responsive and accessible
+
+## Phase 5: Reference Projects
+
+Implement example Projects using only definitions:
+
+- Decision Analysis
+- Partner Operations
+- Content Generation
+- Data Analysis
+
+**Constraint:** No platform code changes for new Projects.
 
 **Success Criteria:**
-- 4 fully functional vertical workspaces
-- Each using only definition packages
-- No platform code changes required for new verticals
+- 4 fully functional Projects
+- Each uses only definition packages
+- Demonstrate platform capability
 
 ## Guiding Principles
 
-### One Runtime, Many Workspaces
+### One Runtime, Many Projects
 
-Decision, Finance, HR, Partner are `WorkspaceDefinitions` rendered by one runtime.
+Decision, Finance, HR, Partner are Projects defined declaratively.
 
-Do not build separate applications for them.
+Do not create separate platforms or applications for different domains.
+
+### Industry-Standard Vocabulary
+
+Use Agent, Tool, Skill, Run, Artifact, Thread—align with agent frameworks.
+
+Do not invent domain-specific platform concepts.
+
+### Explicit & Observable
+
+Agents execute (Run), create Artifacts, discuss in Threads.
+All activity is recorded, versioned, and auditable.
 
 ### Metadata-Driven
 
