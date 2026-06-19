@@ -1,401 +1,620 @@
 # AGENTS.md
 
-This file is the starting context for future AI coding agents working in this repository.
+**Read this first.** This document is the starting context for future AI agents and contributors joining the repository.
 
-Assume no prior project knowledge.
+Assume no prior project knowledge. Architecture V2 is the only architecture.
 
-Read this file first.
+---
 
-## Platform Thesis
+## What Is This Repository?
 
-Agents perform work in Projects.
-Tools and Skills enable agent capabilities.
-Artifacts preserve outcomes.
-Humans and agents collaborate through shared Threads and Runs.
-Schedules trigger work.
-Resources provide context.
+This repository implements the Agent Platform: a framework for building AI agent systems that support human-agent collaboration.
 
-## Architectural Principles
+**Core thesis:**
+- Projects organize context.
+- Agents perform work.
+- Tools connect agents to capabilities.
+- Skills provide reusable know-how.
+- Channels receive and send messages.
+- Schedules trigger work.
+- Artifacts preserve outcomes.
+- Threads capture collaboration.
+- Runs record execution.
+- Resources provide context.
 
-- Project-centric (organizing context)
-- Artifact-centric (preserving outcomes)
-- Agent-driven (explicit execution actors)
-- Tool-oriented (connecting to capabilities)
-- Durable collaboration (versioned, auditable)
-- Industry-standard vocabulary (Agent, Tool, Skill, Run, Thread)
-- Generic platform over domain-specific implementations
+That's the complete model. Nothing else is needed.
 
-## Filesystem-First Package Structure
+---
 
-The platform is organized around filesystem-first declarative packages.
+## Architectural Philosophy
 
-### Project Package
+### 10 Core Concepts (Not 11, Not 9)
 
-A Project is a directory with a `project.yaml` file at the root:
+1. **Project** - Organizing container
+2. **Agent** - Autonomous actor
+3. **Tool** - Capability interface
+4. **Skill** - Reusable know-how
+5. **Channel** - Communication interface
+6. **Schedule** - Automation trigger
+7. **Resource** - Shared context
+8. **Artifact** - Versioned outcome
+9. **Thread** - Collaboration context
+10. **Run** - Execution record
+
+These 10 concepts represent the complete ontology. Resist adding more.
+
+### Why These 10?
+
+- **Project:** Container for execution context (vs. Workspace, which was too UI-centric)
+- **Agent:** First-class execution actor (vs. implicit or reactive systems)
+- **Tool:** Unified capability model (not separate API/Connector/Function types)
+- **Skill:** Composition of tools and skills (reusable know-how)
+- **Channel:** Communication interface (send/receive)
+- **Schedule:** Automation trigger (when work happens)
+- **Resource:** Shared context (data, config, credentials)
+- **Artifact:** Durable, versioned outcome (primary deliverable)
+- **Thread:** Collaboration context (discussion history)
+- **Run:** Execution record (who did what, when, why)
+
+### Principles
+
+1. **Package-first** - Everything is a filesystem YAML package
+2. **Project-centric** - Projects own all work and participants
+3. **Artifact-centric** - Outcomes are first-class (versioned, auditable)
+4. **Minimal ontology** - 10 concepts, zero unnecessary abstractions
+5. **Configuration over abstraction** - YAML config, not code hierarchies
+6. **Convention over invention** - Use industry patterns (Claude, LangGraph, Anthropic)
+7. **Borrow before inventing** - Use proven patterns, only invent when necessary
+
+---
+
+## Package Structure
+
+### Project Layout
 
 ```
-my-project/
-  project.yaml                    # Project metadata and configuration
-  agents/                         # Agent definitions
-    decision-analyzer/
-      agent.yaml
+project/
+  project.yaml                    # Project definition
+  agents/
+    agent-name/
+      agent.yaml                  # Agent definition and instructions
       tools/
+        tool-name.yaml
       skills/
-  resources/                      # Shared context data
-    guidelines.md
-    company-policy.yaml
-  artifacts/                      # Output types and examples
-    decision-analysis/
-      schema.json
-  threads/                        # Discussion/collaboration archives
-  runs/                           # Execution history
-  schedules/                      # Automated triggers
-    daily-review.yaml
+        skill-name.yaml
+      channels/
+        channel-name.yaml
+  resources/
+    resource-name.yaml            # Shared context data
+  schedules/
+    schedule-name.yaml            # Automation triggers
+  artifacts/
+    artifact-schema.yaml          # Output type definitions
+  threads/
+    (created at runtime)
+  runs/
+    (created at runtime)
 ```
 
-### Agent Package
+### Key Principle: Instructions Live in YAML
 
-An Agent is a directory with an `agent.yaml` file at the root:
-
-```
-agents/decision-analyzer/
-  agent.yaml                      # Agent definition, instructions, configuration
-  tools/                          # Tool definitions available to this Agent
-    search-tool.yaml
-    analysis-tool.yaml
-  skills/                         # Skill definitions (compose Tools)
-    financial-analysis.yaml
-  channels/                       # Communication interfaces
-    slack.yaml
-    email.yaml
-  schedules/                      # Triggers for this Agent
-    daily-analysis.yaml
-  evals/                          # Evaluation definitions
-    output-quality.yaml
-  sandbox/                        # Execution environment config
-    resources.yaml
-    constraints.yaml
-```
-
-### Tool and Skill Packages
-
-Tools and Skills follow the same pattern:
-
-```
-agents/decision-analyzer/
-  tools/
-    search/
-      tool.yaml                   # Tool definition and configuration
-  skills/
-    financial-analysis/
-      skill.yaml                  # Skill definition, instructions
-      tools/                      # References to tools used
-        tool-reference.yaml
-```
-
-### YAML Structure Principles
-
-- All instructions go in the YAML file under an `instructions` field
-- No separate .md files for instructions
-- YAML is the single source of truth for each package
-- Files are organized by type and relationship
-- Directories group related definitions
-
-Example `project.yaml`:
+Agent instructions are **not** separate files. They live in `agent.yaml`:
 
 ```yaml
-project:
-  id: decision-analysis-v1
-  name: Decision Analysis Project
-  version: 1
-
-agents:
-  - name: decision-analyzer
-    path: agents/decision-analyzer
-    
-resources:
-  - name: company-guidelines
-    path: resources/company-policy.yaml
-    
-artifact_types:
-  - type: decision-analysis
-    schema: artifacts/decision-analysis/schema.json
-    
-permissions:
-  - role: analyst
-    can: ['run_agents', 'review_artifacts']
-```
-
-Example `agent.yaml`:
-
-```yaml
-agent:
-  id: decision-analyzer-v1
-  name: Decision Analyzer
-  type: autonomous
-  version: 1
-
+kind: agent
+id: decision-analyzer
+name: Decision Analyzer
+model: claude-opus
 instructions: |
   You are an expert decision analyst.
-  Your role is to evaluate strategic decisions.
+  
+  Your responsibilities:
+  - Analyze complex decisions
+  - Evaluate options using structured frameworks
+  - Produce detailed analysis artifacts
   
   Process:
-  1. Gather context from available resources
-  2. Analyze options using financial and strategic tools
-  3. Produce a structured decision analysis
-  
-  Be thorough and cite sources for all claims.
+  1. Gather decision context
+  2. Identify stakeholders
+  3. Evaluate each option
+  4. Synthesize findings
+```
 
+This keeps everything in one place, version-controlled, portable.
+
+### YAML Package Format
+
+Every package (agent, tool, skill, etc.) is a YAML file with metadata:
+
+```yaml
+kind: agent|tool|skill|project|channel|schedule|resource
+id: unique-identifier
+name: Display Name
+version: 1.0.0
+description: What this does
+
+# Type-specific fields
+instructions: |
+  (for agents and skills)
+model: claude-opus
+role: strategic-analyst
+
+# References to other packages
 tools:
-  - name: search-tool
-    path: tools/search-tool.yaml
-  - name: analysis-tool
-    path: tools/analysis-tool.yaml
+  - id: tool-id
+    name: Display Name
 
 skills:
-  - name: financial-analysis
-    path: skills/financial-analysis.yaml
+  - id: skill-id
 
-constraints:
-  max_iterations: 10
-  timeout: 300
-  sandbox:
-    path: sandbox/resources.yaml
+# Implementation details (for tools)
+implementation:
+  type: http|mcp|connector|function|platform_service
+  endpoint: https://api.example.com
+  # ... type-specific config
+
+metadata:
+  tags: [category, domain]
+  team: platform
 ```
 
-## Core Model
+---
 
-### Top-Level Nouns
+## Core Vocabulary Explained
 
-- **Project** - Organizing container for context, participants, and work
-- **Agent** - Autonomous or semi-autonomous actor performing work
-- **Tool** - Capability that an Agent can invoke (first-class platform concept)
-- **Skill** - Reusable know-how composed from Tools or other Skills
-- **Channel** - Message send/receive point (email, Slack, HTTP, etc.)
-- **Schedule** - Trigger definition for automated work
-- **Artifact** - Durable output with versioning and provenance
-- **Thread** - Conversation or discussion context
-- **Run** - Execution record (Agent action, tool invocation, skill execution)
-- **Resource** - Context data for Agents (documents, configs, credentials)
-- **Sandbox** - Isolated execution environment for Agents
-- **Eval** - Evaluation or assessment of outputs
+### Project
 
-### Tool Implementation (Not Platform Vocabulary)
+A container for all work: agents, tools, resources, artifacts, threads, runs, schedules.
 
-Tools are first-class platform concepts. What backs a tool is an implementation detail:
+**Owns:**
+- Agents (actors)
+- Resources (shared context)
+- Schedules (triggers)
+- Artifacts (outcomes)
+- Threads (conversations)
+- Runs (execution history)
+- Participants (humans and agents)
 
-- **API endpoints** - HTTP/REST, GraphQL, webhooks
-- **Connectors** - Database, SaaS, data source connectors
-- **MCP servers** - Claude Model Context Protocol implementations
-- **Native code** - Python, JavaScript, Go functions
-- **Platform services** - Built-in platform capabilities
+### Agent
 
-These are mechanisms by which tools work, NOT platform root concepts.
+An autonomous actor that performs work. Defined as a package with instructions, tool/skill bindings, and configuration.
 
-From the Agent's perspective: invoke Tool. The platform handles the backing mechanism transparently.
-
-### Relationships
-
-```text
-Project
-  ├─ Agents (perform work in the project)
-  ├─ Tools (capabilities available to agents)
-  ├─ Skills (reusable know-how available to agents)
-  ├─ Schedules (automated triggers)
-  ├─ Channels (communication interfaces)
-  ├─ Resources (shared context data)
-  ├─ Artifacts (durable outputs)
-  ├─ Runs (execution history)
-  ├─ Threads (collaboration history)
-  └─ Participants (humans and agents)
-
-Agent
-  ├─ uses Tools
-  ├─ uses Skills
-  ├─ creates Runs (each tool/skill invocation is a run)
-  ├─ creates Artifacts
-  ├─ participates in Threads
-  └─ accesses Resources
-
-Tool
-  ├─ has implementation backing (not platform vocabulary)
-  │   ├─ API endpoint
-  │   ├─ Connector (database, SaaS, data source)
-  │   ├─ MCP server
-  │   ├─ Native code (function)
-  │   └─ Platform service
-  ├─ exposes input schema
-  └─ produces output
-
-Skill
-  ├─ uses Tools
-  ├─ uses other Skills
-  └─ provides reusable know-how
-
-Run
-  ├─ Agent executing
-  ├─ invokes Tool or Skill (creates sub-run)
-  └─ produces output or Artifact
-
-Thread
-  ├─ message history
-  ├─ Agents and Humans participating
-  └─ linked to Artifacts and Runs
+```yaml
+kind: agent
+id: decision-analyzer
+instructions: |
+  You are a decision analyst...
+tools:
+  - id: search-tool
+  - id: database-query
+model: claude-opus
 ```
 
-## Canonical Vocabulary
+### Tool
 
-### Durable Outcome
+A capability interface. **Not** the implementation, just the interface.
 
-Canonical term: **Artifact**
+Tools are backed by providers (implementation detail):
+- **http** - REST/GraphQL endpoints
+- **mcp** - Model Context Protocol servers
+- **connector** - Database/SaaS connections
+- **function** - Native code (Python, JavaScript)
+- **platform_service** - Built-in platform capabilities
 
-Artifacts are versioned, timestamped, and auditable.
+From agent perspective: invoke Tool. Platform handles routing to correct provider.
 
-### Execution Record
+### Skill
 
-Canonical term: **Run**
+Reusable know-how composed from Tools and other Skills.
 
-Runs record what happened, who did it, and what was produced.
+```yaml
+kind: skill
+id: financial-analysis
+tools:
+  - id: search-tool
+  - id: database-query
+skills:
+  - id: data-validation
+instructions: |
+  1. Gather financial data using available tools
+  2. Validate data quality
+  3. Calculate metrics
+```
 
-### Execution Actor
+### Channel
 
-Canonical term: **Agent**
+Communication interface (Slack, email, webhook, HTTP). Used for:
+- Sending run results
+- Delivering notifications
+- Notifying external systems
+- Publishing artifacts
 
-Agents are explicit first-class actors (human or autonomous).
+### Schedule
 
-### Reusable Capability
+Automation trigger. Defines when work happens:
+- **cron** - Time-based (9 AM daily)
+- **event** - Event-driven (when X happens)
+- **manual** - On-demand trigger
 
-Canonical terms: **Tool** (external), **Skill** (composed)
+Schedules are **project-level** (not agent-level). Multiple agents can share one schedule.
 
-Tools connect to external capabilities.
-Skills compose Tools and other Skills into reusable know-how.
+### Resource
 
-## Architecture
+Shared context data available to all agents:
+- Documents
+- Configuration
+- Credentials
+- Policies
 
-```text
+### Artifact
+
+Durable, versioned outcome. The primary deliverable.
+
+**Automatic versioning:**
+- Current version
+- All previous versions
+- Who edited, when
+- Full audit trail
+
+**Use cases:**
+- Decision analysis
+- Reports
+- Plans
+- Recommendations
+
+### Thread
+
+Collaboration context for discussion.
+
+- Message history
+- Participants (humans and agents)
+- Can reference artifacts and runs
+- Used for asynchronous collaboration
+
+### Run
+
+Execution record. One Run per:
+- Tool invocation
+- Skill execution
+- Agent invocation
+- Schedule trigger
+
+Captures:
+- What was invoked
+- Who triggered it
+- Input and output
+- Timing
+- Success or failure
+- Which artifacts were created
+
+---
+
+## Implementation Conventions
+
+### Adding New Features
+
+**Before adding anything:**
+1. Can it be expressed with the 10 core concepts?
+2. If not, write an ADR (Architecture Decision Record)
+3. If yes, implement it without changing the core model
+
+**How to add to an agent:**
+- New tool? Add to agents/agent-name/tools/
+- New skill? Add to agents/agent-name/skills/
+- New capability? Extend Agent.instructions
+- New output type? Add Artifact type definition
+- New communication? Add a Channel
+
+**How to add to a project:**
+- New agent? Create agents/new-agent/agent.yaml
+- New resource? Create resources/resource-name.yaml
+- New schedule? Create schedules/schedule-name.yaml
+- New artifact type? Create artifacts/type-name.yaml
+
+**Avoid:**
+- New ontology concepts (without ADR)
+- New type hierarchies
+- New execution models
+- Hard-coding domain-specific logic in platform code
+- Mixing concerns (UI, runtime, persistence, tooling)
+
+### Prefer Configuration Over Code
+
+**Good:**
+```yaml
+# Agent configuration in agent.yaml
+instructions: |
+  Handle financial analysis using these tools...
+model: claude-opus
+tools:
+  - id: financial-tool
+```
+
+**Avoid:**
+```typescript
+// Hard-coded agent behavior in code
+class FinancialAgent extends Agent {
+  async run() { ... }
+}
+```
+
+### Prefer Deletion Over Deprecation
+
+When concepts become obsolete:
+- Delete the code (not deprecate)
+- Remove from types
+- Update documentation
+- Explain in commit message
+
+Why? Smaller codebase, cleaner history, less confusion.
+
+### Prefer Composition Over Hierarchy
+
+**Good:**
+```yaml
+# Skill composes tools
+kind: skill
+tools:
+  - id: tool-a
+  - id: tool-b
+```
+
+**Avoid:**
+```typescript
+// Class hierarchy
+class BaseTool { }
+class SpecializedTool extends BaseTool { }
+```
+
+### Prefer Simple Names Over Clever Abstractions
+
+**Good:**
+- ProjectState (clear: it's project state)
+- ToolProvider (clear: provides tools)
+- ArtifactRecord (clear: record of artifact)
+
+**Avoid:**
+- Context (too generic)
+- Handler (too generic)
+- Manager (too generic)
+- Visitor (too clever)
+
+---
+
+## What NOT to Add
+
+### Do NOT Add New Ontology Concepts
+
+These 10 concepts are complete. Do not add:
+- Workspace (that's Project)
+- WorkItem (that's Run)
+- Playbook (that's Agent + Schedule)
+- Integration (that's Tool implementation)
+- Capability (that's Tool)
+- Role (that's Agent.role field)
+- Step (that's Run)
+- Action (that's Run)
+
+If you need something new, it's probably an Artifact type or Resource.
+
+### Do NOT Add Separate Types for Tool Implementations
+
+Tools are abstracted. Do not add:
+- APIConcept (use Tool with implementation.type = 'http')
+- ConnectorConcept (use Tool with implementation.type = 'connector')
+- MCPServerConcept (use Tool with implementation.type = 'mcp')
+- FunctionConcept (use Tool with implementation.type = 'function')
+
+### Do NOT Mix Concerns
+
+Keep separate:
+- **Definitions** (YAML packages) from **Runtime** (execution state)
+- **Type system** from **UI models**
+- **Persistence** from **Runtime**
+- **Platform** from **Domain-specific** logic
+
+### Do NOT Hard-Code Domain Logic
+
+Platform is domain-neutral. Domain logic lives in:
+- Agent instructions
+- Tool implementations
+- Skill definitions
+- Artifact schemas
+- Channel integrations
+
+NOT in:
+- Core types
+- Runtime execution
+- Package loading
+- Persistence layer
+
+---
+
+## Optional Package Kinds
+
+Two optional package kinds exist but are NOT core:
+
+### Sandbox
+
+Agent execution configuration (resource limits, allowed operations, environment).
+
+- **Not a core concept** (doesn't represent business value)
+- Agent configuration: `agent.constraints.sandbox`
+- Can reference sandbox policy if needed
+
+**When to use:**
+- Deploying in containers
+- Restricting resource usage
+- Setting environment variables
+
+**When NOT to use:**
+- Most development and testing
+- When defaults are acceptable
+
+### Eval
+
+Quality evaluation definition (assess outputs, check quality).
+
+- **Not a core concept** (evaluation is domain-specific)
+- Future extensibility for evaluation systems
+- Can be added as optional package kind if needed
+
+**When to use:**
+- Only if building evaluation/assessment system
+
+**When NOT to use:**
+- Most projects don't need this
+
+---
+
+## File Organization
+
+### Code Organization
+
+```
+packages/
+  types/               # TypeScript type definitions
+  loader/              # Package discovery and loading
+  runtime/             # Project execution engine
+  tools/               # Tool execution with providers
+  schemas/             # JSON schemas for validation
+  examples/            # Reference implementations
+
+docs/
+  architecture/        # Architecture specifications and ADRs
+  ARCHITECTURE_V2.md   # Authoritative specification
+```
+
+### Documentation Files
+
+- **README.md** - Project overview
+- **AGENTS.md** - This file (contributor guide)
+- **docs/architecture/ARCHITECTURE_V2.md** - Authoritative spec
+- **docs/architecture/adr/** - Architecture Decision Records
+- **ARCHITECTURE_REFINEMENT_REPORT.md** - Recent changes
+
+### Authoritative Sources
+
+Trust these (in order):
+1. `docs/architecture/ARCHITECTURE_V2.md` - Authoritative spec
+2. `docs/architecture/adr/` - Decision rationale
+3. TypeScript types in `packages/types/` - Code of truth
+4. This file (AGENTS.md) - Contributor guide
+
+---
+
+## Working on the Codebase
+
+### Before You Start
+
+1. Read ARCHITECTURE_V2.md
+2. Read the relevant ADR (docs/architecture/adr/)
+3. Read this file (AGENTS.md)
+
+### When Adding Features
+
+1. Can it be done with 10 core concepts?
+2. If yes, implement using YAML packages
+3. If no, write an ADR first
+4. Update documentation
+5. Add examples
+6. Add tests
+
+### When You're Confused
+
+1. Check ARCHITECTURE_V2.md
+2. Check the relevant ADR
+3. Check examples in packages/*/examples/
+4. Look at existing implementations
+
+### When You Find a Mistake
+
+1. Fix it immediately
+2. Don't deprecate or soft-delete
+3. Update related docs
+4. Explain in commit message
+
+---
+
+## Quick Reference
+
+| Concept | Type | Location | Use For |
+|---------|------|----------|---------|
+| Project | Definition | project.yaml | Container |
+| Agent | Definition | agents/name/agent.yaml | Actor |
+| Tool | Definition | agents/agent/tools/name.yaml | Capability |
+| Skill | Definition | agents/agent/skills/name.yaml | Reusable know-how |
+| Channel | Definition | agents/agent/channels/name.yaml | Communication |
+| Schedule | Definition | project/schedules/name.yaml | Automation |
+| Resource | Definition | resources/name.yaml | Shared context |
+| Artifact | Runtime | Project.artifacts | Outcome |
+| Thread | Runtime | Project.threads | Collaboration |
+| Run | Runtime | Project.runs | Execution record |
+
+---
+
+## Getting Oriented
+
+### The 10-Second Summary
+
+```
 Project (organizing context)
     ↓
 Agent (performs work)
     ↓
-Tools + Skills (enable capabilities)
+Tool + Skill (enable capabilities)
     ↓
 Run (execution record)
     ↓
-Artifacts + Threads (outcomes + collaboration)
+Artifact (outcome) + Thread (collaboration)
 ```
 
-The key architectural boundary is:
+### The 10-Minute Deep Dive
 
-```text
-Tool/Skill Definition
-    ↓
-Agent Invocation
-    ↓
-Run (execution + effects)
-```
+Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
 
-One generic platform supports many project types and use cases.
+### The Complete Picture
 
-## Project Interface
+Read [docs/architecture/adr/](docs/architecture/adr/)
 
-Projects expose these to participants:
+---
 
-- **Channels** - Where work is requested or reported
-- **Artifacts** - What was produced
-- **Runs** - How it was done (audit trail)
-- **Threads** - Discussion and context
-- **Resources** - Shared context data
-- **Schedules** - Automated triggers
+## Architecture Decision Records
 
-## Constraints
+All major decisions are documented in Architecture Decision Records (ADRs):
 
-Do not introduce new platform root concepts without explicit approval.
+| ADR | Decision |
+|-----|----------|
+| [ADR-001](docs/architecture/adr/ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md) | Project as Primary Container |
+| [ADR-002](docs/architecture/adr/ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) | Package-First Architecture |
+| [ADR-003](docs/architecture/adr/ADR-003-YAML-ROOTED-PACKAGES.md) | YAML-Rooted Packages |
+| [ADR-004](docs/architecture/adr/ADR-004-INSTRUCTIONS-EMBEDDED-IN-YAML.md) | Instructions Embedded in YAML |
+| [ADR-005](docs/architecture/adr/ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs |
+| [ADR-006](docs/architecture/adr/ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability |
+| [ADR-007](docs/architecture/adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules |
+| [ADR-008](docs/architecture/adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (10 Concepts) |
+| [ADR-009](docs/architecture/adr/ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing |
 
-Prefer specialization over new abstractions.
+Each ADR documents the context, decision, consequences, and alternatives considered.
 
-Do not hard-code vertical-specific behavior:
+---
 
-- Decision-making Projects
-- Partner management Projects
-- HR/Finance Projects
+## Joining the Repository
 
-These are Projects with different Agents, Tools, Skills, and Artifact types.
+1. Read this file (AGENTS.md) - **you are here**
+2. Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
+3. Read one relevant ADR (based on what you'll work on)
+4. Look at examples in `packages/*/examples/`
+5. Read the code in `packages/` to understand current state
 
-Vertical language should live in:
+Then start contributing.
 
-- Tool configurations
-- Skill definitions
-- Agent instructions
-- Artifact schemas
-- Channel integrations
+---
 
-and not in platform foundations.
+**This is the authoritative guide for working in this repository.**
 
-## Implementation Order
+All decisions, structure, and conventions are intentional.
 
-1. Schemas (Tool, Skill, Artifact, Run, Agent, Project)
-2. Types (TypeScript interfaces for all concepts)
-3. Interpreters (transform definitions to executable)
-4. Runtime (execute Agents, Runs, manage state)
-5. SDK (client library for Agents)
-6. Shell UI (render Projects and collaboration)
-7. Tool integrations (connect external capabilities)
-8. Reference implementations (example Projects)
+When in doubt, refer back to ARCHITECTURE_V2.md and the ADRs.
 
-If work is ambiguous, prefer progress in this order.
-
-## Working Rules
-
-Treat the following as architectural source of truth:
-
-- `README.md`
-- `ARCHITECTURE_FREEZE.md`
-- `IMPLEMENTATION_CONTRACT.md`
-- `SCHEMA_INVENTORY.md`
-- `docs/`
-- `schemas/`
-
-Keep the platform domain-neutral.
-
-Keep Agent execution explicit and observable.
-
-Keep Artifacts first-class and durable.
-
-Capture reusable platform concepts before introducing project-specific language.
-
-## Design Heuristics
-
-When deciding whether something belongs in the platform:
-
-1. Does it apply across multiple project types?
-2. Does it have a distinct lifecycle (creation, execution, completion)?
-3. Does it require separate persistence?
-4. Does it require separate permissions?
-5. Does it require distinct UI treatment?
-
-Keep a concept out of the platform core when it is primarily:
-
-- project-specific vocabulary
-- agent-specific behavior
-- tool-specific integration
-- temporary implementation detail
-- view or presentation concern
-
-## Current Intent
-
-The vocabulary is being aligned with industry standard agent platform patterns.
-
-The architecture emphasizes:
-- Agents as first-class execution actors
-- Tools and Skills as capability composition
-- Artifacts as durable, versioned outcomes
-- Runs as observable execution records
-- Projects as organizing containers (not custom "Workspace" terminology)
-
-The immediate goal is to implement the core model using industry-standard vocabulary that aligns with how agents and autonomous systems are discussed across platforms.
-
-This makes the platform:
-- More accessible to people familiar with agent frameworks
-- Less custom jargon to learn
-- Easier to integrate with other systems
-- More aligned with emerging standards
+Good luck.
