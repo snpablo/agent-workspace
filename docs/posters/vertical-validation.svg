@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000">
-<rect width="100%" height="100%" fill="white"/>
-<text x="80" y="100" font-size="52" font-family="Arial">Vertical Validation</text>
-<text x="120" y="220" font-size="30" font-family="Arial">Decision Workspace</text>
-<text x="120" y="290" font-size="30" font-family="Arial">Finance Workspace</text>
-<text x="120" y="360" font-size="30" font-family="Arial">HR Workspace</text>
-<text x="120" y="430" font-size="30" font-family="Arial">Partner Workspace</text>
-<text x="120" y="500" font-size="30" font-family="Arial">Different definitions. Same platform nouns. Same runtime.</text>
-</svg>

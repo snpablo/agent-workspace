@@ -1,5 +1,0 @@
-WorkspaceDefinition → WorkspaceInstance
-ArtifactDefinition  → ArtifactInstance
-PlaybookDefinition  → PlaybookInstance
-AgentDefinition     → AgentSession
-SkillDefinition     → Runtime Capability
