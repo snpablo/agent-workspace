@@ -1,124 +1,112 @@
 # Roadmap
 
-This document describes the next implementation step after the v1 architecture freeze.
+Implementation progress toward a metadata-driven collaborative AI workspace platform.
 
-The architecture is frozen enough to begin building.
+## Phase 1: Core Packages ✅ COMPLETE
 
-The next phase is not more documentation work. The next phase is implementation pressure against the frozen model.
+Successfully implemented the four foundational packages forming the "Definition → Interpreter → ComponentTree" architectural center:
 
-## Current State
+- ✅ `packages/schemas` - 20 canonical JSON schemas
+- ✅ `packages/types` - 50+ TypeScript type interfaces  
+- ✅ `packages/definitions` - Fluent builders and validators with examples
+- ✅ `packages/interpreter` - Complete transformation pipeline with normalization
 
-The repository has completed:
+**Status:** Phase 1 is architecture-validated. The frozen model holds under implementation.
 
-- architecture discovery
-- terminology consolidation
-- canonical model freeze
-- implementation contract freeze
-- schema inventory definition
-- vertical definition normalization
+See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for completion details.
 
-Primary references for the frozen state:
+## Phase 2: Runtime State (Next)
 
-- [ARCHITECTURE_FREEZE.md](ARCHITECTURE_FREEZE.md)
-- [CANONICAL_MODEL.md](CANONICAL_MODEL.md)
-- [DECISIONS.md](DECISIONS.md)
-- [IMPLEMENTATION_CONTRACT.md](IMPLEMENTATION_CONTRACT.md)
-- [SCHEMA_INVENTORY.md](SCHEMA_INVENTORY.md)
+The next phase builds on the validated foundation to implement runtime state management:
 
-## Next Step
+- `@awp/runtime` - Workspace state management and lifecycle
+- State persistence and serialization
+- Event model and event sourcing
+- Audit trails and versioning
 
-The immediate next step is implementation with only:
+## Phase 2: Runtime State
 
-- `packages/schemas`
-- `packages/types`
-- `packages/definitions`
-- `packages/interpreter`
+Build workspace state management for runtime execution:
 
-This is the narrowest useful implementation slice.
+### `packages/runtime`
 
-## Why This Is The Next Step
+- Implement `WorkspaceState` and sub-state models
+- State persistence and serialization  
+- Event model and event sourcing
+- Audit trails and versioning
+- Participant and session lifecycle
 
-These packages are enough to begin testing whether the frozen architecture actually holds under implementation pressure.
+**Dependencies:** Phase 1 packages
 
-They allow us to:
+**Success Criteria:**
+- Complete state model implementation
+- Persistence layer integration  
+- Event sourcing and audit trails working
+- Tested with Phase 1 definitions
 
-- formalize the schema set
-- derive or author stable platform types
-- define reusable definition packages
-- implement the first-pass interpreter from `WorkspaceDefinition` to `ComponentTree`
+## Phase 3: Workspace Shell
 
-They do not yet require:
+Implement reference shell using Phase 1 and Phase 2:
 
-- runtime execution code
-- shell component implementation
-- application-specific behavior
-- infrastructure decisions
+### `packages/shell`
 
-## What To Build In This Step
+- Zone and component rendering
+- State binding and reactivity
+- User interaction handling
+- Responsive layout management
+- Modal and overlay support
 
-### `packages/schemas`
+**Dependencies:** Phase 1, Phase 2 packages
 
-- move or mirror the canonical JSON schemas into implementation-ready package form
-- validate schema completeness against [SCHEMA_INVENTORY.md](SCHEMA_INVENTORY.md)
+**Success Criteria:**
+- All 9 canonical zones rendering
+- State binding working end-to-end
+- Example workspace fully interactive
 
-### `packages/types`
+## Phase 4: Vertical Applications
 
-- generate or author TypeScript types from the frozen schemas
-- preserve the canonical object boundaries from [CANONICAL_MODEL.md](CANONICAL_MODEL.md)
+Build verticals using only definitions (no platform code changes):
 
-### `packages/definitions`
+- Decision Workspace
+- Partner Workspace
+- HR Workspace  
+- Finance Workspace
 
-- establish the package shape for workspace, artifact, playbook, and agent definitions
-- include canonical definition examples for vertical workspaces
+**Dependencies:** Phase 1, 2, 3 packages
 
-### `packages/interpreter`
+**Constraint:** All verticals must work with shared platform (no vertical forks).
 
-- accept canonical `WorkspaceDefinition`
-- validate input against schema
-- normalize historical variants into canonical shape
-- resolve bindings
-- generate a first-pass `ComponentTree`
+**Success Criteria:**
+- 4 fully functional vertical workspaces
+- Each using only definition packages
+- No platform code changes required for new verticals
 
-## What Not To Do Yet
+## Guiding Principles
 
-Do not start with:
+### One Runtime, Many Workspaces
 
-- `packages/runtime`
-- `packages/state`
-- `packages/components`
-- separate vertical applications
-- speculative architecture expansion
-- new platform root concepts
-
-## Guiding Constraint
-
-Decision Workspace, Finance Workspace, HR Workspace, and Partner Workspace are `WorkspaceDefinitions` rendered by one runtime.
+Decision, Finance, HR, Partner are `WorkspaceDefinitions` rendered by one runtime.
 
 Do not build separate applications for them.
 
+### Metadata-Driven
+
 Prefer fewer, more generic platform abstractions.
 
-Do not introduce new platform root concepts when an existing abstraction can be specialized.
+Do not introduce new platform root concepts when specialization suffices.
 
-## Discovery Rule For The Next Phase
+### Discovery Through Implementation
 
-Let implementation pressure, not more documentation work, drive the next architectural discoveries.
+Let implementation pressure drive discoveries. If implementation reveals gaps:
 
-If implementation reveals gaps, capture only the minimum necessary decisions to keep the model coherent.
+1. Capture minimum necessary decisions
+2. Update frozen contracts
+3. Continue implementation
 
-The default posture is:
+### No Speculative Expansion
 
-1. implement against the frozen model
-2. observe where the model resists implementation
-3. adjust only when the pressure is concrete
+Do not start phases not listed above.
 
-## Success Condition
+Do not add features before needed.
 
-This phase is successful when:
-
-- the schema set is implementation-ready
-- the type layer reflects the canonical model
-- definitions can be represented in package form
-- the interpreter can consume canonical workspace definitions and emit a normalized component tree
-
-At that point, runtime state and shell implementation can begin with materially better guidance than further speculative documentation would provide.
+Do not pre-design for undefined requirements.

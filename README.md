@@ -222,6 +222,13 @@ These examples are intended to prove:
 ## Repository Structure
 
 ```text
+packages/                          # Core implementation packages (Phase 1)
+  schemas/                         # @awp/schemas - JSON Schema definitions
+  types/                           # @awp/types - TypeScript types
+  definitions/                     # @awp/definitions - Builders & validators
+  interpreter/                     # @awp/interpreter - Definition transformer
+  README.md                        # Package overview
+
 docs/
   README.md
   architecture/
@@ -235,39 +242,18 @@ docs/
   specification/v1/
   verticals/
 
-schemas/
-  agent-definition.schema.json
-  agent-session.schema.json
-  workspace-definition.schema.json
-  workspace-instance.schema.json
-  workspace-state.schema.json
-  work-item.schema.json
-  artifact-definition.schema.json
-  artifact-instance.schema.json
-  knowledge-source.schema.json
-  action.schema.json
-  thread.schema.json
-  playbook-definition.schema.json
-  playbook-instance.schema.json
-  run.schema.json
-  skill-definition.schema.json
-  tool-definition.schema.json
-  event.schema.json
-  participant.schema.json
-  component-tree.schema.json
-  policies.schema.json
-  permissions.schema.json
-  examples/
+schemas/                           # Legacy schema location (mirrored in packages/schemas)
+  *.schema.json
 
-AGENTS.md
-ARCHITECTURE_FREEZE.md
-CANONICAL_MODEL.md
-DECISIONS.md
-GLOSSARY.md
-IMPLEMENTATION_CONTRACT.md
-README.md
-ROADMAP.md
-SCHEMA_INVENTORY.md
+AGENTS.md                          # Starting context for agents
+ARCHITECTURE_FREEZE.md             # Frozen architectural decisions
+CANONICAL_MODEL.md                 # Object boundaries and semantics
+IMPLEMENTATION_CONTRACT.md         # Implementation obligations
+SCHEMA_INVENTORY.md                # Schema definitions and inventory
+ROADMAP.md                         # Implementation roadmap
+IMPLEMENTATION_GUIDE.md            # Architecture integration guide (NEW)
+IMPLEMENTATION_SUMMARY.md          # Completion status and metrics (NEW)
+README.md                          # This file
 LICENSE
 ```
 
@@ -284,27 +270,53 @@ Recommended reading order for a first pass:
 9. [IMPLEMENTATION_CONTRACT.md](IMPLEMENTATION_CONTRACT.md)
 10. [schemas/workspace-definition.schema.json](schemas/workspace-definition.schema.json)
 
-## Development Phases
+## Implementation Status
 
-The current documentation points to this implementation sequence:
+### Phase 1: Core Packages ✅ COMPLETE
 
-1. `Definitions and schemas`
-   - validate and refine schemas
-   - use `/schemas` as source of truth
-2. `Types`
-   - generate or author platform types from schemas
-3. `Interpreter`
-   - accept `WorkspaceDefinition`
-   - output a normalized component tree
-4. `Runtime state`
-   - implement `WorkspaceState` and its sub-state models
-5. `Workspace shell`
-   - build reusable shell zones and components
+Implemented the four foundational packages forming the architectural center of gravity:
 
-The repo is currently architecture-frozen and implementation-ready at the specification level. The next steps are to use the frozen model and schema inventory to implement the interpreter/runtime path without splitting into domain-specific apps.
+- **@awp/schemas** - 20 canonical JSON schemas
+- **@awp/types** - 50+ TypeScript type interfaces
+- **@awp/definitions** - Fluent builders and validators
+- **@awp/interpreter** - Definition → ComponentTree transformation
+
+See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for completion details.
+
+### Phase 2: Runtime State (In Progress)
+
+- `@awp/runtime` - Workspace state management
+- State persistence and serialization
+- Event model and event sourcing
+
+### Phase 3: Workspace Shell (Planned)
+
+- `@awp/shell` - Reference shell implementation
+- Zone and component rendering
+- State binding and reactivity
+
+### Phase 4: Vertical Applications (Planned)
+
+- Decision Workspace
+- Partner Workspace  
+- HR Workspace
+- Finance Workspace
 
 ## Key References
 
+**Implementation Guides**
+- [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - Phase 1 completion status and metrics
+- [Implementation Guide](IMPLEMENTATION_GUIDE.md) - Architecture integration and design patterns
+- [Packages README](packages/README.md) - Overview of all packages
+
+**Architecture & Design**
+- [AGENTS.md](AGENTS.md) - Starting context for agents
+- [Architecture Freeze](ARCHITECTURE_FREEZE.md) - Frozen architectural decisions
+- [Canonical Model](CANONICAL_MODEL.md) - Object boundaries and semantics
+- [Implementation Contract](IMPLEMENTATION_CONTRACT.md) - Implementation obligations
+- [Schema Inventory](SCHEMA_INVENTORY.md) - Complete schema definitions
+
+**Specification**
 - [Docs Overview](docs/README.md)
 - [Specification v1](docs/specification/v1/README.md)
 - [Typed Metamodel](docs/specification/v1/metamodel.md)
@@ -312,10 +324,6 @@ The repo is currently architecture-frozen and implementation-ready at the specif
 - [Runtime State](docs/specification/v1/runtime-state.md)
 - [Architecture Overview](docs/architecture/README.md)
 - [Vertical Workspaces](docs/verticals/README.md)
-- [Architecture Freeze](ARCHITECTURE_FREEZE.md)
-- [Canonical Model](CANONICAL_MODEL.md)
-- [Implementation Contract](IMPLEMENTATION_CONTRACT.md)
-- [Schema Inventory](SCHEMA_INVENTORY.md)
 
 ## License
 
