@@ -4,7 +4,9 @@ Completed: June 18, 2026
 
 ## Overview
 
-This document summarizes the completion of Phase 1 of the Agent Workspace Platform implementation: the core four packages that implement the "Definition → Interpreter → ComponentTree" architectural pattern.
+This document summarizes the completion of Phase 1 of the Agent Platform implementation: the core four packages that implement the "Definition → Interpreter → ComponentTree" architectural pattern.
+
+**Note:** Phase 1 uses transitional terminology (Workspace, WorkItem, Playbook). Phase 2 will migrate to standard agent platform vocabulary (Project, Agent, Tool, Skill). See [ARCHITECTURE_MIGRATION.md](ARCHITECTURE_MIGRATION.md) for details.
 
 ## What Was Built
 

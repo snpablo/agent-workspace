@@ -1,6 +1,6 @@
 # Implementation Guide: Packages & Architecture
 
-This document describes the implementation of the core packages and how they fit into the Agent Workspace Platform architecture.
+This document describes the implementation of the core packages and how they fit into the Agent Platform architecture.
 
 ## Overview
 
@@ -11,29 +11,31 @@ packages/
 ├── schemas/        # JSON schema definitions
 ├── types/          # TypeScript type definitions
 ├── definitions/    # Definition builders and validators
-└── interpreter/    # Workspace definition → component tree transformation
+└── interpreter/    # Tool/Skill/Agent definition → executable configuration transformation
 ```
+
+**Note:** Phase 1 was implemented with transitional terminology. Phase 2 will migrate to full Project/Agent/Tool/Skill vocabulary. See [ARCHITECTURE_MIGRATION.md](ARCHITECTURE_MIGRATION.md) for context.
 
 ## Architecture Flow
 
 ```
-WorkspaceDefinition (YAML/JSON)
+Project/Agent/Tool/Skill Definitions (YAML)
         ↓
     Built with @awp/definitions builders
         ↓
-Workspace Interpreter (@awp/interpreter)
+Interpreter (@awp/interpreter)
     │
     ├─ Normalization (migrate legacy formats)
     ├─ Validation (schema and constraint checks)
-    ├─ Binding Resolution (select components/views)
-    ├─ Policy Evaluation (evaluate constraints)
-    └─ Component Tree Generation (normalized output)
+    ├─ Resolution (resolve all references)
+    ├─ Policy Evaluation (apply constraints)
+    └─ Configuration Generation (normalized output)
         ↓
-ComponentTree (ready for shell rendering)
+Executable Configuration (ready for runtime)
         ↓
-Workspace Runtime (@awp/runtime - future)
+Agent Runtime (@awp/runtime - Phase 2)
         ↓
-Workspace Shell (@awp/shell - future)
+Collaboration UI (@awp/shell - Phase 3)
 ```
 
 ## Package Responsibilities
@@ -43,9 +45,9 @@ Workspace Shell (@awp/shell - future)
 **Purpose:** Canonical JSON Schema definitions for all platform objects
 
 **Exports:**
-- Definition schemas: `workspaceDefinition`, `artifactDefinition`, `playbookDefinition`, `agentDefinition`, `skillDefinition`, `toolDefinition`
-- Runtime schemas: `workspaceInstance`, `workItem`, `artifactInstance`, `run`, `event`, `agentSession`, etc.
-- Interpreter schemas: `componentTree`
+- Definition schemas: `projectDefinition`, `agentDefinition`, `toolDefinition`, `skillDefinition`, `artifactDefinition`
+- Runtime schemas: `projectInstance`, `run`, `artifact`, `thread`, `event`, `agentSession`, etc.
+- Interpreter schemas: `executableConfiguration`
 - Policy/permission schemas: `policies`, `permissions`
 
 **Key Concepts:**
@@ -53,6 +55,8 @@ Workspace Shell (@awp/shell - future)
 - Enforces required properties and types
 - Enables validation and code generation
 - Versioned alongside implementations
+
+**Note:** Phase 1 schemas use transitional names (workspace*, work-item, etc.) for backward compatibility. Phase 2 will migrate to project, agent, tool naming.
 
 ### @awp/types
 
@@ -65,30 +69,29 @@ Workspace Shell (@awp/shell - future)
 
 **Key Interfaces:**
 
-*Definitions:*
+*Definitions (will migrate to new names in Phase 2):*
 ```typescript
-WorkspaceDefinition    // Complete workspace type
-ArtifactDefinition     // Artifact type definition
-PlaybookDefinition     // Process definition
-AgentDefinition        // Agent capabilities
-SkillDefinition        // Reusable capability
-ToolDefinition         // Callable capability
+ProjectDefinition      // Project composition (currently WorkspaceDefinition)
+AgentDefinition        // Agent configuration (unchanged)
+ToolDefinition         // Tool definition (unchanged)
+SkillDefinition        // Skill definition (unchanged)
+ArtifactDefinition     // Artifact type definition (unchanged)
 ```
 
-*Runtime:*
+*Runtime (will migrate to new names in Phase 2):*
 ```typescript
-WorkspaceInstance      // Live workspace
-WorkItem               // Queue item
-ArtifactInstance       // Artifact with versioning
-Run                    // Execution instance
-Event                  // Activity record
-AgentSession           // Agent context
-WorkspaceState         // Complete state model
+Project                // Live project (currently WorkspaceInstance)
+Run                    // Execution record (unchanged)
+Artifact               // Artifact instance (currently ArtifactInstance)
+Thread                 // Conversation context (currently Session)
+Event                  // Activity record (unchanged)
+AgentSession           // Agent session (unchanged)
+WorkspaceState         // Runtime state model
 ```
 
 *Interpreter:*
 ```typescript
-ComponentTree          // Interpreter output
+ExecutableConfig       // Interpreter output (currently ComponentTree)
 ComponentDefinition    // UI component
 ViewDefinition         // Component variant
 InterpretationResult   // Transformation result
@@ -98,14 +101,14 @@ InterpretationResult   // Transformation result
 
 **Purpose:** Fluent builders and validators for creating definitions
 
-**Builders:**
+**Builders (Phase 1 naming, will migrate in Phase 2):**
 ```typescript
-WorkspaceDefinitionBuilder
-ArtifactDefinitionBuilder
-PlaybookDefinitionBuilder
-AgentDefinitionBuilder
-SkillDefinitionBuilder
-ToolDefinitionBuilder
+WorkspaceDefinitionBuilder  // Will become ProjectDefinitionBuilder
+ArtifactDefinitionBuilder   // Unchanged
+PlaybookDefinitionBuilder   // Will become ScheduleDefinitionBuilder or removed
+AgentDefinitionBuilder      // Unchanged
+SkillDefinitionBuilder      // Unchanged
+ToolDefinitionBuilder       // Unchanged
 ```
 
 **Validators:**
