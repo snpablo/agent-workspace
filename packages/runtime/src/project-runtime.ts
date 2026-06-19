@@ -20,7 +20,7 @@ import {
 } from '@awp/types';
 import { PackageRegistry } from '@awp/loader';
 import {
-  ProjectContext,
+  ProjectState,
   ProjectInitOptions,
   RunRequest,
   RunResult,
@@ -35,7 +35,7 @@ import {
  * ProjectRuntime - manages project execution and state
  */
 export class ProjectRuntime {
-  private contexts: Map<string, ProjectContext> = new Map();
+  private contexts: Map<string, ProjectState> = new Map();
   private registry: PackageRegistry;
 
   constructor(registry: PackageRegistry) {
@@ -45,11 +45,11 @@ export class ProjectRuntime {
   /**
    * Initialize a project context
    */
-  async initializeProject(options: ProjectInitOptions): Promise<ProjectContext> {
+  async initializeProject(options: ProjectInitOptions): Promise<ProjectState> {
     const projectId = options.project.id;
 
     // Create context
-    const context: ProjectContext = {
+    const context: ProjectState = {
       project: options.project,
       agents: [],
       resources: options.resources || [],
@@ -121,7 +121,7 @@ export class ProjectRuntime {
   /**
    * Get project context
    */
-  getProjectContext(projectId: string): ProjectContext | undefined {
+  getProjectState(projectId: string): ProjectState | undefined {
     return this.contexts.get(projectId);
   }
 
@@ -244,7 +244,7 @@ export class ProjectRuntime {
    * Execute a tool
    */
   private async executeTool(
-    context: ProjectContext,
+    context: ProjectState,
     toolId: string,
     input?: Record<string, any>,
   ): Promise<Record<string, any>> {
@@ -266,7 +266,7 @@ export class ProjectRuntime {
    * Execute a skill
    */
   private async executeSkill(
-    context: ProjectContext,
+    context: ProjectState,
     skillId: string,
     input?: Record<string, any>,
   ): Promise<Record<string, any>> {
@@ -302,7 +302,7 @@ export class ProjectRuntime {
    * Execute an agent
    */
   private async executeAgent(
-    context: ProjectContext,
+    context: ProjectState,
     agentId: string,
     input?: Record<string, any>,
   ): Promise<Record<string, any>> {
@@ -343,7 +343,7 @@ export class ProjectRuntime {
    * Execute a schedule
    */
   private async executeSchedule(
-    context: ProjectContext,
+    context: ProjectState,
     scheduleId: string,
   ): Promise<Record<string, any>> {
     const scheduleInstance = context.schedules.find((s) => s.schedule.id === scheduleId);

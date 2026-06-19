@@ -35,7 +35,7 @@ This is the complete model. Nothing else is needed.
 
 ## Core Vocabulary
 
-The platform uses exactly 12 concepts:
+The platform uses exactly 10 concepts:
 
 | Concept | Purpose | Scope |
 |---------|---------|-------|
@@ -49,12 +49,14 @@ The platform uses exactly 12 concepts:
 | **Artifact** | Versioned, durable outcome | Durable (persisted) |
 | **Thread** | Collaboration context | Durable (persisted) |
 | **Run** | Execution record | Durable (persisted) |
-| **Eval** | Quality evaluation definition | Durable (packaged) |
-| **Sandbox** | Execution constraints | Durable (packaged) |
 
 **No other concepts exist.**
 
-Everything maps cleanly to one of these 12. If you find yourself needing something else, you're over-modeling.
+Everything maps cleanly to one of these 10. If you find yourself needing something else, you're over-modeling.
+
+**Concepts Removed:**
+- ~~Eval~~ - Future extensibility (can be added as optional package kind, not core)
+- ~~Sandbox~~ - Agent configuration (sandbox constraints field, not core concept)
 
 ---
 
@@ -74,22 +76,16 @@ project/
         skill-name.yaml
       channels/
         channel-name.yaml
-      schedules/
-        schedule-name.yaml
-      evals/
-        eval-name.yaml
-      sandbox/
-        sandbox.yaml
   resources/
     resource-name.yaml          # Shared context
+  schedules/
+    schedule-name.yaml          # Automation triggers
   artifacts/
     artifact-schema.yaml        # Artifact type definitions
   threads/
     (none - created at runtime)
   runs/
     (none - created at runtime)
-  schedules/
-    (none - part of agents)
 ```
 
 ### Package Format (YAML)
@@ -97,7 +93,7 @@ project/
 Every package is a YAML file with metadata:
 
 ```yaml
-kind: agent|tool|skill|project|channel|schedule|resource|eval|sandbox
+kind: agent|tool|skill|project|channel|schedule|resource
 id: unique-identifier
 name: Display Name
 version: 1.0.0
@@ -712,18 +708,22 @@ const thread = await runtime.createThread(context.project.id, {
 
 ## Summary
 
-The Agent Platform consists of exactly 12 concepts organized in three layers:
+The Agent Platform consists of exactly 10 concepts organized in three layers:
 
 ### Definitions (Filesystem Packages)
-- Agent, Tool, Skill, Channel, Schedule, Eval, Sandbox
+- Agent, Tool, Skill, Channel, Schedule, Resource
 
 ### Runtime (Project State)
-- Project, Run, Artifact, Thread, Resource
+- Project, Run, Artifact, Thread
 
 ### Execution (Through Providers)
 - Tools are backed by providers (API, Connector, MCP, Function, Service)
 
 Everything flows from this model. Nothing else is needed.
+
+**Extensibility:**
+- Sandbox: Agent configuration (constraints field)
+- Eval: Optional package kind for future evaluation systems
 
 ---
 
@@ -740,7 +740,7 @@ This architecture is formalized through Architecture Decision Records. See `docs
 | [ADR-005](adr/ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs | Accepted |
 | [ADR-006](adr/ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability Model | Accepted |
 | [ADR-007](adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules as First-Class | Accepted |
-| [ADR-008](adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (12 Concepts) | Accepted |
+| [ADR-008](adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (10 Concepts) | Accepted |
 | [ADR-009](adr/ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing | Accepted |
 
 Read the ADRs to understand the reasoning behind each architectural decision.

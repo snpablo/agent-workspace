@@ -18,7 +18,7 @@ The question: How many concepts does the platform actually need?
 
 ## Decision
 
-**The platform has exactly 12 concepts. No more. Period.**
+**The platform has exactly 10 concepts. No more. Period.**
 
 ```
 1. Project
@@ -31,8 +31,6 @@ The question: How many concepts does the platform actually need?
 8. Artifact
 9. Thread
 10. Run
-11. Eval
-12. Sandbox
 ```
 
 **Rationale for each:**
@@ -49,10 +47,12 @@ The question: How many concepts does the platform actually need?
 | **Artifact** | Durable, versioned output (see [ADR-005](ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md)) |
 | **Thread** | Collaboration context for discussion |
 | **Run** | Execution record and audit trail |
-| **Eval** | Quality evaluation definition |
-| **Sandbox** | Execution constraints and isolation |
 
 Each is essential. None is redundant with others.
+
+**Concepts Removed (Post-V2):**
+- ~~Eval~~ - Future extensibility (can be packaged but not core)
+- ~~Sandbox~~ - Agent configuration (not independent concept)
 
 ## No Additional Concepts
 

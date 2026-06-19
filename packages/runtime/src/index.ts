@@ -5,7 +5,7 @@
 export { ProjectRuntime } from './project-runtime';
 export { InMemoryProjectRepository } from './repository';
 export type {
-  ProjectContext,
+  ProjectState,
   ProjectService,
   RunService,
   ArtifactService,

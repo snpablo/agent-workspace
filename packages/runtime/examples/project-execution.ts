@@ -200,7 +200,7 @@ async function executeProject() {
 
   // Step 13: Show events
   console.log('📋 Events:\n');
-  const eventContext = runtime.getProjectContext(project.id);
+  const eventContext = runtime.getProjectState(project.id);
   if (eventContext) {
     const recentEvents = eventContext.events.slice(-5);
     for (const event of recentEvents) {

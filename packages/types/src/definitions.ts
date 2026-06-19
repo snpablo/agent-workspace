@@ -18,8 +18,8 @@
  * These fields come from the YAML package or are derived from the filesystem
  */
 export interface PackageMetadata {
-  /** Package kind: tool, skill, agent, project, channel, schedule, resource, sandbox */
-  kind: 'tool' | 'skill' | 'agent' | 'project' | 'channel' | 'schedule' | 'resource' | 'sandbox';
+  /** Package kind: tool, skill, agent, project, channel, schedule, resource */
+  kind: 'tool' | 'skill' | 'agent' | 'project' | 'channel' | 'schedule' | 'resource';
   /** Unique identifier within scope */
   id: string;
   /** Display name */
@@ -164,28 +164,6 @@ export interface Resource extends PackageMetadata {
   metadata?: Record<string, any>;
 }
 
-/**
- * Sandbox package - execution environment constraints
- * Located at: sandbox/sandbox.yaml
- */
-export interface Sandbox extends PackageMetadata {
-  kind: 'sandbox';
-  /** Resource limits */
-  limits?: {
-    memoryMb?: number;
-    cpuShares?: number;
-    timeoutSeconds?: number;
-    diskMb?: number;
-  };
-  /** Allowed operations */
-  allow?: string[];
-  /** Forbidden operations */
-  deny?: string[];
-  /** Environment variables */
-  env?: Record<string, string>;
-  /** Sandbox metadata */
-  metadata?: Record<string, any>;
-}
 
 /**
  * Artifact type - describes what kinds of artifacts a project creates

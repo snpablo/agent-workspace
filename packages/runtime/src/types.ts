@@ -5,10 +5,11 @@
 import { Project, Agent, Tool, Skill, Run, Artifact, Thread, Resource, ArtifactVersion, Participant, Event, AgentSession, Channel, Schedule } from '@awp/types';
 
 /**
- * ProjectContext - mutable runtime state of a project
- * This is the primary container for all execution and collaboration
+ * ProjectState - mutable runtime state of a project
+ * Represents the runtime execution context and collaboration state
+ * Wraps the Project definition with runtime data (artifacts, threads, runs, etc.)
  */
-export interface ProjectContext {
+export interface ProjectState {
   /** Project definition and configuration */
   project: Project;
 
@@ -220,10 +221,10 @@ export interface ExecutionOptions {
  */
 export interface ProjectService {
   /** Initialize a project context */
-  initializeProject(options: ProjectInitOptions): Promise<ProjectContext>;
+  initializeProject(options: ProjectInitOptions): Promise<ProjectState>;
 
   /** Get current project context */
-  getProject(projectId: string): Promise<ProjectContext | undefined>;
+  getProject(projectId: string): Promise<ProjectState | undefined>;
 
   /** Add participant to project */
   addParticipant(projectId: string, participant: Participant): Promise<void>;
@@ -337,10 +338,10 @@ export interface EventFilter {
  */
 export interface ProjectRepository {
   /** Save project context */
-  save(context: ProjectContext): Promise<void>;
+  save(context: ProjectState): Promise<void>;
 
   /** Load project context */
-  load(projectId: string): Promise<ProjectContext | undefined>;
+  load(projectId: string): Promise<ProjectState | undefined>;
 
   /** Delete project */
   delete(projectId: string): Promise<void>;

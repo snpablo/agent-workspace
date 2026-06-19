@@ -2,19 +2,19 @@
  * ProjectRepository implementations
  */
 
-import { ProjectContext, ProjectRepository } from './types';
+import { ProjectState, ProjectRepository } from './types';
 
 /**
  * In-memory repository for projects
  * Useful for testing and single-process deployments
  */
 export class InMemoryProjectRepository implements ProjectRepository {
-  private projects: Map<string, ProjectContext> = new Map();
+  private projects: Map<string, ProjectState> = new Map();
 
   /**
    * Save project context to memory
    */
-  async save(context: ProjectContext): Promise<void> {
+  async save(context: ProjectState): Promise<void> {
     this.projects.set(context.project.id, {
       ...context,
       // Create deep copies to prevent mutations
@@ -33,7 +33,7 @@ export class InMemoryProjectRepository implements ProjectRepository {
   /**
    * Load project context from memory
    */
-  async load(projectId: string): Promise<ProjectContext | undefined> {
+  async load(projectId: string): Promise<ProjectState | undefined> {
     const context = this.projects.get(projectId);
     if (!context) {
       return undefined;
@@ -78,7 +78,7 @@ export class InMemoryProjectRepository implements ProjectRepository {
   /**
    * Get all projects (for testing/debugging)
    */
-  getAll(): ProjectContext[] {
+  getAll(): ProjectState[] {
     return Array.from(this.projects.values());
   }
 }
@@ -95,7 +95,7 @@ export class FileProjectRepository implements ProjectRepository {
   /**
    * Save project context to file
    */
-  async save(context: ProjectContext): Promise<void> {
+  async save(context: ProjectState): Promise<void> {
     // In real implementation, would write to JSON file
     // For now, this is a stub
     console.log(`Saving project to ${this.basePath}/${context.project.id}.json`);
@@ -104,7 +104,7 @@ export class FileProjectRepository implements ProjectRepository {
   /**
    * Load project context from file
    */
-  async load(projectId: string): Promise<ProjectContext | undefined> {
+  async load(projectId: string): Promise<ProjectState | undefined> {
     // In real implementation, would read from JSON file
     // For now, this is a stub
     console.log(`Loading project from ${this.basePath}/${projectId}.json`);

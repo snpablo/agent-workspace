@@ -206,7 +206,7 @@ describe('ProjectRuntime', () => {
     });
 
     it('should emit events during execution', async () => {
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       const initialEventCount = context?.events.length || 0;
 
       await runtime.executeRun(projectId, {
@@ -215,7 +215,7 @@ describe('ProjectRuntime', () => {
         triggeredBy: 'user-001',
       });
 
-      const updatedContext = runtime.getProjectContext(projectId);
+      const updatedContext = runtime.getProjectState(projectId);
       expect((updatedContext?.events.length || 0) > initialEventCount).toBe(true);
     });
 
@@ -226,7 +226,7 @@ describe('ProjectRuntime', () => {
         triggeredBy: 'user-001',
       });
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       expect(context?.runs.has(result.run.id)).toBe(true);
     });
   });
@@ -275,7 +275,7 @@ describe('ProjectRuntime', () => {
 
       await runtime.createArtifact(projectId, artifact);
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       expect(context?.artifacts.has('artifact-001')).toBe(true);
     });
 
@@ -294,7 +294,7 @@ describe('ProjectRuntime', () => {
 
       await runtime.createArtifact(projectId, artifact);
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       const record = context?.artifacts.get('artifact-001');
 
       expect(record?.versions).toHaveLength(1);
@@ -314,12 +314,12 @@ describe('ProjectRuntime', () => {
         createdAt: new Date().toISOString(),
       };
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       const initialCount = context?.events.length || 0;
 
       await runtime.createArtifact(projectId, artifact);
 
-      const updated = runtime.getProjectContext(projectId);
+      const updated = runtime.getProjectState(projectId);
       const newEvents = (updated?.events || []).slice(initialCount);
       const createdEvent = newEvents.find((e) => e.name === 'artifact.created');
 
@@ -366,7 +366,7 @@ describe('ProjectRuntime', () => {
 
       await runtime.createThread(projectId, thread);
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       expect(context?.threads.has('thread-001')).toBe(true);
     });
   });
@@ -393,7 +393,7 @@ describe('ProjectRuntime', () => {
 
       runtime.addParticipant(projectId, participant);
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       expect(context?.participants.has('user-001')).toBe(true);
     });
 
@@ -407,12 +407,12 @@ describe('ProjectRuntime', () => {
         joinedAt: new Date().toISOString(),
       };
 
-      const context = runtime.getProjectContext(projectId);
+      const context = runtime.getProjectState(projectId);
       const initialCount = context?.events.length || 0;
 
       runtime.addParticipant(projectId, participant);
 
-      const updated = runtime.getProjectContext(projectId);
+      const updated = runtime.getProjectState(projectId);
       const newEvents = (updated?.events || []).slice(initialCount);
       const joinedEvent = newEvents.find((e) => e.name === 'participant.joined');
 
