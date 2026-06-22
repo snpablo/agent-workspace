@@ -6,19 +6,17 @@
 
 ---
 
+## Decision Summary
+
+The platform has exactly 10 core concepts, and extensions should happen through fields, types, and providers rather than new ontology entries.
+
 ## Context
 
-Every new platform concept adds:
-- Cognitive load (what is this? how does it relate to others?)
-- Implementation work (types, schemas, APIs, tests)
-- Documentation overhead
-- Potential confusion (overlapping semantics)
-
-The question: How many concepts does the platform actually need?
+Every new platform concept increases implementation, documentation, and learning cost.
 
 ## Decision
 
-**The platform has exactly 10 concepts. No more. Period.**
+The platform has exactly 10 concepts:
 
 ```
 1. Project
@@ -33,7 +31,7 @@ The question: How many concepts does the platform actually need?
 10. Run
 ```
 
-**Rationale for each:**
+Rationale:
 
 | Concept | Why It's Required |
 |---------|------------------|
@@ -48,49 +46,41 @@ The question: How many concepts does the platform actually need?
 | **Thread** | Collaboration context for discussion |
 | **Run** | Execution record and audit trail |
 
-Each is essential. None is redundant with others.
+Each is essential and intentionally distinct.
 
-**Concepts Removed (Post-V2):**
-- ~~Eval~~ - Future extensibility (can be packaged but not core)
-- ~~Sandbox~~ - Agent configuration (not independent concept)
+Optional areas such as sandboxing or evaluation can exist as package kinds or configuration patterns without expanding the core ontology.
 
-## No Additional Concepts
+## Boundaries
 
-The following are **NOT** concepts:
+The following are not core concepts:
 
-- **Workspace:** Replaced by Project
-- **WorkItem:** Replaced by Run
-- **Playbook/Workflow:** Replaced by Agent + Schedule
 - **Connector/Integration:** Provider mechanism, not concept (see [ADR-006](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md))
 - **API:** Provider mechanism for Tool (not separate concept)
 - **Function:** Provider mechanism for Tool (not separate concept)
 - **Role:** Agent property, not separate concept
-- **Permission:** Out of scope for v1, not a core concept
+- **Permission:** Not a core concept
 - **Zone/Binding:** UI concern, not runtime concept
 - **Component/View:** UI concern, not runtime concept
 
 ## Consequences
 
 ### Positive
-- **Simple to learn:** 12 concepts vs. 30+
-- **Easy to implement:** Focused scope
-- **Coherent model:** Every concept has clear purpose
-- **Scalable documentation:** Not overwhelming
-- **Testable:** Finite number of interactions to verify
-- **Extensible:** Add providers/variants without new concepts
 
-### Negative
-- **Requires discipline:** Tempting to add new concepts when stuck
-- **Some concepts broad:** Artifact covers many output types
-- **Custom behavior:** Can't represent every use case with 12 concepts
-- **May feel limiting:** Users might want more granularity
+- The platform stays teachable
+- Definitions, docs, and code have clearer boundaries
+- Extension pressure moves toward configuration and providers instead of ontology growth
 
-### How to Extend Without New Concepts
-- **New tool type?** Add provider type, not new concept
-- **New artifact type?** Add artifact.type field, not new concept
-- **New channel type?** Add channel.type field, not new concept
-- **New execution context?** That's what Resource is for
-- **New actor type?** Still an Agent, use role field
+### Tradeoffs
+
+- The team must resist adding concepts whenever a new use case appears
+- Some concepts intentionally cover broad ground
+
+## How to Extend Without New Concepts
+
+- Add provider types for new tool backings
+- Add fields or schemas for richer artifact or channel variation
+- Add configuration to existing package kinds
+- Use Resources for new shared context needs
 
 ## Alternatives Considered
 
@@ -106,41 +96,14 @@ The following are **NOT** concepts:
    - Rejected: Leads to bloat
    - Rejected: Creates confusion
 
----
-
-## Design Pressure
-
-The minimal ontology creates healthy design pressure:
-
-- **When you want to add a concept:** Ask: "Can this be a provider type? A field? A value in an enum?"
-- **When unclear:** That's feedback the model isn't complete
-- **When overlapping:** Indicates concepts should merge or be renamed
-
-This constraint has driven better design decisions throughout the platform.
-
----
-
-## Testing Minimal Ontology
-
-How do you verify 12 concepts are enough?
-
-1. **Can you build the platform?** Yes - all features fit in these concepts
-2. **Can agents express all needed capabilities?** Yes - via Tool + Skill composition
-3. **Can you persist all state?** Yes - Project contains everything
-4. **Can you support multiple agent types?** Yes - Agent + role field
-5. **Can you support multiple output types?** Yes - Artifact + type field
-6. **Can you automate?** Yes - Schedule concept
-7. **Can you route communication?** Yes - Channel concept
-8. **Can you audit everything?** Yes - Event (in Project.events)
-
-If any answer is "no," the ontology is incomplete.
+The minimal ontology is a design constraint on purpose: when new needs appear, the first question should be whether they fit an existing concept plus configuration, not whether the platform needs a new noun.
 
 ---
 
 ## Related Decisions
 
 - All ADRs depend on minimal ontology
-- [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) (these 12 concepts are packages)
+- [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) (these 10 concepts are packages)
 - [ADR-006: Tools as Primary Capability](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) (not multiple capability types)
 
 ## References

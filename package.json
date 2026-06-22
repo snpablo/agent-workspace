@@ -6,10 +6,17 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build": "npm run build --workspace=@awp/types && npm run build --workspace=@awp/loader && npm run build --workspace=@awp/tools && npm run build --workspace=@awp/runtime && npm run build --workspace=@awp/schemas",
+    "test": "jest --config ./jest.config.cjs"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.3.0",
     "json-schema-to-typescript": "^13.0.0"
   }

@@ -275,7 +275,6 @@ Shared context data (documents, config, guidelines) available to all agents in a
 
 ## Documentation
 
-- [RUNTIME_ARCHITECTURE.md](../RUNTIME_ARCHITECTURE.md) - Runtime design
-- [AGENT_PACKAGE_MODEL.md](../AGENT_PACKAGE_MODEL.md) - Agent packages
-- [TOOL_EXECUTION_MODEL.md](../TOOL_EXECUTION_MODEL.md) - Tool execution
-- [PERSISTENCE_REVIEW.md](../PERSISTENCE_REVIEW.md) - Storage design
+- [../docs/architecture/ARCHITECTURE_V2.md](../docs/architecture/ARCHITECTURE_V2.md) - Authoritative architecture
+- [../docs/examples/README.md](../docs/examples/README.md) - Example projects
+- [../docs/posters/README.md](../docs/posters/README.md) - Runtime and platform posters

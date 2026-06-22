@@ -6,25 +6,22 @@
 
 ---
 
+## Decision Summary
+
+Agent instructions live directly in `agent.yaml` so behavior and definition stay together.
+
 ## Context
 
-Agent behavior is configured through **instructions** - the system prompt that defines how an agent thinks and acts.
+The platform needs agent behavior to be:
 
-Previously, instructions could be:
-- Hardcoded in agent class definition
-- Stored in separate prompt files
-- Managed as database records
-- Passed at runtime
-
-This created separation between agent metadata and agent behavior, making it hard to:
-- Version control agent behavior with agent definition
-- Understand agent capabilities by reading one file
-- Non-technical users to modify agent personality
-- Reason about complete agent package
+- reviewable with the rest of the package
+- portable with the agent definition
+- understandable from a single file
+- editable without adding another authoring system
 
 ## Decision
 
-**Instructions are embedded directly in the package YAML as a field.**
+Instructions are embedded directly in the package YAML as a field.
 
 ```yaml
 kind: agent
@@ -52,111 +49,33 @@ tools:
   - id: search-tool
 ```
 
-Instructions are:
-- Part of the package definition
-- Versioned with the agent
-- Readable in a single file
-- Editable by non-technical users
-- Reviewable in pull requests
-- Complete with all metadata in one place
-
 ## Consequences
 
 ### Positive
-- **Single source of truth:** Agent definition and behavior in one file
-- **Version control:** Behavior changes are commits, not separate
-- **Easy to understand:** Read the file, understand the agent
-- **Non-technical authoring:** Anyone can write instructions
-- **PR-friendly:** Behavior changes reviewable in pull requests
-- **Portable:** Agent package is self-contained
-- **Clear dependencies:** Tools/skills declared same file as instructions
-- **Ease of modification:** Change instructions = change file = commit
 
-### Negative
-- **Large files:** agent.yaml can be long if instructions are detailed
-- **File size limits:** Very large instructions might cause editor issues
-- **Template expansion:** Complex instructions may benefit from templating
-- **Environment-specific config:** Instructions can't easily reference environment variables
+- One file explains what the agent is and how it should behave
+- Pull requests capture behavior changes alongside package changes
+- Agents stay portable and self-contained
+- Non-code contributors can still inspect and refine behavior
 
-### Mitigation
-- Keep instructions clear but concise
-- Use line length conventions (80-120 chars for readability)
-- Instructions are YAML multi-line strings (`|` or `>`), readable as markdown
+### Tradeoffs
+
+- Large instructions can make `agent.yaml` verbose
+- Shared prompt fragments and templating are intentionally deferred
 
 ## Alternatives Considered
 
-1. **Separate instructions.md file**
-   - Rejected: Breaks "single source of truth"
-   - Rejected: Package isn't self-contained
-   - Rejected: Harder to version together
+1. **Separate prompt files**
+   - Rejected because they split behavior from package definition.
 
-2. **Instructions as database records**
-   - Rejected: Breaks filesystem-first design
-   - Rejected: Requires persistent storage
-   - Rejected: Not portable
+2. **Database-managed instructions**
+   - Rejected because they break the filesystem-first model.
 
-3. **Instructions passed at runtime**
-   - Rejected: Can't see agent capabilities from package
-   - Rejected: Behavior not version controlled
-   - Rejected: Makes agents non-reproducible
+3. **Runtime-supplied instructions**
+   - Rejected because reproducibility and reviewability suffer.
 
-4. **Separate prompt/ directory with prompts**
-   - Rejected: Over-engineering for v1
-   - Rejected: Still split from metadata
-   - **Possible future** if shared prompts needed
-
-5. **Templating system for instructions**
-   - Rejected: Complexity not justified yet
-   - Rejected: Non-technical users confused
-   - **Possible future** if template reuse needed
-
----
-
-## Implementation Details
-
-Instructions field:
-- Always present in agent definitions
-- Multi-line string using YAML `|` (literal) or `>` (folded) syntax
-- Treated as plain text by runtime
-- Passed directly to model as system prompt
-- Can reference agent role/name for context
-
-Example with complex instructions:
-
-```yaml
-kind: agent
-id: code-reviewer
-name: Code Reviewer
-version: 1.0.0
-
-role: senior-engineer
-model: claude-opus
-
-instructions: |
-  You are a senior software engineer and code reviewer.
-  
-  Code Review Standards:
-  - Security: Check for injection, auth, data protection
-  - Performance: Identify bottlenecks, efficiency issues
-  - Maintainability: Question complex logic, naming clarity
-  - Testing: Verify coverage, edge cases
-  
-  Output Format:
-  Always provide your review as:
-  1. Summary (1 paragraph)
-  2. Critical Issues (if any)
-  3. Improvements (by category)
-  4. Positive Feedback
-  
-  Style:
-  - Be constructive, never dismissive
-  - Suggest specific improvements
-  - Acknowledge good patterns
-
-tools:
-  - id: diff-tool
-  - id: linter-tool
-```
+4. **Instruction templating system**
+   - Rejected because the extra abstraction is not yet justified.
 
 ---
 
@@ -168,4 +87,4 @@ tools:
 ## References
 
 - [ARCHITECTURE_V2.md - YAML Package Format](../ARCHITECTURE_V2.md#package-format-yaml)
-- [AGENT_PACKAGE_MODEL.md - Agent Definition](../../../AGENT_PACKAGE_MODEL.md#agent-definition-agencyaml)
+- [AGENTS.md - Instructions Live in YAML](../../../AGENTS.md#key-principle-instructions-live-in-yaml)

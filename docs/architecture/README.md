@@ -5,7 +5,7 @@ Architecture V2 models the platform with 10 concepts: Project, Agent, Tool, Skil
 ## Learning Path
 
 1. Read the [authoritative specification](./ARCHITECTURE_V2.md).
-2. Read the relevant [ADRs](./adr/).
+2. Read the relevant [ADRs](./adr/README.md).
 3. Compare the model with the [project archetypes](../project-archetypes/README.md).
 4. Inspect the [example projects](../examples/README.md).
 5. Read the [source packages](../../packages/README.md).
@@ -27,5 +27,5 @@ Artifacts, threads, and runs
 ## References
 
 - [ARCHITECTURE_V2.md](./ARCHITECTURE_V2.md)
-- [ADR Directory](./adr/)
+- [ADR Guide](./adr/README.md)
 - [Posters](../posters/README.md)

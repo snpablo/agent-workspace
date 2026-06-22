@@ -2,19 +2,11 @@
 
 TypeScript type definitions for Agent Platform.
 
-This package provides the canonical type system for the platform. **There is no Definition/Instance split**—definitions are filesystem packages, runtime state is kept in runtime types.
+This package provides the canonical type system for the platform. Definitions are filesystem packages, and runtime state is kept in runtime types.
 
-## Key Change: No Definition/Instance Split
+## Type Model
 
-**Old Model (Phase 1):**
-```
-WorkspaceDefinition + WorkspaceInstance
-ArtifactDefinition + ArtifactInstance  
-AgentDefinition + AgentSession
-PlaybookDefinition + PlaybookInstance
-```
-
-**New Model (Phase 2):**
+The package model is:
 ```
 Tool, Skill, Agent, Project (filesystem packages)
   ↓
@@ -89,13 +81,6 @@ Filesystem packages with metadata.
 - `ToolReference`, `SkillReference`, `AgentReference` - Links between packages
 - `ResourceReference`, `ChannelReference`, `ScheduleReference` - Cross-package references
 
-**Deprecated Aliases** (for migration)
-- `ToolDefinition` → `Tool`
-- `SkillDefinition` → `Skill`
-- `AgentDefinition` → `Agent`
-- `ProjectDefinition` → `Project`
-- `ArtifactDefinition` → `ArtifactType`
-
 ### Runtime State (src/runtime.ts)
 
 Live execution objects.
@@ -121,11 +106,6 @@ Live execution objects.
 - `ThreadStatus` - 'active' | 'closed' | 'archived'
 - `ArtifactStatus` - 'draft' | 'active' | 'archived'
 - `ParticipantRole` - 'owner' | 'editor' | 'reviewer' | 'viewer'
-
-**Deprecated Aliases** (for migration)
-- `ArtifactInstance` → `Artifact`
-- `WorkspaceInstance` → `ProjectState`
-- `PlaybookInstance` → `Run`
 
 ### Interpreter (src/interpreter.ts)
 
@@ -199,24 +179,24 @@ Definitions ARE filesystem packages:
 
 Package metadata includes `sourcePath` for discovery.
 
-### No Definition/Instance Split
+### Definitions and Runtime State
 
-The old Definition/Instance pattern is removed:
-- No `ToolDefinition` + separate runtime (Tool is the package)
-- No `AgentDefinition` + `AgentSession` (Agent is the package, AgentSession is runtime context)
-- No `ArtifactDefinition` + `ArtifactInstance` (ArtifactType is definition, Artifact is runtime)
+- Tool is a filesystem package
+- Agent is a filesystem package
+- ArtifactType describes artifact structure
+- Artifact, Run, Thread, and ProjectState represent runtime state
 
 ### Canonical Vocabulary
 
 Types use industry-standard agent platform vocabulary:
-- `Project` (not Workspace)
-- `Agent` (not Playbook or Actor)
-- `Tool` (not Capability, Connector, Integration)
-- `Skill` (not Workflow)
-- `Run` (not Execution, Action, Activity)
-- `Artifact` (not Output, Result)
-- `Thread` (not Conversation, Session)
-- `Resource` (not KnowledgeSource)
+- `Project`
+- `Agent`
+- `Tool`
+- `Skill`
+- `Run`
+- `Artifact`
+- `Thread`
+- `Resource`
 
 ### Minimal Interfaces
 
@@ -287,12 +267,7 @@ const run: Run = {
 - **@awp/interpreter** - Interprets package definitions
 - **@awp/runtime** - Uses runtime state types
 
-## Migration from Phase 1
+## Architecture Alignment
 
-See [ARCHITECTURE_MIGRATION.md](../../ARCHITECTURE_MIGRATION.md) for guidance on moving from Phase 1 (Definition/Instance split) to Phase 2 (filesystem packages + runtime state).
-
-Deprecated type aliases are provided for backward compatibility:
-- `ToolDefinition` → `Tool`
-- `AgentDefinition` → `Agent`
-- `ArtifactInstance` → `Artifact`
-- `WorkspaceInstance` → `ProjectState`
+This package reflects Architecture V2 only: filesystem package definitions plus runtime state types.
+Use [ARCHITECTURE_V2.md](../../docs/architecture/ARCHITECTURE_V2.md) and the [ADR guide](../../docs/architecture/adr/README.md) as the canonical reference.

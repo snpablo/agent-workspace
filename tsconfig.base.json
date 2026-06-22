@@ -6,18 +6,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "paths": {
-      "@awp/schemas": ["./packages/schemas"],
-      "@awp/types": ["./packages/types/dist"],
-      "@awp/definitions": ["./packages/definitions/dist"],
-    }
+    "moduleResolution": "node"
   }
 }

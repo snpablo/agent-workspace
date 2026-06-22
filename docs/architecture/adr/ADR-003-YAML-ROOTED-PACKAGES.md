@@ -6,25 +6,19 @@
 
 ---
 
+## Decision Summary
+
+Packages are rooted in YAML files so they stay human-readable, portable, and easy to discover.
+
 ## Context
 
-Given that packages live on the filesystem ([ADR-002](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md)), we need a convention for:
-- How to identify a package in a directory
-- What constitutes a valid package
-- How to discover packages
-- How to name packages
-
-Options include:
-- Each package is a JSON file (one file per package)
-- Each package is a YAML file (one file per package)
-- Each package is a Python class (requires runtime)
-- Each package is a directory with internal structure
+Once the platform chooses filesystem packages, it still needs one concrete representation for package metadata and configuration.
 
 ## Decision
 
-**Each package is a YAML file, named after its kind and id.**
+Each package is represented by a YAML file that carries the package metadata and configuration.
 
-Convention:
+Typical convention:
 ```
 agents/
   agent-name/
@@ -41,98 +35,36 @@ resources/
   resource-name.yaml       # Single file is OK
 ```
 
-The YAML file contains all package metadata and configuration:
-
-```yaml
-kind: agent
-id: decision-analyzer
-name: Decision Analyzer
-version: 1.0.0
-
-instructions: |
-  You are a strategic decision analyst.
-  ...
-
-tools:
-  - id: search-tool
-
-metadata:
-  tags: [decision-support]
-```
-
-**Why YAML?**
-- Human-readable (better than JSON for configs)
-- Standard in DevOps/Kubernetes/Docker
-- Supports multi-line strings (for instructions)
-- Wide tool support
-- Minimal syntax
+YAML is the standard package format because it supports structured metadata, long instructions, comments, and ordinary configuration workflows.
 
 ## Consequences
 
 ### Positive
-- **Discoverable:** `find . -name "*.yaml" -path "*/agents/*"` finds all agents
-- **Standard format:** YAML is industry standard for config
-- **Human-editable:** Technical and non-technical users can edit
-- **Simple parsing:** Standard YAML parsers available everywhere
-- **Supports long text:** Instructions, descriptions in multi-line strings
-- **Comments supported:** YAML comments help document inline
-- **Git-friendly:** Text format diffs clearly
 
-### Negative
-- **Larger file size:** YAML less compact than JSON
-- **Whitespace sensitivity:** Indentation matters (but less than Python)
-- **No embedded code:** Logic must be external (by design)
-- **No schema validation by format:** Must validate content explicitly
+- Easy to read and review in git
+- Good fit for instructions and other multiline content
+- Familiar to teams already using cloud-native configuration
+- Straightforward discovery by filename and directory pattern
+
+### Tradeoffs
+
+- YAML requires validation beyond parsing
+- Loader conventions must be documented and enforced
+- Mixed layout styles can be supported, but they increase ambiguity
 
 ## Alternatives Considered
 
-1. **JSON format**
-   - Rejected: Less readable for humans
-   - Rejected: Multi-line strings awkward (requires escape sequences)
-   - Rejected: No comments support
-   - **Possible future** for machine generation
+1. **JSON**
+   - Rejected because it is less readable for package authoring and instructions.
 
-2. **Python classes (dataclasses/Pydantic)**
-   - Rejected: Requires Python runtime
-   - Rejected: Prevents non-technical authoring
-   - Rejected: Not portable without Python
+2. **Code-defined packages**
+   - Rejected because they require execution environments and narrow the author audience.
 
-3. **Directory-as-package (no single root file)**
-   - Rejected: Harder to discover
-   - Rejected: No single place to put metadata
-   - Rejected: Less clear what the package is
+3. **Directory-only packages with no root definition file**
+   - Rejected because metadata and discovery become less obvious.
 
-4. **Multiple formats (YAML + JSON + Python)**
-   - Rejected: Complexity for v1
-   - Rejected: Conflicting source-of-truth issues
-   - **Possible future** once single format proven
-
-5. **Toml or other format**
-   - Rejected: YAML more standard in agent/DevOps community
-   - Rejected: Unnecessary additional format diversity
-
----
-
-## Discovery Convention
-
-PackageLoader discovers packages by pattern:
-
-```
-agents/
-  agent-name/           # Directory matches package id
-    agent.yaml          # File named after kind
-  another-agent/
-    agent.yaml
-
-tools/
-  tool-name/
-    tool.yaml           # Or just tool.yaml in tools/
-
-skills/
-  skill-name.yaml       # Or directory with skill.yaml
-```
-
-Mixed styles supported but discouraged for clarity.
+4. **Multiple equivalent formats**
+   - Rejected because they create avoidable source-of-truth ambiguity.
 
 ---
 

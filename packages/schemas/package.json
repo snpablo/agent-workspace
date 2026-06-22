@@ -9,6 +9,9 @@
     "index.js",
     "index.d.ts"
   ],
+  "scripts": {
+    "build": "node -e \"console.log('schemas package has no build step')\""
+  },
   "exports": {
     ".": {
       "types": "./index.d.ts",

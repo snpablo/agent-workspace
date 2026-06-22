@@ -123,12 +123,9 @@ describe('ProjectRuntime', () => {
         id: 'doc-001',
         name: 'Document',
         version: '1.0.0',
-        sourcePath: '/resources/doc-001/doc-001.yaml',
+        sourcePath: '/resources/doc-001.yaml',
         type: 'document',
         content: { text: 'Content' },
-        projectId: testProject.id,
-        createdBy: 'user-001',
-        createdAt: new Date().toISOString(),
       };
 
       registry.register({

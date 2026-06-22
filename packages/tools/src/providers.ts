@@ -46,6 +46,10 @@ export abstract class BaseToolProvider implements ToolProvider {
       config: this.config,
     };
   }
+
+  protected getExecutionConfig(): Record<string, any> {
+    return this.config.config || {};
+  }
 }
 
 /**
@@ -62,7 +66,7 @@ export class ApiToolProvider extends BaseToolProvider {
 
   async execute(request: ToolExecutionRequest): Promise<ToolExecutionResult> {
     try {
-      const impl = this.config as any;
+      const impl = this.getExecutionConfig();
 
       // Simulate HTTP call
       const result = {
@@ -120,7 +124,7 @@ export class ConnectorToolProvider extends BaseToolProvider {
 
   async execute(request: ToolExecutionRequest): Promise<ToolExecutionResult> {
     try {
-      const impl = this.config as any;
+      const impl = this.getExecutionConfig();
 
       // Simulate connector call
       const result = {
@@ -181,7 +185,7 @@ export class McpToolProvider extends BaseToolProvider {
 
   async execute(request: ToolExecutionRequest): Promise<ToolExecutionResult> {
     try {
-      const impl = this.config as any;
+      const impl = this.getExecutionConfig();
 
       // Simulate MCP call
       const result = {
@@ -242,7 +246,7 @@ export class NativeToolProvider extends BaseToolProvider {
 
   async execute(request: ToolExecutionRequest): Promise<ToolExecutionResult> {
     try {
-      const impl = this.config as any;
+      const impl = this.getExecutionConfig();
 
       // Simulate function call
       const result = {
@@ -312,7 +316,7 @@ export class PlatformServiceToolProvider extends BaseToolProvider {
 
   async execute(request: ToolExecutionRequest): Promise<ToolExecutionResult> {
     try {
-      const impl = this.config as any;
+      const impl = this.getExecutionConfig();
 
       // Simulate platform service call
       const result = {

@@ -2,7 +2,7 @@
  * ProjectRuntime - primary runtime container for project execution
  */
 
-import { v4 as uuidv4 } from 'crypto';
+import { randomUUID } from 'crypto';
 import {
   Project,
   Agent,
@@ -138,7 +138,7 @@ export class ProjectRuntime {
       throw new Error(`Project not found: ${projectId}`);
     }
 
-    const runId = uuidv4();
+    const runId = randomUUID();
     const now = new Date().toISOString();
 
     // Create run record
@@ -158,7 +158,7 @@ export class ProjectRuntime {
 
     // Emit started event
     const startEvent: Event = {
-      id: uuidv4(),
+      id: randomUUID(),
       name: 'run.started',
       timestamp: now,
       projectId,
@@ -198,7 +198,7 @@ export class ProjectRuntime {
 
       // Emit succeeded event
       const successEvent: Event = {
-        id: uuidv4(),
+        id: randomUUID(),
         name: 'run.succeeded',
         timestamp: new Date().toISOString(),
         projectId,
@@ -221,7 +221,7 @@ export class ProjectRuntime {
 
       // Emit failed event
       const failEvent: Event = {
-        id: uuidv4(),
+        id: randomUUID(),
         name: 'run.failed',
         timestamp: new Date().toISOString(),
         projectId,
@@ -386,7 +386,7 @@ export class ProjectRuntime {
       },
       versions: [
         {
-          id: uuidv4(),
+          id: randomUUID(),
           artifactId: artifact.id,
           version: 1,
           content: artifact.content,
@@ -402,7 +402,7 @@ export class ProjectRuntime {
 
     // Emit event
     const event: Event = {
-      id: uuidv4(),
+      id: randomUUID(),
       name: 'artifact.created',
       timestamp: now,
       projectId,
@@ -427,7 +427,7 @@ export class ProjectRuntime {
 
     // Emit event
     const event: Event = {
-      id: uuidv4(),
+      id: randomUUID(),
       name: 'participant.joined',
       timestamp: new Date().toISOString(),
       projectId,
@@ -450,7 +450,7 @@ export class ProjectRuntime {
 
     // Emit event
     const event: Event = {
-      id: uuidv4(),
+      id: randomUUID(),
       name: 'resource.added',
       timestamp: new Date().toISOString(),
       projectId,
@@ -482,7 +482,7 @@ export class ProjectRuntime {
 
     // Emit event
     const event: Event = {
-      id: uuidv4(),
+      id: randomUUID(),
       name: 'thread.created',
       timestamp: new Date().toISOString(),
       projectId,

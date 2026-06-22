@@ -18,8 +18,8 @@
  * These fields come from the YAML package or are derived from the filesystem
  */
 export interface PackageMetadata {
-  /** Package kind: tool, skill, agent, project, channel, schedule, resource */
-  kind: 'tool' | 'skill' | 'agent' | 'project' | 'channel' | 'schedule' | 'resource';
+  /** Package kind: tool, skill, agent, project, channel, schedule, resource, sandbox */
+  kind: 'tool' | 'skill' | 'agent' | 'project' | 'channel' | 'schedule' | 'resource' | 'sandbox';
   /** Unique identifier within scope */
   id: string;
   /** Display name */
@@ -164,6 +164,18 @@ export interface Resource extends PackageMetadata {
   metadata?: Record<string, any>;
 }
 
+/**
+ * Sandbox package - optional execution constraints for an agent
+ * Located at: agents/agent-name/sandbox/*.yaml
+ */
+export interface Sandbox extends PackageMetadata {
+  kind: 'sandbox';
+  limits?: Record<string, any>;
+  permissions?: Record<string, any>;
+  environment?: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
 
 /**
  * Artifact type - describes what kinds of artifacts a project creates
@@ -260,6 +272,20 @@ export interface PolicyReference {
 }
 
 /**
+ * Union of supported package definitions
+ */
+export type AnyPackage =
+  | Tool
+  | Skill
+  | Agent
+  | Project
+  | Channel
+  | Schedule
+  | Resource
+  | ArtifactType
+  | Sandbox;
+
+/**
  * Validation result for packages
  */
 export interface ValidationResult {
@@ -267,4 +293,3 @@ export interface ValidationResult {
   errors: string[];
   warnings?: string[];
 }
-

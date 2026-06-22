@@ -502,7 +502,7 @@ Benefits:
 ### 6. Convention Over Invention
 
 - Follow industry patterns (Agent, Tool, Skill, Run)
-- Borrow from Claude Projects, Vercel Eve, LangGraph
+- Borrow from established agent-platform and workflow patterns
 - Don't invent new patterns
 - Align with how agents are already discussed
 
@@ -729,7 +729,7 @@ Everything flows from this model. Nothing else is needed.
 
 ## Architecture Decision Records (ADRs)
 
-This architecture is formalized through Architecture Decision Records. See `docs/architecture/adr/` for detailed rationale on each decision:
+This architecture is formalized through Architecture Decision Records. See [adr/README.md](adr/README.md) for the ADR guide and recommended reading order:
 
 | ADR | Decision | Status |
 |-----|----------|--------|
@@ -752,10 +752,9 @@ Read the ADRs to understand the reasoning behind each architectural decision.
 This document is authoritative. All other documentation should reference it.
 
 Related documents:
-- [RUNTIME_ARCHITECTURE.md](../../RUNTIME_ARCHITECTURE.md) - Project runtime implementation
-- [AGENT_PACKAGE_MODEL.md](../../AGENT_PACKAGE_MODEL.md) - Agent package structure
-- [TOOL_EXECUTION_MODEL.md](../../TOOL_EXECUTION_MODEL.md) - Tool execution and providers
-- [PERSISTENCE_REVIEW.md](../../PERSISTENCE_REVIEW.md) - Storage design
+- [README.md](../../README.md) - Repository overview and learning path
+- [../examples/README.md](../examples/README.md) - Architecture V2 example projects
+- [../posters/README.md](../posters/README.md) - Visual runtime and platform explanations
 
 Implementation:
 - [@awp/types](../../packages/types) - TypeScript definitions

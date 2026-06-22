@@ -76,7 +76,9 @@ export class PackageLoader {
    */
   async loadPackage<T extends AnyPackage = AnyPackage>(packagePath: string): Promise<PackageLoadResult<T>> {
     try {
-      const yamlPath = path.join(packagePath, `${path.basename(packagePath)}.yaml`);
+      const yamlPath = packagePath.endsWith('.yaml')
+        ? packagePath
+        : path.join(packagePath, `${path.basename(packagePath)}.yaml`);
 
       if (!fs.existsSync(yamlPath)) {
         return {
@@ -169,7 +171,7 @@ export class PackageLoader {
       if (!pkg.name) {
         errors.push({ message: 'Missing required field: name', severity: 'error' });
       }
-      if (!pkg.version) {
+      if ('version' in pkg && !pkg.version) {
         errors.push({ message: 'Missing required field: version', severity: 'error' });
       }
     }
@@ -182,7 +184,7 @@ export class PackageLoader {
       if (typeof pkg.name !== 'string') {
         errors.push({ message: 'Field name must be string', path: 'name', severity: 'error' });
       }
-      if (typeof pkg.version !== 'string') {
+      if ('version' in pkg && typeof pkg.version !== 'string') {
         errors.push({ message: 'Field version must be string', path: 'version', severity: 'error' });
       }
     }
@@ -226,19 +228,16 @@ export class PackageLoader {
       }
 
       if (entry.isDirectory()) {
-        // Check if this is a package directory (has a .yaml file matching its name)
-        const yamlPath = path.join(fullPath, `${entry.name}.yaml`);
-        if (fs.existsSync(yamlPath)) {
-          // This is a package
-          const result = await this.loadPackage(fullPath);
-          if (result.success) {
-            packages.push(result);
-          } else {
-            failed.push({ path: fullPath, error: result.error || 'Unknown error' });
-          }
-        } else if (this.options.recursive) {
+        if (this.options.recursive) {
           // Recursively scan subdirectories
           await this.scanDirectory(fullPath, packages, failed);
+        }
+      } else if (entry.isFile() && entry.name.endsWith('.yaml')) {
+        const result = await this.loadPackage(fullPath);
+        if (result.success) {
+          packages.push(result);
+        } else {
+          failed.push({ path: fullPath, error: result.error || 'Unknown error' });
         }
       }
     }

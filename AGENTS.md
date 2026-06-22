@@ -45,9 +45,9 @@ These 10 concepts represent the complete ontology. Resist adding more.
 
 ### Why These 10?
 
-- **Project:** Container for execution context (vs. Workspace, which was too UI-centric)
-- **Agent:** First-class execution actor (vs. implicit or reactive systems)
-- **Tool:** Unified capability model (not separate API/Connector/Function types)
+- **Project:** Container for execution context
+- **Agent:** First-class execution actor
+- **Tool:** Unified capability model across provider-backed implementations
 - **Skill:** Composition of tools and skills (reusable know-how)
 - **Channel:** Communication interface (send/receive)
 - **Schedule:** Automation trigger (when work happens)
@@ -63,7 +63,7 @@ These 10 concepts represent the complete ontology. Resist adding more.
 3. **Artifact-centric** - Outcomes are first-class (versioned, auditable)
 4. **Minimal ontology** - 10 concepts, zero unnecessary abstractions
 5. **Configuration over abstraction** - YAML config, not code hierarchies
-6. **Convention over invention** - Use industry patterns (Claude, LangGraph, Anthropic)
+6. **Convention over invention** - Use established ecosystem patterns and terminology
 7. **Borrow before inventing** - Use proven patterns, only invent when necessary
 
 ---
@@ -124,10 +124,10 @@ This keeps everything in one place, version-controlled, portable.
 
 ### YAML Package Format
 
-Every package (agent, tool, skill, etc.) is a YAML file with metadata:
+Every package (agent, tool, skill, project, channel, schedule, resource, and optional sandbox) is a YAML file with metadata:
 
 ```yaml
-kind: agent|tool|skill|project|channel|schedule|resource
+kind: agent|tool|skill|project|channel|schedule|resource|sandbox
 id: unique-identifier
 name: Display Name
 version: 1.0.0
@@ -385,17 +385,13 @@ class SpecializedTool extends BaseTool { }
 
 ### Do NOT Add New Ontology Concepts
 
-These 10 concepts are complete. Do not add:
-- Workspace (that's Project)
-- WorkItem (that's Run)
-- Playbook (that's Agent + Schedule)
-- Integration (that's Tool implementation)
-- Capability (that's Tool)
-- Role (that's Agent.role field)
-- Step (that's Run)
-- Action (that's Run)
+These 10 concepts are complete. Do not add parallel container, execution, or capability concepts that duplicate the existing model.
 
-If you need something new, it's probably an Artifact type or Resource.
+If you need something new, it is usually:
+- a field on an existing package
+- an Artifact type
+- a Resource
+- a provider-backed Tool implementation
 
 ### Do NOT Add Separate Types for Tool Implementations
 
@@ -478,7 +474,6 @@ packages/
   runtime/             # Project execution engine
   tools/               # Tool execution with providers
   schemas/             # JSON schemas for validation
-  examples/            # Reference implementations
 
 docs/
   architecture/        # Architecture specifications and ADRs
@@ -490,14 +485,13 @@ docs/
 - **README.md** - Project overview
 - **AGENTS.md** - This file (contributor guide)
 - **docs/architecture/ARCHITECTURE_V2.md** - Authoritative spec
-- **docs/architecture/adr/** - Architecture Decision Records
-- **ARCHITECTURE_REFINEMENT_REPORT.md** - Recent changes
+- **docs/architecture/adr/README.md** - Architecture Decision Records
 
 ### Authoritative Sources
 
 Trust these (in order):
 1. `docs/architecture/ARCHITECTURE_V2.md` - Authoritative spec
-2. `docs/architecture/adr/` - Decision rationale
+2. `docs/architecture/adr/*.md` - Decision rationale
 3. TypeScript types in `packages/types/` - Code of truth
 4. This file (AGENTS.md) - Contributor guide
 
@@ -508,8 +502,56 @@ Trust these (in order):
 ### Before You Start
 
 1. Read ARCHITECTURE_V2.md
-2. Read the relevant ADR (docs/architecture/adr/)
+2. Read the relevant ADR (docs/architecture/adr/README.md)
 3. Read this file (AGENTS.md)
+
+### Current Repository State
+
+The repository is currently strongest in these areas:
+
+- Architecture V2 terminology and documentation consistency
+- Example project structure and learning-path docs
+- Visual posters that explain the runtime and package model
+- Basic workspace test wiring (`npm test`)
+
+The repository is currently weaker in these areas:
+
+- Runtime completeness versus the architecture spec
+- Persistence implementation depth
+- Full schema enforcement and package validation
+- End-to-end execution beyond mock or partial behavior
+
+### Recommended Next Priorities
+
+If you are deciding what to work on next, prefer this order:
+
+1. Close the gap between `docs/architecture/ARCHITECTURE_V2.md` and the real runtime behavior.
+2. Strengthen persistence and repository-backed state handling.
+3. Improve loader/schema validation so broken packages fail clearly.
+4. Add integrations and richer provider behavior only after the core execution path is solid.
+
+Avoid spending the next cycle on:
+
+- new ontology concepts
+- renaming exercises unless they fix real inconsistency
+- additional architecture expansion without corresponding implementation progress
+
+### Architecture Freeze Guidance
+
+Architecture V2 is frozen for normal repository work.
+
+Before changing any of the following, stop and confirm with the user unless the change is a small factual correction, typo fix, broken link fix, or consistency cleanup:
+
+- `docs/architecture/ARCHITECTURE_V2.md`
+- files under `docs/architecture/adr/`
+- the 10 core concepts
+- core terminology used across the repo
+
+Default behavior should be:
+
+1. prefer implementation work over architecture revision
+2. prefer runtime/code alignment with the frozen model
+3. ask before making substantive architecture or ADR changes
 
 ### When Adding Features
 
@@ -575,7 +617,7 @@ Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
 
 ### The Complete Picture
 
-Read [docs/architecture/adr/](docs/architecture/adr/)
+Read [docs/architecture/adr/README.md](docs/architecture/adr/README.md)
 
 ---
 
@@ -601,10 +643,10 @@ Each ADR documents the context, decision, consequences, and alternatives conside
 
 ## Joining the Repository
 
-1. Read this file (AGENTS.md) - **you are here**
-2. Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
-3. Read one relevant ADR (based on what you'll work on)
-4. Look at examples in `packages/*/examples/`
+1. Read [docs/README.md](docs/README.md) for the canonical learning path
+2. Read this file (AGENTS.md) for repository conventions
+3. Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
+4. Read one relevant ADR (based on what you'll work on)
 5. Read the code in `packages/` to understand current state
 
 Then start contributing.

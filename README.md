@@ -20,7 +20,7 @@ Agent systems in production need clear architectural boundaries. Existing approa
 - Over-engineer with unnecessary abstractions (complexity)
 
 Agent Platform solves this by:
-1. **Borrowing industry patterns** - Uses Project, Agent, Tool, Run (not custom Workspace, WorkItem, Playbook)
+1. **Borrowing industry patterns** - Uses familiar concepts like Project, Agent, Tool, and Run
 2. **Keeping the ontology minimal** - 10 concepts, each essential, none redundant
 3. **Making outcomes first-class** - Artifacts are durable, versioned, auditable (not afterthoughts)
 4. **Separating concerns cleanly** - Definitions (packages) vs. Runtime (execution state)
@@ -34,16 +34,16 @@ Result: A clean, focused architecture that scales from prototype to production w
 
 | Concept | Purpose | Scope |
 |---------|---------|-------|
-| **Project** | Organizing container for all work | Persisted |
+| **Project** | Organizing container for all work | Packaged |
 | **Agent** | Autonomous actor with instructions | Packaged |
 | **Tool** | Interface to external capability | Packaged |
 | **Skill** | Reusable know-how (composed tools) | Packaged |
 | **Channel** | Communication interface (Slack, email, webhook) | Packaged |
 | **Schedule** | Automation trigger (cron, event, manual) | Packaged |
-| **Resource** | Shared context data (docs, config, credentials) | Persisted |
-| **Artifact** | Versioned, durable outcome | Persisted |
-| **Thread** | Collaboration context (discussion history) | Persisted |
-| **Run** | Execution record (who did what, when) | Persisted |
+| **Resource** | Shared context data (docs, config, credentials) | Packaged |
+| **Artifact** | Versioned, durable outcome | Runtime |
+| **Thread** | Collaboration context (discussion history) | Runtime |
+| **Run** | Execution record (who did what, when) | Runtime |
 
 **That's it.** These 10 concepts represent the complete model.
 
@@ -70,8 +70,7 @@ my-project/
   schedules/
     daily-review.yaml             # Automation triggers
   artifacts/
-    decision-analysis/
-      schema.yaml                 # Output type definitions
+    decision-analysis.yaml        # Output type definition
   threads/
     (created at runtime)
   runs/
@@ -103,7 +102,7 @@ instructions: |
   4. Synthesize findings
 ```
 
-No separate files, no code, no runtimes. Just YAML.
+Agent behavior lives directly in YAML rather than separate prompt files or code classes.
 
 ---
 
@@ -112,7 +111,7 @@ No separate files, no code, no runtimes. Just YAML.
 ```yaml
 # project.yaml
 kind: project
-id: decision-support-v1
+id: decision-support
 name: Decision Support System
 version: 1.0.0
 description: Organizational decision-making framework
@@ -271,7 +270,7 @@ Behavior is configured in YAML, not expressed through class hierarchies. Example
 No inheritance, no abstract classes, no subtle overrides. Just YAML.
 
 ### 6. Convention Over Invention
-Uses industry patterns (Project, Agent, Tool, Run, Thread) instead of inventing custom terminology (Workspace, WorkItem, Playbook, Definition, Instance). This means:
+Uses industry patterns like Project, Agent, Tool, Run, and Thread instead of inventing unnecessary new terms. This means:
 - Less learning curve for people familiar with other agent frameworks
 - Industry alignment
 - Easier cross-platform integration
@@ -297,7 +296,7 @@ Projects are the organizing container because:
 4. **Natural Scale** - One project might be one decision, one workflow, one quarter's work
 5. **Portability** - Entire project (agents, tools, resources) can be copied to another environment
 
-Projects are not Workspaces (too UI-centric) or Workflows (too execution-focused). They're the container.
+Projects are the container for context, participants, and execution.
 
 ---
 
@@ -422,20 +421,19 @@ The platform is generic. Domain logic lives in agents, tools, skills, and artifa
 
 ✅ **Type System Implemented**
 - TypeScript interfaces for all concepts
-- JSON schemas for validation
+- Base JSON schemas for validation
 - Package metadata structure
 
-✅ **Runtime Foundation**
-- Project execution engine
-- Agent loading and execution
-- Tool provider pattern
-- Artifact and thread management
-- Event audit trail
+🟡 **Runtime Foundation**
+- Basic project execution engine exists
+- Basic agent/tool/skill execution paths exist
+- Artifact, thread, and event foundations exist
+- Further runtime completion is still needed
 
-✅ **Package Loading**
+🟡 **Package Loading**
 - Filesystem discovery
 - YAML parsing
-- Package validation
+- Basic package validation
 - Reference resolution
 
 ✅ **Documentation**
@@ -444,51 +442,28 @@ The platform is generic. Domain logic lives in agents, tools, skills, and artifa
 - Examples and reference implementations
 - Contributor guide
 
-**Status:** Production-ready for initial implementation. Ready for teams to build projects.
-
----
-
-## Key Differentiators
-
-### vs. Workflow Engines
-
-Workflow engines are task-centric (execute a DAG). Agent Platform is actor-centric (agents perform work using available tools). This is fundamentally different.
-
-### vs. Custom Agent Frameworks
-
-Many teams build custom agent frameworks. Agent Platform provides the glue:
-- Standard vocabulary (not custom terminology)
-- Package discovery (not hardcoded configs)
-- Artifact persistence (not logs)
-- Collaboration primitives (threads, runs)
-
-### vs. LangGraph / AutoGen
-
-These are great for orchestration within a single execution. Agent Platform is the container for many agents, many executions, collaboration, and durable outcomes.
-
-### vs. Claude Projects
-
-Claude Projects are hosted, proprietary. Agent Platform is open, self-hosted, extensible through code.
+**Status:** Architecture and documentation are in strong shape. Core implementation foundations exist, but runtime depth, persistence, and validation still need work.
 
 ---
 
 ## Documentation
 
 **Start here:**
-- [AGENTS.md](AGENTS.md) - Contributor guide (read this first if joining)
+- [docs/README.md](docs/README.md) - Canonical learning path for terms, examples, runtime, and code
+- [AGENTS.md](AGENTS.md) - Contributor guide for working conventions in this repository
 
 **Understand the architecture:**
 - [docs/architecture/ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md) - Authoritative specification
 - [docs/architecture/README.md](docs/architecture/README.md) - Architecture overview
 
 **Follow the learning path:**
-- [docs/README.md](docs/README.md) - Documentation entry point
 - [docs/project-archetypes/README.md](docs/project-archetypes/README.md) - Project archetype diagrams
 - [docs/examples/README.md](docs/examples/README.md) - Example projects
+- [docs/posters/README.md](docs/posters/README.md) - Runtime and platform mechanics diagrams
 - [packages/README.md](packages/README.md) - Source packages
 
 **Understand design decisions:**
-- [docs/architecture/adr/](docs/architecture/adr/) - Architecture Decision Records
+- [docs/architecture/adr/README.md](docs/architecture/adr/README.md) - Architecture Decision Records
   - [ADR-001: Project as Primary Container](docs/architecture/adr/ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md)
   - [ADR-002: Package-First Architecture](docs/architecture/adr/ADR-002-PACKAGE-FIRST-ARCHITECTURE.md)
   - [ADR-003: YAML-Rooted Packages](docs/architecture/adr/ADR-003-YAML-ROOTED-PACKAGES.md)
@@ -498,12 +473,6 @@ Claude Projects are hosted, proprietary. Agent Platform is open, self-hosted, ex
   - [ADR-007: Channels and Schedules as First-Class](docs/architecture/adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md)
   - [ADR-008: Minimal Ontology](docs/architecture/adr/ADR-008-MINIMAL-ONTOLOGY.md)
   - [ADR-009: Borrow Before Inventing](docs/architecture/adr/ADR-009-BORROW-BEFORE-INVENTING.md)
-
-**See recent refinements:**
-- [EXTERNAL_ARCHITECTURE_REVIEW.md](EXTERNAL_ARCHITECTURE_REVIEW.md) - Independent review by principal architect
-- [ARCHITECTURE_REFINEMENT_REPORT.md](ARCHITECTURE_REFINEMENT_REPORT.md) - Simplification work
-
----
 
 ## Architecture Summary
 
@@ -534,11 +503,10 @@ Collaboration
 
 ## Getting Started
 
-1. **Read AGENTS.md** - Understand how to work in this repository
-2. **Read ARCHITECTURE_V2.md** - Understand the model
+1. **Read docs/README.md** - Follow the canonical learning path
+2. **Read AGENTS.md** - Understand repository conventions and the architecture freeze guidance
 3. **Read a relevant ADR** - Understand the decision that affects your work
-4. **Look at examples** - See how concepts are used in [docs/examples/](docs/examples/README.md)
-5. **Run code** - Start implementing
+4. **Run code and inspect examples** - Use [docs/examples/](docs/examples/README.md) and the packages to connect the model to implementation
 
 ---
 

@@ -33,7 +33,7 @@ const valid = validate(myProjectData);
 - **policies.schema.json** - Project policies
 
 - **component-tree.schema.json** - Normalized interpreter output
-- **workspace-state.schema.json** - Runtime state model
+- **workspace-state.schema.json** - Runtime state schema used by interpreter-oriented flows
 
 ### Policy & Permission Schemas
 
@@ -42,11 +42,11 @@ const valid = validate(myProjectData);
 
 ## Canonical Structure
 
-### WorkspaceDefinition
+### Project-Oriented Structure Example
 
 ```json
 {
-  "workspace": {
+  "project": {
     "id": "string",
     "type": "string",
     "version": 1,
@@ -66,20 +66,17 @@ const valid = validate(myProjectData);
   "artifacts": [
     { "type": "string", "primary": true }
   ],
-  "actions": [
-    { "type": "string" }
-  ],
-  "playbooks": [
+  "runs": [
     { "type": "string" }
   ]
 }
 ```
 
-### ComponentTree
+### Component Tree Example
 
 ```json
 {
-  "workspace": {
+  "project": {
     "id": "string",
     "type": "string",
     "version": 1
@@ -102,18 +99,9 @@ const valid = validate(myProjectData);
 }
 ```
 
-## Schema Migration & Versioning
+## Schema Versioning
 
-The interpreter normalizes legacy schema formats into canonical form. Supported migrations:
-
-- `root.id` → `workspace.id`
-- `workspaceType` → `workspace.type`
-- `componentBindings` → `bindings`
-- `binding.zoneKey` → `binding.zone`
-- `binding.viewKey` → `binding.view`
-- `binding.componentType` → `binding.component`
-- `binding.objectKind: "task"` → `binding.objectKind: "work_item"`
-- `artifact.type: "Output"` → `artifact.type: "Artifact"`
+Schemas evolve by updating the package definitions and runtime structures while preserving a single Architecture V2 vocabulary across the repository.
 
 ## Validation
 
@@ -133,13 +121,13 @@ if (!valid) {
 }
 ```
 
-### With the @awp/definitions validator
+### With a package validator
 
 ```typescript
 import { DefinitionValidator } from '@awp/definitions';
 
 const validator = new DefinitionValidator();
-const result = validator.validateWorkspaceDefinition(definition);
+const result = validator.validateProjectDefinition(definition);
 console.log(result.errors, result.warnings);
 ```
 
@@ -147,12 +135,7 @@ console.log(result.errors, result.warnings);
 
 ### Required Properties
 
-Each schema defines minimal required properties to ensure referential integrity:
-
-- WorkspaceDefinition: `workspace`, `zones`, `bindings`
-- ArtifactDefinition: `id`, `type`, `version`, `displayName`
-- PlaybookDefinition: `id`, `type`, `version`, `activities`
-- WorkItem: `id`, `type`, `workspaceId`, `status`, `title`
+Each schema defines minimal required properties to ensure referential integrity and stable package loading.
 
 ### Extensibility
 
@@ -163,7 +146,7 @@ Schemas use `additionalProperties: false` to enforce strict structure. Custom pr
 Schemas reference each other via `$ref` for:
 - Policies and permissions references
 - Zone and binding definitions
-- Artifact and artifact instance relationships
+- Artifact and runtime relationships
 
 ## Inventory Compliance
 

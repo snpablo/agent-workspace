@@ -6,83 +6,56 @@
 
 ---
 
+## Decision Summary
+
+The platform uses **Project** as the single top-level container for configuration, execution context, collaboration, and durable state.
+
 ## Context
 
-Early versions of the platform used "Workspace" as the primary container concept, borrowed from UI frameworks. Workspace was a UI-centric abstraction that confused the separation between:
-- Container for organizing work (business concern)
-- Container for organizing UI components (presentation concern)
+The platform needs one boundary that:
 
-As the platform evolved to support production agent systems with durable collaboration, persistence, and audit trails, we needed a concept that:
-- Clearly represents execution context
-- Maps to industry standard terminology (Claude Projects, Vercel Eve, LangGraph)
-- Emphasizes runtime execution over UI composition
-- Clearly owns all runtime state
+- groups related agents, resources, schedules, artifacts, threads, and runs
+- provides a stable persistence unit
+- gives collaboration a clear scope
+- aligns with common agent-platform terminology
 
 ## Decision
 
-**Project** is the primary organizing container for all agent platform work.
+A Project is the organizing container for all work in the platform.
 
-A Project:
-- Owns agents, resources, artifacts, threads, runs, schedules
-- Represents a coherent execution context
-- Is the unit of persistence and reproducibility
-- Is the unit of multi-tenancy
-- Contains all participants (humans and agents)
+It owns:
 
-```typescript
-interface Project {
-  id: string;
-  name: string;
-  version: string;
-  
-  // Configuration
-  agents: Agent[];
-  resources: Resource[];
-  schedules: Schedule[];
-  
-  // Runtime state
-  artifacts: Map<id, Artifact>;
-  threads: Map<id, Thread>;
-  runs: Map<id, Run>;
-  participants: Map<id, Participant>;
-  events: Event[];
-}
-```
+- agent definitions and bindings
+- shared resources
+- schedules and channels
+- runtime artifacts, threads, runs, participants, and events
 
-**No Workspace concept exists in the runtime or API.** Workspace is git history only.
+This keeps configuration, execution, and audit history aligned around one durable unit.
 
 ## Consequences
 
 ### Positive
-- **Clear semantics:** Project unambiguously means "execution context," not "UI layout"
-- **Industry alignment:** Claude Projects, Vercel Eve, LangGraph all use Project or equivalent
-- **Persistence is simple:** Projects are the atomic unit of storage
-- **Multi-tenancy is clear:** Each project is isolated with its own state
-- **Collaboration is bounded:** All collaboration happens within project scope
-- **No UI/runtime confusion:** Project is runtime, UI layer is separate concern
 
-### Negative
-- **Breaking change from V1:** Existing Workspace-based code must be rewritten
-- **Requires migration:** Projects must be created and initialized explicitly
+- Clear execution boundary for loading, running, and persisting work
+- Straightforward collaboration scope for humans and agents
+- Simple storage and import/export boundary
+- Clean alignment between documentation, examples, and runtime
+
+### Tradeoffs
+
+- Projects must be initialized explicitly
+- Multi-level organizational structures are deferred rather than modeled now
 
 ## Alternatives Considered
 
-1. **Keep "Workspace"**
-   - Rejected: Confuses UI organization with runtime execution context
-   - Rejected: Doesn't align with industry terminology
+1. **Generic context container**
+   - Rejected because it does not clearly imply ownership or persistence.
 
-2. **Use "Context" instead of "Project"**
-   - Rejected: Too generic, doesn't indicate isolation/ownership
-   - Rejected: "Context" suggests just data, not execution
+2. **Pure execution container**
+   - Rejected because the platform also needs durable collaboration and outcomes, not only transient execution.
 
-3. **Use "Execution" or "Execution Context"**
-   - Rejected: Too technical/verbose
-   - Rejected: "Execution" suggests momentary, not durable
-
-4. **Hierarchical containers (Organization → Project → Workspace)**
-   - Rejected: Over-engineering for v1
-   - Rejected: Complexity not justified by current requirements
-   - **Future decision** if multi-level hierarchy needed
+3. **Multi-level container hierarchy**
+   - Rejected because current requirements do not justify the extra coordination and complexity.
 
 ---
 
@@ -94,4 +67,4 @@ interface Project {
 ## References
 
 - [ARCHITECTURE_V2.md - Runtime Model](../ARCHITECTURE_V2.md#runtime-model)
-- [RUNTIME_ARCHITECTURE.md](../../../RUNTIME_ARCHITECTURE.md)
+- [@awp/runtime README](../../../packages/runtime/README.md)

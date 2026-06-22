@@ -6,6 +6,40 @@ Implementation roadmap for building out the Agent Platform ecosystem. Architectu
 
 ---
 
+## Current Snapshot
+
+The repository is now in a good Architecture V2 state:
+
+- The V2 vocabulary is consistent across architecture docs, examples, posters, and root navigation.
+- `docs/README.md` is the canonical onboarding flow for new readers.
+- Example projects under `docs/examples/` use the V2 package layout and align to the archetype images.
+- Architecture posters are SVG-backed Markdown pages that explain runtime behavior visually.
+- Jest is wired at the workspace level and currently passes from the root test command.
+
+What this means in practice:
+
+- The architecture and documentation are in better shape than the implementation.
+- Terminology cleanup, documentation consolidation, and architecture framing are largely complete.
+- The next meaningful work is turning the documented model into more complete runtime behavior.
+
+## Recommended Next Work
+
+If a future agent needs to choose what to do next, prefer this order:
+
+1. Make the runtime behavior match the architecture more closely.
+2. Add persistence and execution behavior before adding new package kinds or abstractions.
+3. Improve validation and package/schema enforcement.
+4. Only after that, add integrations like channels, schedules, and richer tool providers.
+
+In other words:
+
+- Prefer implementation depth over more architecture writing.
+- Treat terminology and documentation cleanup as maintenance work, not the main roadmap driver.
+- Prefer closing spec/code gaps over adding new concepts.
+- Prefer end-to-end vertical slices that prove the model works.
+
+---
+
 ## Guiding Principles
 
 ### The Architecture is Intentionally Minimal
@@ -22,7 +56,7 @@ This is not a constraint. It's a feature. The minimal ontology forces:
 
 1. **Prefer implementation over abstraction** - Ship working code, not new concepts
 2. **Prefer configuration over new ontology** - Extend via YAML, not new types
-3. **Prefer borrowing emerging standards over inventing terminology** - Use industry patterns (MCP, OpenAPI, etc.)
+3. **Prefer borrowing emerging standards over inventing terminology** - Use established protocols, interface specifications, and ecosystem conventions where they fit
 4. **Require an ADR for any proposed new ontology concept** - No new core concepts without decision record and justification
 
 ### What Should NOT Happen
@@ -39,9 +73,9 @@ This is not a constraint. It's a feature. The minimal ontology forces:
 ### Completed
 
 - ✅ Core type definitions (packages/types)
-- ✅ JSON schemas for validation (packages/schemas)
+- ✅ Base JSON schemas added (packages/schemas)
 - ✅ Package metadata structure
-- ✅ YAML parsing and validation
+- ✅ YAML parsing and basic validation
 - ✅ Architecture specification (ARCHITECTURE_V2.md)
 - ✅ 9 Architecture Decision Records
 - ✅ Contributor guide (AGENTS.md)
@@ -57,13 +91,21 @@ The type system is complete and aligned with V2:
 
 ## Phase 2: Foundation Implementation (Current)
 
+**Practical priority inside Phase 2:**
+
+- First: runtime completion
+- Second: persistence
+- Third: schema validation and loader hardening
+
+These three areas are the highest-leverage path to turning the repository from a strong architecture/spec repo into a stronger working platform repo.
+
 ### 2.1 Package Loading
 
-**Status:** Core framework exists, enhancement needed
+**Status:** Core framework exists, partially improved, still needs hardening
 
 **Work:**
-- [ ] Improve PackageLoader discovery for nested packages
-- [ ] Add package validation with JSON Schema
+- [ ] Add full package validation with JSON Schema
+- [ ] Validate package references and missing dependencies clearly
 - [ ] Add package caching for performance
 - [ ] Support optional packages (Sandbox, Eval)
 - [ ] Add package dependency resolution
@@ -73,7 +115,7 @@ The type system is complete and aligned with V2:
 
 ### 2.2 YAML Schemas
 
-**Status:** Basic schemas exist
+**Status:** Basic schemas exist, but enforcement is incomplete
 
 **Work:**
 - [ ] Create comprehensive JSON schemas for all package kinds
@@ -86,21 +128,23 @@ The type system is complete and aligned with V2:
 
 ### 2.3 Runtime Model
 
-**Status:** Type definitions exist, implementation in progress
+**Status:** Type definitions exist, basic implementation exists, still incomplete relative to the architecture
 
 **Work:**
-- [ ] Implement ProjectState management
+- [ ] Replace mock execution paths with real execution flow where appropriate
+- [ ] Implement ProjectState management thoroughly
 - [ ] Implement AgentInstance resolution (load agent with tools/skills)
 - [ ] Implement Run execution model
 - [ ] Implement Artifact creation and versioning
 - [ ] Implement Thread message handling
 - [ ] Implement Event emission and audit trail
+- [ ] Align runtime README/examples with the actual current runtime API
 
 **Deliverable:** Complete project runtime engine
 
 ### 2.4 Persistence Layer
 
-**Status:** Type definitions exist, implementation needed
+**Status:** Architecture expects persistence; implementation still needs to catch up
 
 **Work:**
 - [ ] Implement file-based persistence (JSON files)
