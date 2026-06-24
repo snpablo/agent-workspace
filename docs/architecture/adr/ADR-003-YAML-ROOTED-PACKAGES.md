@@ -75,5 +75,5 @@ YAML is the standard package format because it supports structured metadata, lon
 
 ## References
 
-- [ARCHITECTURE_V2.md - Filesystem Package Model](../ARCHITECTURE_V2.md#filesystem-package-model)
+- [ARCHITECTURE_V3.md - Filesystem Package Model](../ARCHITECTURE_V3.md#filesystem-package-model)
 - [@awp/loader - Package discovery](../../../packages/loader/README.md#package-discovery)

@@ -1,18 +1,18 @@
 # Agent Platform Roadmap
 
-Implementation roadmap for building out the Agent Platform ecosystem. Architecture V2 is complete and frozen.
+Implementation roadmap for building out the Agent Platform ecosystem. Architecture V3 is complete and frozen.
 
-**Focus:** Implementation and ecosystem evolution, not ontology.
+**Focus:** Implementation and ecosystem evolution, not architecture churn.
 
 ---
 
 ## Current Snapshot
 
-The repository is now in a good Architecture V2 state:
+The repository is now in a good Architecture V3 state:
 
-- The V2 vocabulary is consistent across architecture docs, examples, posters, and root navigation.
+- The V3 vocabulary is consistent across architecture docs, examples, posters, and root navigation.
 - `docs/README.md` is the canonical onboarding flow for new readers.
-- Example projects under `docs/examples/` use the V2 package layout and align to the archetype images.
+- Example projects under `docs/examples/` use the V3 package layout and align to the archetype images.
 - Architecture posters are SVG-backed Markdown pages that explain runtime behavior visually.
 - Jest is wired at the workspace level and currently passes from the root test command.
 
@@ -20,48 +20,53 @@ What this means in practice:
 
 - The architecture and documentation are in better shape than the implementation.
 - Terminology cleanup, documentation consolidation, and architecture framing are largely complete.
-- The next meaningful work is turning the documented model into more complete runtime behavior.
+- The next meaningful work is turning the documented model into more complete runtime behavior and visible workspace flows.
 
 ## Recommended Next Work
 
 If a future agent needs to choose what to do next, prefer this order:
 
 1. Make the runtime behavior match the architecture more closely.
-2. Add persistence and execution behavior before adding new package kinds or abstractions.
-3. Improve validation and package/schema enforcement.
-4. Only after that, add integrations like channels, schedules, and richer tool providers.
+2. Build a thin end-to-end UI slice early so the filesystem model, event projections, and workspace interpretation are proven together.
+3. Add persistence and execution behavior before adding new abstractions.
+4. Improve validation and package/schema enforcement.
+5. Only after that, add broader integrations like channels, schedules, and richer tool providers.
 
 In other words:
 
 - Prefer implementation depth over more architecture writing.
 - Treat terminology and documentation cleanup as maintenance work, not the main roadmap driver.
 - Prefer closing spec/code gaps over adding new concepts.
-- Prefer end-to-end vertical slices that prove the model works.
+- Prefer end-to-end vertical slices that prove the model works, including at least one real UI surface.
 
 ---
 
 ## Guiding Principles
 
-### The Architecture is Intentionally Minimal
+### The Architecture is Intentionally Layered
 
-Agent Platform implements exactly 10 core concepts: Project, Agent, Tool, Skill, Channel, Schedule, Resource, Artifact, Thread, and Run.
+Agent Platform separates:
 
-This is not a constraint. It's a feature. The minimal ontology forces:
-- Clear thinking about abstractions
+- collaboration and work
+- integration and capability
+- runtime records and projected state
+
+This is a feature. The layered model forces:
+- Clear thinking about architectural boundaries
 - Composition over inheritance
 - Configuration over code
-- Reusable patterns instead of one-off types
+- Reusable patterns instead of one-off abstractions
 
 ### Future Work Must
 
 1. **Prefer implementation over abstraction** - Ship working code, not new concepts
-2. **Prefer configuration over new ontology** - Extend via YAML, not new types
+2. **Prefer configuration over unnecessary abstraction** - Extend via YAML, projections, and package structure where possible
 3. **Prefer borrowing emerging standards over inventing terminology** - Use established protocols, interface specifications, and ecosystem conventions where they fit
-4. **Require an ADR for any proposed new ontology concept** - No new core concepts without decision record and justification
+4. **Require an ADR for structural architecture changes** - No major model changes without decision record and justification
 
 ### What Should NOT Happen
 
-- Adding new core ontology concepts (Eval and Sandbox are optional, not core)
+- Blurring filesystem definitions, runtime history, and UI projections into one layer
 - Inventing new terminology (don't create custom versions of industry concepts)
 - Over-engineering extensibility (keep it simple until needed)
 - Hard-coding domain logic in platform code (belongs in agents, tools, skills, artifact schemas)
@@ -76,16 +81,17 @@ This is not a constraint. It's a feature. The minimal ontology forces:
 - ✅ Base JSON schemas added (packages/schemas)
 - ✅ Package metadata structure
 - ✅ YAML parsing and basic validation
-- ✅ Architecture specification (ARCHITECTURE_V2.md)
-- ✅ 9 Architecture Decision Records
+- ✅ Architecture specification (ARCHITECTURE_V3.md)
+- ✅ 11 Architecture Decision Records
 - ✅ Contributor guide (AGENTS.md)
 
 ### Current State
 
-The type system is complete and aligned with V2:
-- Project, Agent, Tool, Skill, Channel, Schedule, Resource
-- Artifact, Thread, Run (runtime concepts)
-- Clean separation of definitions (packages) from runtime state
+The type system is complete and aligned with V3:
+- collaboration/work package and runtime types
+- connector/tool capability separation
+- event-canonical runtime state with projections
+- clean separation of definitions, runtime history, and derived current state
 
 ---
 
@@ -94,10 +100,42 @@ The type system is complete and aligned with V2:
 **Practical priority inside Phase 2:**
 
 - First: runtime completion
-- Second: persistence
-- Third: schema validation and loader hardening
+- Second: a thin but real UI/workspace slice
+- Third: persistence
+- Fourth: schema validation and loader hardening
+
+The next high-value runtime slice should explicitly cover:
+
+- Persisted collaboration state: canonical events plus the projections and records needed to recover long-running work
+- Wake-on-event execution: agents stay idle until schedules or relevant external/project events wake them
+- Evaluation outside the core loop: assessment remains an optional subsystem, not part of the main execution loop
 
 These three areas are the highest-leverage path to turning the repository from a strong architecture/spec repo into a stronger working platform repo.
+
+### 2.0 Workspace UI Slice
+
+**Status:** Should start soon, not at the end
+
+The platform now has a clear UI architecture:
+
+- filesystem definitions are durable truth for project structure
+- events are durable truth for runtime history
+- projections derive current workspace state
+- interpreters build renderer-neutral view trees
+- renderers surface those workspaces in React, Ink, and future clients
+
+This means UI should be developed as an early proving slice, not deferred until everything else is finished.
+
+**Work:**
+- [ ] Define the minimum `views/` workspace definition shape needed for one end-to-end example
+- [ ] Build a project loader -> project model -> projection -> interpreter pipeline for UI consumption
+- [ ] Implement one renderer-neutral workspace/view tree format
+- [ ] Build one concrete renderer first (prefer React)
+- [ ] Render artifacts, threads, runs, and event-derived status in one coherent workspace
+- [ ] Show dormant/wake/resume behavior in the UI using hiring-project or a similar example
+- [ ] Keep the UI as a projection over project state, not a second source of truth
+
+**Deliverable:** One working filesystem-native workspace UI that proves the architecture
 
 ### 2.1 Package Loading
 
@@ -132,29 +170,44 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Work:**
 - [ ] Replace mock execution paths with real execution flow where appropriate
-- [ ] Implement ProjectState management thoroughly
+- [ ] Implement event-primary `ProjectState` projection management thoroughly
 - [ ] Implement AgentInstance resolution (load agent with tools/skills)
 - [ ] Implement Run execution model
 - [ ] Implement Artifact creation and versioning
 - [ ] Implement Thread message handling
-- [ ] Implement Event emission and audit trail
+- [ ] Implement rich canonical event emission and projection replay
 - [ ] Align runtime README/examples with the actual current runtime API
 
 **Deliverable:** Complete project runtime engine
 
 ### 2.4 Persistence Layer
 
-**Status:** Architecture expects persistence; implementation still needs to catch up
+**Status:** Architecture expects persistence; implementation is moving toward event-canonical recovery
 
 **Work:**
-- [ ] Implement file-based persistence (JSON files)
+- [x] Implement file-based persistence (JSON files)
 - [ ] Implement database persistence (pluggable)
 - [ ] Implement artifact versioning storage
-- [ ] Implement event log persistence
+- [x] Implement event log persistence
+- [ ] Separate persisted event log from cached projections if needed
 - [ ] Add persistence abstraction layer (Repository pattern)
 - [ ] Add backup and recovery mechanisms
 
 **Deliverable:** Pluggable persistence implementation
+
+### 2.5 View and Interpreter Model
+
+**Status:** Not started, now near-term
+
+**Work:**
+- [ ] Define how `views/` participate in the project filesystem without overcomplicating package kinds
+- [ ] Define interpreter inputs: project model, projected state, view metadata
+- [ ] Define renderer-neutral workspace nodes and layout primitives
+- [ ] Define how UI components reference artifacts, threads, runs, and agent activity
+- [ ] Keep renderer concerns separate from interpreter concerns
+- [ ] Document the boundary between package loading, event replay, interpretation, and rendering
+
+**Deliverable:** Clear view/interpreter contract for all renderers
 
 ---
 
@@ -213,6 +266,19 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Deliverable:** Comprehensive project validation
 
+### 3.5 Workspace UX
+
+**Status:** Not started
+
+**Work:**
+- [ ] Build one open-project workspace flow
+- [ ] Build one artifact review flow
+- [ ] Build one thread + approval flow for human-in-the-loop work
+- [ ] Build one activity timeline view driven by event history
+- [ ] Validate that project structure, projections, and UI states stay aligned
+
+**Deliverable:** A usable project workspace flow for one real scenario
+
 ---
 
 ## Phase 4: Agents
@@ -269,6 +335,19 @@ These three areas are the highest-leverage path to turning the repository from a
 - [ ] Add schedule execution logging
 - [ ] Implement schedule enable/disable
 
+### 4.4.1 Event-Driven Dormancy
+
+**Status:** Needed for realistic long-lived agents
+
+**Work:**
+- [ ] Define dormant/idle wake-up behavior using existing AgentSession and Schedule state
+- [ ] Route project events to matching event schedules
+- [ ] Resume the correct agent/session from persisted project state
+- [ ] Prevent busy-loop polling when no triggering event exists
+- [ ] Record wake, sleep, and resume transitions in the event log
+
+**Deliverable:** Agents that stay dormant until an event or schedule activation requires work
+
 **Deliverable:** Full scheduling system
 
 ### 4.5 Sandboxing Configuration
@@ -291,6 +370,7 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Work:**
 - [ ] If/when evaluation systems needed:
+  - [ ] Keep evaluation execution separate from the primary run loop
   - [ ] Define Eval package schema
   - [ ] Implement evaluation execution
   - [ ] Add evaluation result recording
@@ -317,7 +397,7 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Deliverable:** Complete artifact versioning system
 
-### 5.2 Rendering
+### 5.2 Artifact Rendering
 
 **Status:** Not started
 
@@ -330,7 +410,19 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Deliverable:** Artifact rendering system
 
-### 5.3 Publishing
+### 5.3 Workspace Rendering
+
+**Status:** Not started
+
+**Work:**
+- [ ] Implement React renderer support for the renderer-neutral workspace tree
+- [ ] Implement Ink renderer support for the same tree where practical
+- [ ] Keep renderer-specific widgets behind a stable interpreter boundary
+- [ ] Add visual regression or snapshot coverage where useful
+
+**Deliverable:** Multiple renderers over one interpreted workspace model
+
+### 5.4 Publishing
 
 **Status:** Not started
 
@@ -343,7 +435,7 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Deliverable:** Artifact publishing workflow
 
-### 5.4 Sharing
+### 5.5 Sharing
 
 **Status:** Not started
 
@@ -356,7 +448,7 @@ These three areas are the highest-leverage path to turning the repository from a
 
 **Deliverable:** Artifact sharing system
 
-### 5.5 Dependency Tracking
+### 5.6 Dependency Tracking
 
 **Status:** Not started
 
@@ -641,7 +733,7 @@ The following are interesting areas for future exploration. Do NOT implement the
 **Possible Future Approach:**
 - Implement coordination agents (agents that orchestrate other agents)
 - Use existing Project/Agent/Run model
-- No new ontology needed
+- No new top-level architecture concepts needed
 
 **Example:**
 ```yaml
@@ -655,16 +747,6 @@ tools:
   - id: synthesizer-agent
 ```
 
-### Long-Running Projects
-
-**Rationale:** Most projects are relatively short-lived. Long-running support can be built as extension.
-
-**Possible Future Approach:**
-- Implement project checkpointing
-- Implement agent hibernation/resumption
-- Add project state snapshots
-- No new ontology needed
-
 ### Distributed Execution
 
 **Rationale:** Start with single machine. Scaling is separate concern.
@@ -673,7 +755,7 @@ tools:
 - Implement tool execution on remote workers
 - Add execution plan distribution
 - Implement result aggregation
-- No new ontology needed
+- No new top-level architecture concepts needed
 
 ### Artifact Dependency Graphs
 
@@ -683,7 +765,7 @@ tools:
 - Track artifact dependencies in metadata
 - Build dependency visualization
 - Implement impact analysis
-- No new ontology needed
+- No new top-level architecture concepts needed
 
 ### Hosted Runtimes
 
@@ -693,7 +775,7 @@ tools:
 - Containerize runtime
 - Add cloud deployment tools
 - Implement multi-tenant isolation
-- No new ontology needed
+- No new top-level architecture concepts needed
 
 ---
 
@@ -706,6 +788,7 @@ tools:
 3. **Make extensions composable** - New capabilities should layer on top
 4. **Prefer examples over framework** - Show how to do things, don't build frameworks
 5. **Test thoroughly** - Platform code must be rock solid
+6. **Prove the architecture through a visible product slice** - Runtime, projections, and UI should meet early
 
 ### Quality Gates
 
@@ -714,13 +797,13 @@ Each phase must:
 - ✅ Have passing tests
 - ✅ Have documentation
 - ✅ Have at least one working example
-- ✅ Not add new ontology concepts without ADR
+- ✅ Keep filesystem definitions, runtime history, and UI projections clearly separated
 
 ### Release Strategy
 
 1. **Alpha:** Foundation phases complete (1-2)
-2. **Beta:** Core phases complete (3-7)
-3. **1.0:** Developer experience solid (1-8)
+2. **Beta:** Core runtime plus one usable workspace UI slice complete (2-7)
+3. **1.0:** Developer experience solid and at least one renderer mature (1-8)
 4. **1.x:** Observability and stability (9)
 5. **2.0:** Future exploration features
 
@@ -740,6 +823,7 @@ Each phase must:
 - [ ] Projects can be imported/exported
 - [ ] Project validation catches all issues
 - [ ] Project lifecycle is clear and manageable
+- [ ] One project workspace can be opened and understood through the UI
 
 ### Agents
 - [ ] Agents execute with full tool access
@@ -753,6 +837,7 @@ Each phase must:
 - [ ] Artifacts render in multiple formats
 - [ ] Artifacts can be published and shared
 - [ ] Dependencies are tracked correctly
+- [ ] Artifacts are visible in at least one real workspace renderer
 
 ### Resources
 - [ ] Resources load quickly
@@ -771,12 +856,13 @@ Each phase must:
 - [ ] Scaffolding gets projects started in 5 minutes
 - [ ] Validation catches mistakes immediately
 - [ ] Documentation is auto-generated and complete
+- [ ] UI demo path makes the architecture understandable to new contributors quickly
 
 ---
 
 ## What NOT to Do
 
-❌ **Do not** add new core ontology concepts without an ADR
+❌ **Do not** let UI become a second source of truth beside the filesystem and event log
 ❌ **Do not** build frameworks when examples would do
 ❌ **Do not** over-engineer before real usage patterns emerge
 ❌ **Do not** hard-code domain logic in platform code

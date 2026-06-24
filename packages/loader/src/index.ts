@@ -9,6 +9,7 @@ export {
   ToolRegistry,
   SkillRegistry,
   ChannelRegistry,
+  ConnectorRegistry,
   ScheduleRegistry,
   SandboxRegistry,
   AgentCapabilityRegistry,

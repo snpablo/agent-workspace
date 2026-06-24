@@ -149,7 +149,7 @@
      x="205"
      y="443"
      class="text"
-     id="text8">v1</text>
+     id="text8">rev1</text>
   <rect
      class="card"
      x="330"
@@ -161,7 +161,7 @@
      x="375"
      y="443"
      class="text"
-     id="text9">v2</text>
+     id="text9">rev2</text>
   <rect
      class="card"
      x="500"
@@ -173,7 +173,7 @@
      x="545"
      y="443"
      class="text"
-     id="text10">v3</text>
+     id="text10">rev3</text>
   <rect
      class="card"
      x="680"

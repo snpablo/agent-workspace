@@ -5,9 +5,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { parse } from 'yaml';
-import { Agent, Tool, Skill, Channel, Schedule, Sandbox } from '@awp/types';
+import { Agent, Tool, Skill, Channel, Connector, Schedule, Sandbox } from '@awp/types';
 import { PackageLoader } from './package-loader';
-import { AgentCapabilityRegistry, ToolRegistry, SkillRegistry, ChannelRegistry, ScheduleRegistry, SandboxRegistry } from './registries';
+import { AgentCapabilityRegistry } from './registries';
 import { PackageLoadResult } from './types';
 
 /**
@@ -18,6 +18,7 @@ export interface AgentPackageStructure {
   toolResults: PackageLoadResult<Tool>[];
   skillResults: PackageLoadResult<Skill>[];
   channelResults: PackageLoadResult<Channel>[];
+  connectorResults: PackageLoadResult<Connector>[];
   scheduleResults: PackageLoadResult<Schedule>[];
   sandboxResults: PackageLoadResult<Sandbox>[];
   evals: any[];
@@ -46,6 +47,7 @@ export class AgentLoader {
       toolResults: [],
       skillResults: [],
       channelResults: [],
+      connectorResults: [],
       scheduleResults: [],
       sandboxResults: [],
       evals: [],
@@ -81,6 +83,10 @@ export class AgentLoader {
 
         case 'channel':
           result.channelResults.push(packageResult as PackageLoadResult<Channel>);
+          break;
+
+        case 'connector':
+          result.connectorResults.push(packageResult as PackageLoadResult<Connector>);
           break;
 
         case 'schedule':
@@ -134,6 +140,13 @@ export class AgentLoader {
     for (const result of structure.channelResults) {
       if (result.success) {
         registries.channels.register(result.package);
+      }
+    }
+
+    // Register connectors
+    for (const result of structure.connectorResults) {
+      if (result.success) {
+        registries.connectors.register(result.package);
       }
     }
 
@@ -192,6 +205,7 @@ export interface AgentPackageSummary {
   toolCount: number;
   skillCount: number;
   channelCount: number;
+  connectorCount: number;
   scheduleCount: number;
   sandboxCount: number;
   errors: number;
@@ -208,6 +222,7 @@ export function getAgentSummary(structure: AgentPackageStructure): AgentPackageS
     toolCount: structure.toolResults.filter((r) => r.success).length,
     skillCount: structure.skillResults.filter((r) => r.success).length,
     channelCount: structure.channelResults.filter((r) => r.success).length,
+    connectorCount: structure.connectorResults.filter((r) => r.success).length,
     scheduleCount: structure.scheduleResults.filter((r) => r.success).length,
     sandboxCount: structure.sandboxResults.filter((r) => r.success).length,
     errors: structure.errors.length,

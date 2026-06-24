@@ -24,6 +24,7 @@ export declare const playbookDefinition: JSONSchema;
 export declare const agentDefinition: JSONSchema;
 export declare const skillDefinition: JSONSchema;
 export declare const toolDefinition: JSONSchema;
+export declare const connectorDefinition: JSONSchema;
 
 /**
  * Runtime schemas - live or persisted instances during workspace execution

@@ -8,6 +8,7 @@ import {
   Agent,
   Project,
   Channel,
+  Connector,
   Schedule,
   Resource,
   Sandbox,
@@ -18,6 +19,7 @@ import {
   AgentReference,
   ResourceReference,
   ChannelReference,
+  ConnectorReference,
   ScheduleReference,
 } from '@awp/types';
 import { PackageLoadResult, PackageRef, ReferenceResolutionResult, PackageKind } from './types';
@@ -248,6 +250,34 @@ export class PackageRegistry {
   }
 
   /**
+   * Get all connector references in a package
+   */
+  resolveConnectors(pkg: Agent | Project | Tool): Connector[] {
+    const connectors: Connector[] = [];
+    const toolPkg = pkg as Tool;
+    const multiConnectorPkg = pkg as Agent | Project;
+
+    if (toolPkg.connector?.id) {
+      const connector = this.get<Connector>(toolPkg.connector.id);
+      if (connector) {
+        connectors.push(connector);
+      }
+      return connectors;
+    }
+
+    if (!multiConnectorPkg.connectors) return connectors;
+
+    for (const ref of multiConnectorPkg.connectors) {
+      const connector = this.get<Connector>(ref.id);
+      if (connector) {
+        connectors.push(connector);
+      }
+    }
+
+    return connectors;
+  }
+
+  /**
    * Get all agents referenced in a project
    */
   resolveAgents(project: Project): Agent[] {
@@ -389,6 +419,29 @@ export class PackageRegistry {
           });
         }
       }
+    }
+
+    // Connectors referenced
+    if (pkg.connectors && Array.isArray(pkg.connectors)) {
+      for (let i = 0; i < pkg.connectors.length; i++) {
+        const connector = pkg.connectors[i];
+        if (typeof connector === 'object' && connector.id) {
+          refs.push({
+            kind: 'connector',
+            id: connector.id,
+            field: `connectors[${i}]`,
+          });
+        }
+      }
+    }
+
+    // Single connector referenced (typically by tools)
+    if (pkg.connector && typeof pkg.connector === 'object' && pkg.connector.id) {
+      refs.push({
+        kind: 'connector',
+        id: pkg.connector.id,
+        field: 'connector',
+      });
     }
 
     // Schedules referenced (in projects)

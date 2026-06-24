@@ -1,6 +1,6 @@
 # Architecture Posters
 
-These posters explain how Architecture V2 works internally.
+These posters explain how Architecture V3 works internally.
 
 Use them after the [architecture overview](../architecture/README.md) and alongside the [project archetypes](../project-archetypes/README.md) and [example projects](../examples/README.md).
 
@@ -20,7 +20,7 @@ Each poster now has:
 
 ## Recommended Order
 
-1. [ARCHITECTURE_V2.md](../architecture/ARCHITECTURE_V2.md)
+1. [ARCHITECTURE_V3.md](../architecture/ARCHITECTURE_V3.md)
 2. [Project Archetypes](../project-archetypes/README.md)
 3. [Example Projects](../examples/README.md)
 4. These posters

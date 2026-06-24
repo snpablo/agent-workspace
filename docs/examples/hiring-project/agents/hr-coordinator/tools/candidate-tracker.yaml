@@ -4,8 +4,12 @@ name: Candidate Tracker
 version: 1.0.0
 description: Read hiring pipeline status, interview stages, and ownership details
 
+connector:
+  id: candidate-ats
+
 implementation:
   type: connector
+  connector_type: greenhouse
 
 metadata:
   tags: [hiring, pipeline, recruiting]

@@ -1,4 +1,4 @@
-# ADR-008: Minimal Ontology
+# ADR-008: Layered Platform Model
 
 **Status:** Accepted  
 **Date:** June 2026  
@@ -8,59 +8,56 @@
 
 ## Decision Summary
 
-The platform has exactly 10 core concepts, and extensions should happen through fields, types, and providers rather than new ontology entries.
+The platform is best described as a layered model rather than a flat fixed concept list.
+
+The architecture is organized into collaboration/work packages, integration/capability packages, and runtime records with projected current state.
 
 ## Context
 
-Every new platform concept increases implementation, documentation, and learning cost.
+Every new platform concept increases implementation, documentation, and learning cost, but flattening unlike concepts into a single list can also hide important boundaries.
 
 ## Decision
 
-The platform has exactly 10 concepts:
+The platform uses three explicit layers:
 
-```
-1. Project
-2. Agent
-3. Tool
-4. Skill
-5. Channel
-6. Schedule
-7. Resource
-8. Artifact
-9. Thread
-10. Run
-```
+### Collaboration and Work
 
-Rationale:
+- Project
+- Agent
+- Skill
+- Resource
+- Artifact
+- Thread
+- Run
+- Schedule
+- Channel
 
-| Concept | Why It's Required |
-|---------|------------------|
-| **Project** | Container for execution context (see [ADR-001](ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md)) |
-| **Agent** | Autonomous actor that performs work |
-| **Tool** | Capability interface (see [ADR-006](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md)) |
-| **Skill** | Composition of tools and skills for reuse |
-| **Channel** | Communication interface (see [ADR-007](ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md)) |
-| **Schedule** | Automation trigger (see [ADR-007](ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md)) |
-| **Resource** | Shared context data for agents |
-| **Artifact** | Durable, versioned output (see [ADR-005](ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md)) |
-| **Thread** | Collaboration context for discussion |
-| **Run** | Execution record and audit trail |
+These describe who is collaborating, what work is being organized, what outputs are being produced, and how work is triggered or discussed.
 
-Each is essential and intentionally distinct.
+### Integration and Capability
 
-Optional areas such as sandboxing or evaluation can exist as package kinds or configuration patterns without expanding the core ontology.
+- Connector
+- Tool
+
+Connectors bind the platform to external systems. Tools expose the narrow operations the AI may invoke through those bindings.
+
+### Runtime Records and State
+
+- Event
+- projections of current state
+- execution traces such as sessions and run history
+
+Events are canonical for runtime history. Projections make current state queryable and usable in product surfaces.
 
 ## Boundaries
 
-The following are not core concepts:
+The following should not be confused with the main layered model:
 
-- **Connector/Integration:** Provider mechanism, not concept (see [ADR-006](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md))
-- **API:** Provider mechanism for Tool (not separate concept)
-- **Function:** Provider mechanism for Tool (not separate concept)
-- **Role:** Agent property, not separate concept
-- **Permission:** Not a core concept
-- **Zone/Binding:** UI concern, not runtime concept
-- **Component/View:** UI concern, not runtime concept
+- **API implementation details:** one backing mechanism for a Tool
+- **Function implementation details:** another backing mechanism for a Tool
+- **Role:** an Agent property, not a separate package kind
+- **Permission policy:** a policy or configuration concern
+- **Zone, binding, component, view:** UI composition concerns, not platform architecture concepts
 
 ## Consequences
 
@@ -68,45 +65,49 @@ The following are not core concepts:
 
 - The platform stays teachable
 - Definitions, docs, and code have clearer boundaries
-- Extension pressure moves toward configuration and providers instead of ontology growth
+- Connectors become visible as first-class outbound bindings
+- Event-driven runtime behavior becomes explicit instead of implied
+- Extension pressure moves toward configuration, package kinds, providers, and projections instead of accidental conflation
 
 ### Tradeoffs
 
-- The team must resist adding concepts whenever a new use case appears
-- Some concepts intentionally cover broad ground
+- The model is slightly less slogan-friendly than a short numbered list
+- Documentation must explain the differences between packages, runtime records, and projections clearly
 
-## How to Extend Without New Concepts
+## How to Extend Cleanly
 
 - Add provider types for new tool backings
-- Add fields or schemas for richer artifact or channel variation
+- Add package kinds when a distinct architectural boundary needs to be modeled
+- Add fields or schemas for richer artifact, connector, or channel variation
 - Add configuration to existing package kinds
-- Use Resources for new shared context needs
+- Use events plus projections when runtime history and current state need to coexist
 
 ## Alternatives Considered
 
-1. **20-30 concepts (traditional SOA)**
+1. **Large flat concept list (traditional SOA style)**
    - Rejected: Too complex for focused scope
-   - Rejected: More concepts = more bugs
+   - Rejected: More top-level nouns create more confusion than clarity
 
-2. **2-3 concepts (ultra-minimal)**
-   - Rejected: Can't represent necessary distinctions
-   - Rejected: Would require extensive sub-typing
+2. **Ultra-minimal model**
+   - Rejected: Can't represent necessary distinctions like Channel vs Connector or Tool vs Event
+   - Rejected: Would force too much hidden meaning into a few overloaded words
 
 3. **Unbounded concepts (add as needed)**
    - Rejected: Leads to bloat
    - Rejected: Creates confusion
 
-The minimal ontology is a design constraint on purpose: when new needs appear, the first question should be whether they fit an existing concept plus configuration, not whether the platform needs a new noun.
+The layered model is a design constraint on purpose: when new needs appear, the first question should be which architectural layer they belong to and whether they fit an existing package, runtime record, or projection before inventing new structure.
 
 ---
 
 ## Related Decisions
 
-- All ADRs depend on minimal ontology
-- [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) (these 10 concepts are packages)
-- [ADR-006: Tools as Primary Capability](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) (not multiple capability types)
+- [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md)
+- [ADR-006: Tools as Primary Capability](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md)
+- [ADR-010: Event-Canonical Runtime](ADR-010-EVENT-CANONICAL-RUNTIME.md)
+- [ADR-011: Connectors as Outbound Bindings](ADR-011-CONNECTORS-AS-OUTBOUND-BINDINGS.md)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Core Vocabulary](../ARCHITECTURE_V2.md#core-vocabulary)
-- [ARCHITECTURE_V2.md - Vision](../ARCHITECTURE_V2.md#vision) (10-line summary)
+- [ARCHITECTURE_V3.md - Layered Vocabulary](../ARCHITECTURE_V3.md#layered-vocabulary)
+- [ARCHITECTURE_V3.md - Summary](../ARCHITECTURE_V3.md#summary)

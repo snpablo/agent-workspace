@@ -6,10 +6,11 @@ import {
   ToolRegistry,
   SkillRegistry,
   ChannelRegistry,
+  ConnectorRegistry,
   ScheduleRegistry,
   AgentCapabilityRegistry,
 } from '../src/registries';
-import { Tool, Skill, Channel, Schedule } from '@awp/types';
+import { Tool, Skill, Channel, Connector, Schedule } from '@awp/types';
 
 describe('Registries', () => {
   describe('ToolRegistry', () => {
@@ -199,6 +200,65 @@ describe('Registries', () => {
     });
   });
 
+  describe('ConnectorRegistry', () => {
+    let registry: ConnectorRegistry;
+    let notionConnector: Connector;
+    let graphConnector: Connector;
+
+    beforeEach(() => {
+      registry = new ConnectorRegistry();
+
+      notionConnector = {
+        kind: 'connector',
+        id: 'notion-workspace',
+        name: 'Notion Workspace',
+        version: '1.0.0',
+        sourcePath: '/connectors/notion/notion.yaml',
+        type: 'notion',
+        mode: 'action',
+        config: { workspaceId: 'workspace-123' },
+      };
+
+      graphConnector = {
+        kind: 'connector',
+        id: 'microsoft-graph-index',
+        name: 'Microsoft Graph Index',
+        version: '1.0.0',
+        sourcePath: '/connectors/graph/graph.yaml',
+        type: 'microsoft_graph',
+        mode: 'knowledge',
+        config: { tenantId: 'tenant-123' },
+      };
+    });
+
+    it('should find connectors by type', () => {
+      registry.register(notionConnector);
+      registry.register(graphConnector);
+
+      const notion = registry.getByType('notion');
+      expect(notion).toHaveLength(1);
+      expect(notion[0].id).toBe('notion-workspace');
+    });
+
+    it('should find action connectors', () => {
+      registry.register(notionConnector);
+      registry.register(graphConnector);
+
+      const connectors = registry.getActionConnectors();
+      expect(connectors).toHaveLength(1);
+      expect(connectors[0].id).toBe('notion-workspace');
+    });
+
+    it('should find knowledge connectors', () => {
+      registry.register(notionConnector);
+      registry.register(graphConnector);
+
+      const connectors = registry.getKnowledgeConnectors();
+      expect(connectors).toHaveLength(1);
+      expect(connectors[0].id).toBe('microsoft-graph-index');
+    });
+  });
+
   describe('ScheduleRegistry', () => {
     let registry: ScheduleRegistry;
     let cronSchedule: Schedule;
@@ -259,6 +319,7 @@ describe('Registries', () => {
     let tool: Tool;
     let skill: Skill;
     let channel: Channel;
+    let connector: Connector;
     let schedule: Schedule;
 
     beforeEach(() => {
@@ -290,6 +351,16 @@ describe('Registries', () => {
         type: 'slack',
       };
 
+      connector = {
+        kind: 'connector',
+        id: 'notion',
+        name: 'Notion',
+        version: '1.0.0',
+        sourcePath: '/connectors/notion/notion.yaml',
+        type: 'notion',
+        mode: 'action',
+      };
+
       schedule = {
         kind: 'schedule',
         id: 'daily',
@@ -304,11 +375,13 @@ describe('Registries', () => {
       registry.tools.register(tool);
       registry.skills.register(skill);
       registry.channels.register(channel);
+      registry.connectors.register(connector);
       registry.schedules.register(schedule);
 
       expect(registry.tools.count()).toBe(1);
       expect(registry.skills.count()).toBe(1);
       expect(registry.channels.count()).toBe(1);
+      expect(registry.connectors.count()).toBe(1);
       expect(registry.schedules.count()).toBe(1);
     });
 
@@ -316,12 +389,14 @@ describe('Registries', () => {
       registry.tools.register(tool);
       registry.skills.register(skill);
       registry.channels.register(channel);
+      registry.connectors.register(connector);
       registry.schedules.register(schedule);
 
       const stats = registry.getStats();
       expect(stats.tools).toBe(1);
       expect(stats.skills).toBe(1);
       expect(stats.channels).toBe(1);
+      expect(stats.connectors).toBe(1);
       expect(stats.schedules).toBe(1);
       expect(stats.sandboxes).toBe(0);
     });
@@ -330,6 +405,7 @@ describe('Registries', () => {
       registry.tools.register(tool);
       registry.skills.register(skill);
       registry.channels.register(channel);
+      registry.connectors.register(connector);
       registry.schedules.register(schedule);
 
       registry.clear();
@@ -337,6 +413,7 @@ describe('Registries', () => {
       expect(registry.tools.count()).toBe(0);
       expect(registry.skills.count()).toBe(0);
       expect(registry.channels.count()).toBe(0);
+      expect(registry.connectors.count()).toBe(0);
       expect(registry.schedules.count()).toBe(0);
     });
   });

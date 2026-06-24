@@ -11,6 +11,7 @@ This poster explains how filesystem-first YAML packages are discovered, validate
 - Validation
 - Registry construction
 - Runtime instantiation
+- How the same loaded model can feed UI interpretation
 
 ## Key Concepts
 
@@ -19,3 +20,4 @@ This poster explains how filesystem-first YAML packages are discovered, validate
 - **Parsing** transforms YAML into structured objects.
 - **Registry** indexes packages by ID and kind.
 - **Runtime** uses resolved packages to create executable state.
+- **UI Interpretation** can consume the same loaded model plus projected runtime state without creating a second truth source.

@@ -1,6 +1,6 @@
 # Example Projects
 
-These examples turn the archetype dashboards into filesystem-first Architecture V2 projects.
+These examples turn the archetype dashboards into filesystem-first Architecture V3 projects.
 
 Each example directory is itself the project root:
 
@@ -27,4 +27,4 @@ example-project/
 - Back to [Architecture Overview](../architecture/README.md)
 - Back to [Project Archetypes](../project-archetypes/README.md)
 - Continue to [Source Packages](../../packages/README.md)
-- See the [authoritative spec](../architecture/ARCHITECTURE_V2.md)
+- See the [authoritative spec](../architecture/ARCHITECTURE_V3.md)

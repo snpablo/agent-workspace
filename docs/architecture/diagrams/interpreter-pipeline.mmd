@@ -1,15 +1,17 @@
 flowchart TD
-    DEF[Definition]
-    N[Normalization]
-    B[Binding Resolution]
-    POL[Policy Evaluation]
-    L[Layout Resolution]
-    C[Component Tree Generation]
-    R[Workspace Runtime]
+    FS[Project Filesystem]
+    L[Project Loader]
+    M[Typed Project Model]
+    E[Event Replay]
+    PROJ[State Projections]
+    I[UI Interpreter]
+    C[Renderer-Neutral View Tree]
+    R[Renderer Runtime]
 
-    DEF --> N
-    N --> B
-    B --> POL
-    POL --> L
-    L --> C
+    FS --> L
+    L --> M
+    M --> E
+    E --> PROJ
+    PROJ --> I
+    I --> C
     C --> R

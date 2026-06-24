@@ -2,7 +2,7 @@
 
 Tool execution and provider management for Agent Platform.
 
-**Core Principle:** Tools are first-class abstractions. Their backing mechanisms (APIs, connectors, MCP servers, native code, platform services) are implementation details, not core concepts.
+**Core Principle:** Tools are first-class abstractions. Connectors bind external systems; tools are the discrete actions or retrieval operations surfaced through those bindings.
 
 ## Concepts
 
@@ -17,6 +17,9 @@ const tool: Tool = {
   name: 'Web Search',
   version: '1.0.0',
   description: 'Search the web for information',
+  connector: {
+    id: 'search-platform',
+  },
   implementation: {
     type: 'http',
     endpoint: 'https://api.search.example.com/search',
@@ -24,7 +27,9 @@ const tool: Tool = {
 };
 ```
 
-**Key principle:** Agents see only the tool interface (name, description, schema). The implementation type is opaque to the agent.
+Tools may reference exactly one connector package that holds auth, base URLs, remote MCP server endpoints, or tenant/workspace binding details.
+
+**Key principle:** Agents see only the tool interface (name, description, schema). Connector credentials and transport details stay hidden behind that tool boundary.
 
 ### ToolProvider
 
@@ -84,6 +89,16 @@ implementation:
 **Provider:** `ApiToolProvider`
 **Validates:** Requires endpoint
 
+### Connectors vs Tools
+
+- A **connector** binds to an external system as a specific user, tenant, or service account.
+- A **tool** is the discrete operation the model may call through that connector.
+
+Examples:
+
+- One Google Drive MCP connector may surface `search_files`, `read_document`, and `share_link`.
+- One ServiceNow connector may surface `Get_Ticket_Details` and `Update_Status`.
+
 ### 2. Connector Tools
 
 Database and SaaS connectors.
@@ -102,6 +117,9 @@ implementation:
 
 **Provider:** `ConnectorToolProvider`
 **Validates:** Requires connector_type
+
+Connector-backed tools should ideally reference a connector package as well, so auth and system binding stay separate from the callable operation.
+One connector may surface many tools, but each tool should execute through one connector interface.
 
 **Supported connectors:**
 - postgres
@@ -127,6 +145,8 @@ implementation:
 
 **Provider:** `McpToolProvider`
 **Validates:** Requires server
+
+In many deployments, an MCP-backed tool is exposed by a connector package that points at a specific MCP server and user/session binding.
 
 ### 4. Native Code Tools
 
@@ -420,7 +440,7 @@ if (!result.success) {
 
 ### 1. Tool Abstraction
 
-Agents see tools as abstract interfaces. They don't know (and don't care) whether it's an API, database, MCP server, or function call.
+Agents see tools as abstract interfaces. They don't need to reason about OAuth, service bindings, or MCP transport details directly.
 
 ### 2. Provider Pattern
 
@@ -514,7 +534,7 @@ npm test
 
 ## What's Not in Here
 
-These are implementation details, not core concepts:
+These are implementation details, not top-level platform concepts:
 
 - Specific API formats (REST vs GraphQL)
 - Specific database engines (PostgreSQL vs MySQL)
@@ -564,4 +584,4 @@ The tool model provides:
 ✅ **Observability** - Execution statistics and metadata
 ✅ **Type safety** - Full TypeScript support
 
-Tools are first-class, APIs/connectors/MCP/functions are implementation details.
+Tools are first-class. Connectors define outbound bindings. Providers execute the resulting tool calls.

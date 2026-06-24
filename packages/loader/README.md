@@ -18,6 +18,8 @@ project-name/
       agent-name.yaml        # Agent package
       tools/
         tool-name.yaml       # Tool package
+      connectors/
+        connector-name.yaml  # Connector package
       skills/
         skill-name.yaml      # Skill package
   resources/
@@ -107,6 +109,8 @@ agent-name/
     skill-name.yaml         # Skill packages
   channels/
     channel-name.yaml       # Channel packages
+  connectors/
+    connector-name.yaml     # Outbound connector packages
   schedules/
     schedule-name.yaml      # Schedule packages
   sandbox/
@@ -129,6 +133,7 @@ const { agentDefinition, registries } = await agentLoader.loadWithRegistries();
 registries.tools.getAll()           // All tools
 registries.skills.getAll()          // All skills
 registries.channels.getAll()        // All channels
+registries.connectors.getAll()      // All connectors
 registries.schedules.getAll()       // All schedules
 
 // Get tools for a skill
@@ -139,6 +144,8 @@ registries.tools.getHttpTools()
 registries.tools.getConnectorTools()
 registries.tools.getMcpTools()
 registries.tools.getFunctionTools()
+registries.connectors.getActionConnectors()
+registries.connectors.getKnowledgeConnectors()
 ```
 
 ## Registries
@@ -197,6 +204,22 @@ channelRegistry.getWebhookChannels()    // Webhook channels
 channelRegistry.resolve(references)     // Resolve references
 ```
 
+### ConnectorRegistry
+
+Manages outbound connector packages.
+
+```typescript
+const connectorRegistry = new ConnectorRegistry();
+connectorRegistry.register(connector);
+
+// Query methods
+connectorRegistry.getByType(type)            // Connectors by type
+connectorRegistry.getByMode('action')        // Action connectors
+connectorRegistry.getActionConnectors()      // Action-oriented
+connectorRegistry.getKnowledgeConnectors()   // Knowledge-oriented
+connectorRegistry.resolve(references)        // Resolve references
+```
+
 ### ScheduleRegistry
 
 Manages schedule packages.
@@ -224,6 +247,7 @@ const registry = new AgentCapabilityRegistry();
 registry.tools        // ToolRegistry
 registry.skills       // SkillRegistry
 registry.channels     // ChannelRegistry
+registry.connectors   // ConnectorRegistry
 registry.schedules    // ScheduleRegistry
 registry.sandboxes    // SandboxRegistry
 

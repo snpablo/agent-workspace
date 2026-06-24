@@ -68,10 +68,11 @@ Filesystem packages with metadata.
 
 **Package Types**
 - `Tool` - External capability (API, MCP, connector, function, service)
+- `Connector` - Outbound system binding (OAuth, MCP server, SaaS, enterprise index)
 - `Skill` - Reusable know-how (composes tools and skills)
 - `Agent` - Actor definition (role, instructions, tools, skills)
-- `Project` - Organizing container (agents, resources, artifacts, channels, schedules)
-- `Channel` - Communication interface (Slack, email, webhook, etc.)
+- `Project` - Organizing container (agents, resources, artifacts, channels, connectors, schedules)
+- `Channel` - Inbound communication interface (Slack, email, webhook, etc.)
 - `Schedule` - Trigger definition (cron, event, manual)
 - `Resource` - Context data (documents, configs, credentials, data)
 - `Sandbox` - Execution constraints (limits, permissions)
@@ -79,7 +80,7 @@ Filesystem packages with metadata.
 
 **References**
 - `ToolReference`, `SkillReference`, `AgentReference` - Links between packages
-- `ResourceReference`, `ChannelReference`, `ScheduleReference` - Cross-package references
+- `ResourceReference`, `ChannelReference`, `ConnectorReference`, `ScheduleReference` - Cross-package references
 
 ### Runtime State (src/runtime.ts)
 
@@ -269,5 +270,5 @@ const run: Run = {
 
 ## Architecture Alignment
 
-This package reflects Architecture V2 only: filesystem package definitions plus runtime state types.
-Use [ARCHITECTURE_V2.md](../../docs/architecture/ARCHITECTURE_V2.md) and the [ADR guide](../../docs/architecture/adr/README.md) as the canonical reference.
+This package reflects Architecture V3: filesystem package definitions plus runtime state types aligned with event-canonical runtime behavior.
+Use [ARCHITECTURE_V3.md](../../docs/architecture/ARCHITECTURE_V3.md) and the [ADR guide](../../docs/architecture/adr/README.md) as the canonical reference.

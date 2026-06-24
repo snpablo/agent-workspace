@@ -12,7 +12,7 @@ Tool is the single capability concept. Provider types are execution mechanisms b
 
 ## Context
 
-Agents need many kinds of capability, but the platform should not expose a different ontology concept for every backing mechanism.
+Agents need many kinds of capability, but the platform should not expose a different top-level platform concept for every backing mechanism.
 
 ## Decision
 
@@ -26,7 +26,7 @@ Provider-backed implementation details such as HTTP, connector, MCP, function, o
 
 - Agents interact with one capability concept
 - Skills can compose tools without caring about backing mechanism
-- New provider types extend the system without changing the ontology
+- New provider types extend the system without changing the architecture model
 - Tool validation and routing can happen in one consistent layer
 
 ### Tradeoffs
@@ -37,7 +37,7 @@ Provider-backed implementation details such as HTTP, connector, MCP, function, o
 ## Alternatives Considered
 
 1. **Separate concepts for each capability mechanism**
-   - Rejected because it increases ontology size and complicates composition.
+   - Rejected because it increases top-level model complexity and complicates composition.
 
 2. **Implementation-aware agent model**
    - Rejected because agents should care about capability shape, not routing mechanics.
@@ -49,10 +49,10 @@ Provider-backed implementation details such as HTTP, connector, MCP, function, o
 
 ## Related Decisions
 
-- [ADR-008: Minimal Ontology](ADR-008-MINIMAL-ONTOLOGY.md) (Tool is the single concept)
+- [ADR-008: Layered Platform Model](ADR-008-MINIMAL-ONTOLOGY.md) (Tool remains the callable capability concept within the integration layer)
 - [ADR-009: Borrow Before Inventing](ADR-009-BORROW-BEFORE-INVENTING.md) (Tool from industry standard)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Tool Model](../ARCHITECTURE_V2.md#tool-model)
+- [ARCHITECTURE_V3.md - Tool Model](../ARCHITECTURE_V3.md#tool-model)
 - [@awp/tools Documentation](../../../packages/tools/README.md)

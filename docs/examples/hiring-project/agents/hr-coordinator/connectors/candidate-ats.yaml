@@ -1,0 +1,27 @@
+kind: connector
+id: candidate-ats
+name: Candidate ATS
+version: 1.0.0
+description: Outbound hiring-system binding for applicant tracking and stage updates
+type: greenhouse
+mode: action
+
+auth:
+  type: oauth
+  provider: vercel-connect
+  scopes:
+    - candidates.read
+    - applications.read
+    - stages.write
+
+config:
+  baseUrl: https://api.greenhouse.example.com
+  tenant: talent-ops
+
+capabilities:
+  - candidate.lookup
+  - application.read
+  - stage.update
+
+metadata:
+  tags: [hiring, ats, recruiting]

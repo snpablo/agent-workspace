@@ -1,10 +1,10 @@
-# Agent Platform Architecture V2
+# Agent Platform Architecture V3
 
 **Authoritative Source:** This document is the single source of truth for the Agent Platform architecture.
 
 **Date:** June 2026  
-**Version:** 2.0  
-**Status:** Production
+**Version:** 3.0  
+**Status:** Frozen
 
 ---
 
@@ -12,7 +12,7 @@
 
 The Agent Platform enables teams to build AI agent systems that support human-agent collaboration with minimal boilerplate and maximum reusability.
 
-**Core Insight:** Work happens in Projects. Agents perform it. Humans and AI collaborate around durable outcomes.
+**Core Insight:** Work happens in Projects. Agents perform it. Humans and AI collaborate around durable outcomes. What happened is recorded as events, and what is true now is derived as projections.
 
 ### The Model
 
@@ -29,34 +29,42 @@ Runs record execution.
 Resources provide context.
 ```
 
-This is the complete model. Nothing else is needed.
+The architecture is easier to understand in layers rather than as one flat list.
+
+Events are the canonical runtime record across that model. Connectors are the outbound integration boundary. Both are central enough that they should be named explicitly.
 
 ---
 
-## Core Vocabulary
+## Layered Vocabulary
 
-The platform uses exactly 10 concepts:
+### Collaboration and Work
 
 | Concept | Purpose | Scope |
 |---------|---------|-------|
 | **Project** | Organizing container for work | Durable (persisted) |
 | **Agent** | Autonomous actor with instructions | Durable (packaged) |
-| **Tool** | Interface to external capability | Durable (packaged) |
 | **Skill** | Reusable know-how (composed tools) | Durable (packaged) |
-| **Channel** | Communication interface | Durable (packaged) |
+| **Channel** | Inbound communication interface | Durable (packaged) |
 | **Schedule** | Automation trigger | Durable (packaged) |
 | **Resource** | Shared context data | Durable (persisted) |
 | **Artifact** | Versioned, durable outcome | Durable (persisted) |
 | **Thread** | Collaboration context | Durable (persisted) |
 | **Run** | Execution record | Durable (persisted) |
 
-**No other concepts exist.**
+### Integration and Capability
 
-Everything maps cleanly to one of these 10. If you find yourself needing something else, you're over-modeling.
+| Concept | Purpose | Scope |
+|---------|---------|-------|
+| **Connector** | Outbound system binding, auth, and routing boundary | Durable (packaged) |
+| **Tool** | Discrete operation the model may invoke | Durable (packaged) |
 
-**Concepts Removed:**
-- ~~Eval~~ - Future extensibility (can be added as optional package kind, not core)
-- ~~Sandbox~~ - Agent configuration (sandbox constraints field, not core concept)
+### Runtime Records and State
+
+| Concept | Purpose | Scope |
+|---------|---------|-------|
+| **Event** | Canonical record of what happened | Durable (persisted) |
+| **AgentSession** | Resumable agent participation context | Durable (persisted) |
+| **Projection / ProjectState** | Queryable current state rebuilt from events | Durable (persisted) |
 
 ---
 
@@ -75,16 +83,22 @@ project/
       skills/
         skill-name.yaml
       channels/
-        channel-name.yaml
+        channel-name.yaml       # Inbound surfaces
+      connectors/
+        connector-name.yaml     # Outbound system bindings
   resources/
     resource-name.yaml          # Shared context
   schedules/
     schedule-name.yaml          # Automation triggers
   artifacts/
     artifact-schema.yaml        # Artifact type definitions
+  views/
+    workspace.yaml              # Renderer-neutral workspace/view definitions
   threads/
     (none - created at runtime)
   runs/
+    (none - created at runtime)
+  events/
     (none - created at runtime)
 ```
 
@@ -93,7 +107,7 @@ project/
 Every package is a YAML file with metadata:
 
 ```yaml
-kind: agent|tool|skill|project|channel|schedule|resource
+kind: agent|tool|skill|project|channel|connector|schedule|resource
 id: unique-identifier
 name: Display Name
 version: 1.0.0
@@ -151,6 +165,50 @@ instructions: |
 
 This keeps everything in one place, version-controlled, and portable.
 
+### Filesystem-Native UI Interpretation
+
+The filesystem is the durable definition boundary for the platform. `project.yaml`, `agents/`, `artifacts/`, `resources/`, `schedules/`, and `views/` define what the project is. Runtime history is preserved separately as events, runs, and threads.
+
+UI is not a separate source of truth. It is a projection over:
+
+- the loaded project model
+- event-derived current state
+- optional view metadata that describes workspace composition
+
+```text
+Project Filesystem
+    ├── project.yaml
+    ├── agents/
+    ├── artifacts/
+    ├── views/
+    ├── threads/
+    ├── runs/
+    └── events/
+            ↓
+Project Loader
+            ↓
+Typed Project Model
+            ↓
+Event Replay + State Projections
+            ↓
+UI Interpreter
+            ↓
+Renderer-Neutral View Tree
+            ↓
+Renderer
+    ├── React
+    ├── Ink
+    └── Future Renderers
+```
+
+This means:
+
+- the filesystem records what the project is
+- events record what happened
+- projections derive what is true now
+- interpreters decide how project state becomes visible workspace structure
+- renderers only render that interpreted state
+
 ---
 
 ## Runtime Model
@@ -170,14 +228,32 @@ interface Project {
   resources: Resource[];        // Available context data
   schedules: Schedule[];        // Loaded schedules
   
-  // Project state
-  artifacts: Map<id, Artifact>; // Versioned outcomes
-  threads: Map<id, Thread>;     // Collaboration contexts
-  runs: Map<id, Run>;           // Execution records
-  participants: Map<id, Participant>; // Humans and agents
-  events: Event[];              // Complete audit trail
+  // Canonical runtime history
+  events: Event[];              // Source of truth for what happened
+
+  // Derived current state
+  artifacts: Map<id, Artifact>; // Current artifact projection
+  threads: Map<id, Thread>;     // Current collaboration projection
+  runs: Map<id, Run>;           // Current execution projection
+  participants: Map<id, Participant>; // Current participant projection
 }
 ```
+
+### Canonical Rule
+
+The runtime follows one simple rule:
+
+> The system records what happened as events, then derives what is true now as projections.
+
+That means:
+
+- the **event log** is the legal, audit, and coordination truth
+- **project state tables/maps** are queryable current-state projections
+- **artifacts** remain durable work products
+- **threads** remain the human-readable collaboration layer
+- **runs** remain execution trace records that are also replayable from events
+
+The UI and most runtime queries should read projections, not raw events. But replay from events must be able to rebuild the same current state.
 
 ### Agents Execute in Projects
 
@@ -192,7 +268,7 @@ interface AgentInstance {
 }
 ```
 
-### Runs Record Everything
+### Runs Record Execution
 
 A **Run** is how any work is recorded:
 
@@ -224,9 +300,16 @@ interface Run {
 }
 ```
 
+Runs are visible as current-state records, but their authoritative lifecycle is still the event stream:
+
+- `run.started`
+- `run.succeeded`
+- `run.failed`
+- future handoff, retry, cancellation, and resume events
+
 ### Artifacts Preserve Outcomes
 
-**Artifact** is versioned, durable:
+**Artifact** is the durable work product. Its current state is projected from the event log, and its versions remain durable:
 
 ```typescript
 interface Artifact {
@@ -234,7 +317,7 @@ interface Artifact {
   projectId: string;
   type: string;                 // e.g., 'analysis', 'report'
   
-  // Current state
+  // Current projected state
   title: string;
   content: Record<string, any>;
   status: 'draft' | 'active' | 'archived';
@@ -262,7 +345,7 @@ interface Artifact {
 
 ### Threads Capture Collaboration
 
-**Thread** is where humans and agents discuss:
+**Thread** is the human-readable collaboration layer where humans and agents explain intent, request changes, and document handoffs:
 
 ```typescript
 interface Thread {
@@ -327,9 +410,29 @@ Examples:
 - Policy documents
 - Configuration files
 
-### Events Form the Audit Trail
+### Connectors Bind Outbound Systems
 
-**Event** records every action:
+**Connector** is a first-class outbound package kind for external system binding.
+
+It is not where user messages enter the platform. It is where an agent reaches outward to authenticate, retrieve context, or perform actions against another system.
+
+Typical responsibilities:
+
+- hold authentication and authorization bindings
+- define base URLs, remote servers, tenant/workspace identifiers, or scopes
+- describe whether the integration is action-oriented, knowledge-oriented, or hybrid
+- surface one or more allowed tools that the agent can actually invoke
+
+Examples:
+
+- an MCP server bound to Google Drive for a specific user session
+- a Power Platform connector bound to Salesforce or ServiceNow
+- a Microsoft Graph connector that indexes external knowledge into enterprise search
+- a Notion workspace connection that exposes document retrieval and update tools
+
+### Events Are Canonical Runtime Truth
+
+**Event** records every action and serves as the canonical runtime system-of-record:
 
 ```typescript
 interface Event {
@@ -343,10 +446,39 @@ interface Event {
   artifactId?: string;
   threadId?: string;
   
-  // Details
+  // Canonical details sufficient for projection replay
   payload: Record<string, any>;
 }
 ```
+
+Typical event families include:
+
+- `project.*`
+- `item.*` or domain-specific workflow events
+- `artifact.*`
+- `run.*`
+- `human.*`
+- `agent_session.*`
+
+Example long-running hiring workflow:
+
+- `ProjectCreated`
+- `CandidateQueued`
+- `AgentAssigned`
+- `AgentStartedRun`
+- `ArtifactDrafted`
+- `HumanReviewed`
+- `HumanRequestedChanges`
+- `AgentRevisedArtifact`
+- `ApprovalGranted`
+- `CandidatePacketCompleted`
+
+The visible workspace state is then derived from those events:
+
+- `Item.status = "Waiting for Human Review"`
+- `Artifact.version = 4`
+- `Assigned agent = "Research Agent"`
+- `Last action = "Human requested changes"`
 
 ---
 
@@ -363,6 +495,7 @@ interface Tool {
   name: string;
   
   description: string;          // What it does
+  connector?: ConnectorReference; // Outbound binding this tool uses
   implementation: {
     type: 'http' | 'connector' | 'mcp' | 'function' | 'platform_service';
     // Type-specific config
@@ -375,19 +508,46 @@ interface Tool {
 }
 ```
 
-### Backing Mechanisms (Not Primary Concepts)
+### Channels, Connectors, and Tools
+
+These three things play different roles:
+
+- **Channel** is inbound. It is where messages, UI events, or external triggers enter the project.
+- **Connector** is outbound. It carries the authenticated system binding and hides credentials, server state, and routing details from the AI.
+- **Tool** is the discrete action or retrieval operation the agent is allowed to invoke through that connector.
+
+Examples:
+
+- A Slack channel receives a hiring request.
+- A Notion connector authenticates to the workspace.
+- The connector exposes tools such as `search_pages`, `read_document`, or `share_link`.
+
+- A Power Platform connector binds to ServiceNow.
+- The connector exposes tools such as `Get_Ticket_Details` or `Update_Status`.
+
+- An MCP server binds to Google Drive for a specific user session.
+- The connector exposes tools such as `search_files`, `read_document`, and `share_link`.
+
+Operationally:
+
+- the AI sees the tool description, inputs, and purpose
+- the AI does not directly see connector credentials or transport details
+- one connector can surface many tools
+- one tool should execute through exactly one connector interface
+
+### Backing Mechanisms
 
 Tools can be backed by five mechanisms. Each is handled by a **provider**:
 
 | Type | Example | Provider |
 |------|---------|----------|
 | **API** | REST endpoint, third-party service | `ApiToolProvider` |
-| **Connector** | Database, SaaS (Salesforce, etc.) | `ConnectorToolProvider` |
-| **MCP** | Model Context Protocol server | `McpToolProvider` |
+| **Connector** | Tool surfaced through a packaged connector binding | `ConnectorToolProvider` |
+| **MCP** | Model Context Protocol-backed tool surfaced by a connector/server | `McpToolProvider` |
 | **Function** | Python, JavaScript, native code | `NativeToolProvider` |
 | **Platform Service** | Built-in (artifact_manager, etc.) | `PlatformServiceToolProvider` |
 
-**Critical:** APIs, connectors, and MCP are **implementation details**. They are not primary ontology concepts. Agents see only the tool interface, not the backing mechanism.
+**Critical:** tools remain the callable capability surface. Connectors define outbound system bindings and can surface many tools. Agents still invoke tools rather than raw connectors.
 
 ```typescript
 // From agent perspective
@@ -438,6 +598,7 @@ When an agent uses a skill, the platform:
 Everything is a filesystem-first package (YAML + directory):
 - Agents are packages
 - Tools are packages
+- Connectors are packages
 - Skills are packages
 - Resources are packages
 - Schedules are packages
@@ -452,17 +613,32 @@ Benefits:
 ### 2. Project-Centric
 
 All work happens in projects:
-- Projects own agents, resources, artifacts, threads, runs
+- Projects own agents, resources, artifacts, threads, runs, and their event log
 - Projects are the atomic unit of execution context
 - Projects are the unit of persistence
 
 Benefits:
 - Clear scope boundary
-- Easy to reason about
+- Natural place for canonical event history
 - Natural multi-tenancy
-- Simple persistence model
+- Simple replay and recovery boundary
 
-### 3. Artifact-Centric
+### 3. Event-Primary Runtime
+
+The runtime is event-primary, but not event-only:
+
+- Events are the source of truth
+- Projections provide queryable current state
+- Artifacts remain durable outputs
+- Threads remain the collaboration surface
+
+Benefits:
+- Strong auditability
+- Better long-running human-in-the-loop recovery
+- Clear retries, handoffs, approvals, and revisions
+- Cleaner reconstruction after crashes or restarts
+
+### 4. Artifact-Centric
 
 Durable outcomes are first-class:
 - Artifacts are versioned
@@ -476,17 +652,20 @@ Benefits:
 - Complete history
 - Audit trail
 
-### 4. Minimal Ontology
+### 5. Layered Clarity
 
-Only 12 concepts. No more. Period.
+The platform should name important layers explicitly instead of hiding them:
+
+- work and collaboration concepts
+- integration and capability concepts
+- runtime record and state concepts
 
 Benefits:
-- Easy to learn
-- Easy to implement
-- Easy to extend
-- No confusion about concepts
+- Easier to understand quickly
+- Less confusion about what the AI sees versus what infrastructure manages
+- Better alignment between the docs and the actual runtime behavior
 
-### 5. Configuration Over Abstraction
+### 6. Configuration Over Abstraction
 
 Behavior is configured in YAML, not inherited through class hierarchies:
 - Agent behavior is in instructions field
@@ -499,7 +678,7 @@ Benefits:
 - Easy to modify
 - Non-technical users can understand
 
-### 6. Convention Over Invention
+### 7. Convention Over Invention
 
 - Follow industry patterns (Agent, Tool, Skill, Run)
 - Borrow from established agent-platform and workflow patterns
@@ -512,7 +691,7 @@ Benefits:
 - Community alignment
 - Less learning curve
 
-### 7. Extensibility Through Providers
+### 8. Extensibility Through Providers
 
 New backing mechanisms are added as providers, not new concepts:
 - New API type? Add ApiToolProvider variant
@@ -543,7 +722,7 @@ Project
 │   └── Versions (history)
 ├── Threads (collaboration)
 ├── Runs (execution records)
-└── Events (audit trail)
+└── Events (canonical history)
 ```
 
 ### Execution Flow
@@ -559,9 +738,9 @@ Execute (via ToolProviders)
     ↓
 Create Artifacts (if any)
     ↓
-Emit Events
+Emit Canonical Events
     ↓
-Update Project State
+Update Projections
 ```
 
 ### Tool Provider Pattern
@@ -585,6 +764,7 @@ project/
 │   └── agent-name/
 │       ├── agent.yaml (agent definition with instructions)
 │       ├── tools/ (tool packages)
+│       ├── connectors/ (outbound connector packages)
 │       ├── skills/ (skill packages)
 │       ├── channels/ (channel packages)
 │       ├── schedules/ (schedule packages)
@@ -708,18 +888,21 @@ const thread = await runtime.createThread(context.project.id, {
 
 ## Summary
 
-The Agent Platform consists of exactly 10 concepts organized in three layers:
+The Agent Platform is organized in three explicit layers:
 
-### Definitions (Filesystem Packages)
-- Agent, Tool, Skill, Channel, Schedule, Resource
+### Collaboration and Work
+- Project, Agent, Skill, Artifact, Thread, Run, Resource, Schedule, Channel
 
-### Runtime (Project State)
-- Project, Run, Artifact, Thread
+### Integration and Capability
+- Connector, Tool
+
+### Runtime Records and State
+- Event, AgentSession, projected current state
 
 ### Execution (Through Providers)
 - Tools are backed by providers (API, Connector, MCP, Function, Service)
 
-Everything flows from this model. Nothing else is needed.
+Everything flows from this model. The runtime records what happened as events, then derives current collaborative state as projections.
 
 **Extensibility:**
 - Sandbox: Agent configuration (constraints field)
@@ -740,9 +923,10 @@ This architecture is formalized through Architecture Decision Records. See [adr/
 | [ADR-005](adr/ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs | Accepted |
 | [ADR-006](adr/ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability Model | Accepted |
 | [ADR-007](adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules as First-Class | Accepted |
-| [ADR-008](adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (10 Concepts) | Accepted |
+| [ADR-008](adr/ADR-008-MINIMAL-ONTOLOGY.md) | Layered Platform Model | Accepted |
 | [ADR-009](adr/ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing | Accepted |
-
+| [ADR-010](adr/ADR-010-EVENT-CANONICAL-RUNTIME.md) | Event-Canonical Runtime | Accepted |
+| [ADR-011](adr/ADR-011-CONNECTORS-AS-OUTBOUND-BINDINGS.md) | Connectors as Outbound Bindings | Accepted |
 Read the ADRs to understand the reasoning behind each architectural decision.
 
 ---
@@ -753,7 +937,7 @@ This document is authoritative. All other documentation should reference it.
 
 Related documents:
 - [README.md](../../README.md) - Repository overview and learning path
-- [../examples/README.md](../examples/README.md) - Architecture V2 example projects
+- [../examples/README.md](../examples/README.md) - Architecture V3 example projects
 - [../posters/README.md](../posters/README.md) - Visual runtime and platform explanations
 
 Implementation:

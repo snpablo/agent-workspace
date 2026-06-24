@@ -16,6 +16,9 @@ tools:
   - id: candidate-tracker
   - id: onboarding-checklist-builder
 
+connectors:
+  - id: candidate-ats
+
 skills:
   - id: hiring-intake-coordination
 

@@ -1,11 +1,37 @@
 flowchart TD
-    WD[WorkspaceDefinition] --> WI[WorkspaceInstance]
-    AD[ArtifactDefinition] --> AI[ArtifactInstance]
-    PD[PlaybookDefinition] --> PI[PlaybookInstance]
-    AGD[AgentDefinition] --> AS[AgentSession]
+    subgraph WORK[Collaboration and Work]
+      PROJ[Project]
+      AG[Agent]
+      SK[Skill]
+      ART[Artifact]
+      TH[Thread]
+      RUN[Run]
+      RES[Resource]
+      SCH[Schedule]
+      CH[Channel]
+    end
 
-    WI --> WIT[WorkItems]
-    WI --> AI
-    WI --> RUN[Runs]
-    WI --> ACT[Actions]
-    WI --> EVT[Events]
+    subgraph INTEG[Integration and Capability]
+      CONN[Connector]
+      TOOL[Tool]
+    end
+
+    subgraph RUNTIME[Runtime Records and State]
+      EVT[Event]
+      AS[AgentSession]
+      PSTATE[Projected Current State]
+    end
+
+    PROJ --> AG
+    AG --> SK
+    AG --> CH
+    AG --> CONN
+    CONN --> TOOL
+    TOOL --> RUN
+    RUN --> EVT
+    EVT --> PSTATE
+    EVT --> AS
+    PSTATE --> ART
+    PSTATE --> TH
+    PSTATE --> RES
+    PSTATE --> SCH

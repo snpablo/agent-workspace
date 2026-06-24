@@ -41,6 +41,7 @@ TypeScript type definitions for all platform concepts:
 
 **Definitions** (`src/definitions.ts`) - Filesystem packages:
 - `Tool` - Interface to external capability
+- `Connector` - Outbound system binding for tools
 - `Skill` - Reusable know-how
 - `Agent` - Actor definition
 - `Project` - Organizing container
@@ -82,6 +83,7 @@ Filesystem package discovery and management:
 - `ToolRegistry` - Manages tools
 - `SkillRegistry` - Manages skills with dependencies
 - `ChannelRegistry` - Manages channels
+- `ConnectorRegistry` - Manages outbound connector bindings
 - `ScheduleRegistry` - Manages schedules
 
 ### @awp/tools
@@ -260,6 +262,7 @@ Shared context data (documents, config, guidelines) available to all agents in a
 - **Filesystem-First**: Packages are filesystem directories with YAML definitions
 - **No Definition/Instance Split**: Definitions are YAML, runtime state is ProjectContext
 - **Provider Pattern**: Tool backing mechanisms are pluggable
+- **Connector/Tool Split**: Connectors bind external systems; tools expose discrete operations
 - **Project-Centric**: Everything organized around projects
 - **Artifact-Centric**: Outcomes are first-class and versioned
 - **Event-Driven**: All activity produces audit trail events
@@ -275,6 +278,6 @@ Shared context data (documents, config, guidelines) available to all agents in a
 
 ## Documentation
 
-- [../docs/architecture/ARCHITECTURE_V2.md](../docs/architecture/ARCHITECTURE_V2.md) - Authoritative architecture
+- [../docs/architecture/ARCHITECTURE_V3.md](../docs/architecture/ARCHITECTURE_V3.md) - Authoritative architecture
 - [../docs/examples/README.md](../docs/examples/README.md) - Example projects
 - [../docs/posters/README.md](../docs/posters/README.md) - Runtime and platform posters

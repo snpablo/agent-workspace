@@ -86,5 +86,5 @@ tools:
 
 ## References
 
-- [ARCHITECTURE_V2.md - YAML Package Format](../ARCHITECTURE_V2.md#package-format-yaml)
+- [ARCHITECTURE_V3.md - YAML Package Format](../ARCHITECTURE_V3.md#package-format-yaml)
 - [AGENTS.md - Instructions Live in YAML](../../../AGENTS.md#key-principle-instructions-live-in-yaml)

@@ -1,12 +1,12 @@
 # Architecture Decision Records
 
-These ADRs capture the durable Architecture V2 decisions behind the platform.
+These ADRs capture the durable Architecture V3 decisions behind the platform.
 
-Read them after [ARCHITECTURE_V2.md](../ARCHITECTURE_V2.md) when you want the reasoning behind the model rather than just the model itself.
+Read them after [ARCHITECTURE_V3.md](../ARCHITECTURE_V3.md) when you want the reasoning behind the model rather than just the model itself.
 
 ## Recommended Order
 
-1. [ADR-008: Minimal Ontology](./ADR-008-MINIMAL-ONTOLOGY.md)
+1. [ADR-008: Layered Platform Model](./ADR-008-MINIMAL-ONTOLOGY.md)
 2. [ADR-001: Project as Primary Container](./ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md)
 3. [ADR-002: Package-First Architecture](./ADR-002-PACKAGE-FIRST-ARCHITECTURE.md)
 4. [ADR-003: YAML-Rooted Packages](./ADR-003-YAML-ROOTED-PACKAGES.md)
@@ -15,6 +15,8 @@ Read them after [ARCHITECTURE_V2.md](../ARCHITECTURE_V2.md) when you want the re
 7. [ADR-007: Channels and Schedules as First-Class Concepts](./ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md)
 8. [ADR-005: Artifact-Centric Outputs](./ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md)
 9. [ADR-009: Borrow Before Inventing](./ADR-009-BORROW-BEFORE-INVENTING.md)
+10. [ADR-010: Event-Canonical Runtime](./ADR-010-EVENT-CANONICAL-RUNTIME.md)
+11. [ADR-011: Connectors as Outbound Bindings](./ADR-011-CONNECTORS-AS-OUTBOUND-BINDINGS.md)
 
 ## Index
 
@@ -27,5 +29,7 @@ Read them after [ARCHITECTURE_V2.md](../ARCHITECTURE_V2.md) when you want the re
 | [ADR-005](./ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs | Makes durable outcomes first-class |
 | [ADR-006](./ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability Model | Unifies external capabilities behind one concept |
 | [ADR-007](./ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules as First-Class Concepts | Makes communication and automation explicit packages |
-| [ADR-008](./ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology | Freezes the platform at 10 core concepts |
+| [ADR-008](./ADR-008-MINIMAL-ONTOLOGY.md) | Layered Platform Model | Defines the layered model across collaboration, integration, and runtime |
 | [ADR-009](./ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing | Sets the rule for naming and pattern choices |
+| [ADR-010](./ADR-010-EVENT-CANONICAL-RUNTIME.md) | Event-Canonical Runtime | Makes events canonical while keeping projected current state |
+| [ADR-011](./ADR-011-CONNECTORS-AS-OUTBOUND-BINDINGS.md) | Connectors as Outbound Bindings | Separates outbound system binding from model-callable tools |

@@ -30,6 +30,7 @@ import {
   ThreadRecord,
   ScheduleInstance,
 } from './types';
+import { applyEventToProjectState } from './event-projection';
 
 /**
  * ProjectRuntime - manages project execution and state
@@ -42,6 +43,11 @@ export class ProjectRuntime {
     this.registry = registry;
   }
 
+  private appendEvent(context: ProjectState, event: Event): void {
+    context.events.push(event);
+    applyEventToProjectState(context, event);
+  }
+
   /**
    * Initialize a project context
    */
@@ -52,7 +58,7 @@ export class ProjectRuntime {
     const context: ProjectState = {
       project: options.project,
       agents: [],
-      resources: options.resources || [],
+      resources: [],
       artifacts: new Map(),
       threads: new Map(),
       runs: new Map(),
@@ -81,13 +87,23 @@ export class ProjectRuntime {
       }
     }
 
-    // Load resources
+    // Store context early so initialization can emit canonical events
+    this.contexts.set(projectId, context);
+
+    // Load resources declared by the project definition
     if (options.project.resources) {
       for (const resourceRef of options.project.resources) {
         const resource = this.registry.get<Resource>(resourceRef.id);
         if (resource) {
-          context.resources.push(resource);
+          this.addResource(projectId, resource);
         }
+      }
+    }
+
+    // Load resources provided at initialization time
+    if (options.resources) {
+      for (const resource of options.resources) {
+        this.addResource(projectId, resource);
       }
     }
 
@@ -108,12 +124,9 @@ export class ProjectRuntime {
     // Add participants
     if (options.participants) {
       for (const participant of options.participants) {
-        context.participants.set(participant.id, participant);
+        this.addParticipant(projectId, participant);
       }
     }
-
-    // Store context
-    this.contexts.set(projectId, context);
 
     return context;
   }
@@ -145,16 +158,15 @@ export class ProjectRuntime {
     const run: Run = {
       id: runId,
       projectId,
+      agentId: request.targetKind === 'agent' ? request.targetId : undefined,
       status: 'running',
       startedAt: now,
       targetKind: request.targetKind,
       targetId: request.targetId,
+      threadId: request.threadId,
       input: request.input,
       metadata: request.metadata,
     };
-
-    // Store run
-    context.runs.set(runId, run);
 
     // Emit started event
     const startEvent: Event = {
@@ -163,10 +175,17 @@ export class ProjectRuntime {
       timestamp: now,
       projectId,
       runId,
-      payload: { targetKind: request.targetKind, targetId: request.targetId },
+      payload: {
+        run: {
+          ...run,
+          metadata: {
+            ...run.metadata,
+            triggeredBy: request.triggeredBy,
+          },
+        },
+      },
     };
-
-    context.events.push(startEvent);
+    this.appendEvent(context, startEvent);
 
     try {
       // Execute based on target kind
@@ -191,49 +210,62 @@ export class ProjectRuntime {
           break;
       }
 
-      // Update run with results
-      run.status = 'succeeded';
-      run.completedAt = new Date().toISOString();
-      run.output = output;
+      const completedRun: Run = {
+        ...run,
+        status: 'succeeded',
+        completedAt: new Date().toISOString(),
+        output,
+        metadata: {
+          ...run.metadata,
+          triggeredBy: request.triggeredBy,
+        },
+      };
 
       // Emit succeeded event
       const successEvent: Event = {
         id: randomUUID(),
         name: 'run.succeeded',
-        timestamp: new Date().toISOString(),
+        timestamp: completedRun.completedAt!,
         projectId,
         runId,
-        payload: { output },
+        payload: { run: completedRun },
       };
-      context.events.push(successEvent);
+      this.appendEvent(context, successEvent);
 
       return {
-        run,
+        run: context.runs.get(runId)!,
         success: true,
         artifactsCreated,
         events: [startEvent, successEvent],
       };
     } catch (error) {
       // Update run with error
-      run.status = 'failed';
-      run.completedAt = new Date().toISOString();
-      run.error = error instanceof Error ? error.message : String(error);
+      const failedRun: Run = {
+        ...run,
+        status: 'failed',
+        completedAt: new Date().toISOString(),
+        error: error instanceof Error ? error.message : String(error),
+        metadata: {
+          ...run.metadata,
+          triggeredBy: request.triggeredBy,
+        },
+      };
 
       // Emit failed event
       const failEvent: Event = {
         id: randomUUID(),
         name: 'run.failed',
-        timestamp: new Date().toISOString(),
+        timestamp: failedRun.completedAt!,
         projectId,
         runId,
-        payload: { error: run.error },
+        payload: { run: failedRun },
       };
-      context.events.push(failEvent);
+      this.appendEvent(context, failEvent);
 
       return {
-        run,
+        run: context.runs.get(runId)!,
         success: false,
-        error: run.error,
+        error: failedRun.error,
         artifactsCreated: [],
         events: [startEvent, failEvent],
       };
@@ -398,8 +430,6 @@ export class ProjectRuntime {
       lastModified: now,
     };
 
-    context.artifacts.set(artifact.id, record);
-
     // Emit event
     const event: Event = {
       id: randomUUID(),
@@ -407,11 +437,14 @@ export class ProjectRuntime {
       timestamp: now,
       projectId,
       artifactId: artifact.id,
-      payload: { type: artifact.type },
+      payload: {
+        artifact: record.artifact,
+        record,
+      },
     };
-    context.events.push(event);
+    this.appendEvent(context, event);
 
-    return record.artifact;
+    return context.artifacts.get(artifact.id)!.artifact;
   }
 
   /**
@@ -423,8 +456,6 @@ export class ProjectRuntime {
       throw new Error(`Project not found: ${projectId}`);
     }
 
-    context.participants.set(participant.id, participant);
-
     // Emit event
     const event: Event = {
       id: randomUUID(),
@@ -432,9 +463,9 @@ export class ProjectRuntime {
       timestamp: new Date().toISOString(),
       projectId,
       participantId: participant.id,
-      payload: { role: participant.role },
+      payload: { participant },
     };
-    context.events.push(event);
+    this.appendEvent(context, event);
   }
 
   /**
@@ -446,17 +477,15 @@ export class ProjectRuntime {
       throw new Error(`Project not found: ${projectId}`);
     }
 
-    context.resources.push(resource);
-
     // Emit event
     const event: Event = {
       id: randomUUID(),
       name: 'resource.added',
       timestamp: new Date().toISOString(),
       projectId,
-      payload: { resourceId: resource.id, type: resource.type },
+      payload: { resource },
     };
-    context.events.push(event);
+    this.appendEvent(context, event);
   }
 
   /**
@@ -478,8 +507,6 @@ export class ProjectRuntime {
       lastMessageAt: undefined,
     };
 
-    context.threads.set(thread.id, threadRecord);
-
     // Emit event
     const event: Event = {
       id: randomUUID(),
@@ -487,10 +514,14 @@ export class ProjectRuntime {
       timestamp: new Date().toISOString(),
       projectId,
       threadId: thread.id,
+      payload: {
+        thread: threadRecord.thread,
+        record: threadRecord,
+      },
     };
-    context.events.push(event);
+    this.appendEvent(context, event);
 
-    return threadRecord.thread;
+    return context.threads.get(thread.id)!.thread;
   }
 
   /**

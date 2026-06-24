@@ -50,7 +50,7 @@ export interface Resource {
 
 /**
  * Event - canonical record of runtime activity
- * Events are named with <object>.<verb> pattern
+ * Events are named with <object>.<verb> pattern and drive current-state projections.
  */
 export interface Event {
   id: string;
@@ -91,7 +91,7 @@ export interface Run {
   output?: Record<string, any>;
   /** Error if failed */
   error?: string;
-  /** Events emitted during execution */
+  /** Canonical events emitted during execution */
   events?: Event[];
   /** Run metadata */
   metadata?: Record<string, any>;
@@ -211,4 +211,3 @@ export interface ProjectState {
   /** Runtime metadata */
   metadata?: Record<string, any>;
 }
-

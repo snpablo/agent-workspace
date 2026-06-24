@@ -3,7 +3,8 @@
  */
 
 export { ProjectRuntime } from './project-runtime';
-export { InMemoryProjectRepository } from './repository';
+export { InMemoryProjectRepository, FileProjectRepository } from './repository';
+export { applyEventToProjectState, replayProjectEvents } from './event-projection';
 export type {
   ProjectState,
   ProjectService,

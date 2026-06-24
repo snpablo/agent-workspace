@@ -1,6 +1,6 @@
 # Finance Project Example
 
-This example shows how the same Architecture V2 model supports financial planning, reporting, and forecasting.
+This example shows how the same Architecture V3 model supports financial planning, reporting, and forecasting.
 
 ## Archetype
 
@@ -15,6 +15,7 @@ finance-project/
     financial-analyst/
       agent.yaml
       tools/
+      connectors/
       skills/
     budget-reviewer/
       agent.yaml
@@ -43,11 +44,11 @@ finance-project/
 - Recurring reporting schedules
 - Versioned finance artifacts
 - Shared policy and historical data resources
-- One featured V2 agent package with nested tools and skills
+- One featured V3 agent package with nested tools and skills
 
 ## See Also
 
-- [Architecture V2](../../architecture/ARCHITECTURE_V2.md)
+- [Architecture V3](../../architecture/ARCHITECTURE_V3.md)
 - [Project Archetypes](../../project-archetypes/README.md)
 - [Decision Project](../decision-project/README.md)
 - [Hiring Project](../hiring-project/README.md)

@@ -1,13 +1,24 @@
 flowchart TD
     A[Applications]
-    D[Workspace Definition Packages]
-    I[Workspace Interpreter]
-    R[Workspace Runtime]
-    P[Persistence]
+    subgraph WORK[Collaboration and Work]
+      D[Project / Agent / Skill / Artifact / Thread / Run / Resource / Schedule / Channel]
+    end
+    subgraph INTEG[Integration and Capability]
+      C[Connector]
+      T[Tool]
+    end
+    subgraph RUNTIME[Runtime Records and State]
+      E[Event Log]
+      S[AgentSession]
+      PSTATE[Projected Current State]
+    end
     INF[Infrastructure]
 
     A --> D
-    D --> I
-    I --> R
-    R --> P
-    P --> INF
+    D --> T
+    D --> E
+    C --> T
+    T --> E
+    E --> PSTATE
+    E --> S
+    PSTATE --> INF

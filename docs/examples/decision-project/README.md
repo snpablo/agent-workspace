@@ -1,6 +1,6 @@
 # Decision Project Example
 
-This example shows how Architecture V2 supports strategic decision-making without adding any domain-specific ontology.
+This example shows how Architecture V3 supports strategic decision-making without adding any domain-specific architecture layer.
 
 ## Archetype
 
@@ -15,6 +15,7 @@ decision-project/
     decision-analyzer/
       agent.yaml
       tools/
+      connectors/
       skills/
       channels/
     options-synthesizer/
@@ -44,7 +45,7 @@ decision-project/
 
 ## See Also
 
-- [Architecture V2](../../architecture/ARCHITECTURE_V2.md)
+- [Architecture V3](../../architecture/ARCHITECTURE_V3.md)
 - [Project Archetypes](../../project-archetypes/README.md)
 - [Finance Project](../finance-project/README.md)
 - [Hiring Project](../hiring-project/README.md)

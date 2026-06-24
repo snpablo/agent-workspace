@@ -2,7 +2,7 @@
 
 **Read this first.** This document is the starting context for future AI agents and contributors joining the repository.
 
-Assume no prior project knowledge. Architecture V2 is the only architecture.
+Assume no prior project knowledge. Architecture V3 is the only architecture.
 
 ---
 
@@ -22,49 +22,37 @@ This repository implements the Agent Platform: a framework for building AI agent
 - Runs record execution.
 - Resources provide context.
 
-That's the complete model. Nothing else is needed.
+That is the collaboration and work model. The runtime and integration layers are equally important and should be named explicitly.
+
+**Runtime thesis:**
+- Persisted collaboration state makes long-running work survivable.
+- Wake-on-event execution makes long-running work resumable.
+- Evaluation stays beside the main runtime loop rather than inside it.
 
 ---
 
 ## Architectural Philosophy
 
-### 10 Core Concepts (Not 11, Not 9)
+### Layered Architecture
 
-1. **Project** - Organizing container
-2. **Agent** - Autonomous actor
-3. **Tool** - Capability interface
-4. **Skill** - Reusable know-how
-5. **Channel** - Communication interface
-6. **Schedule** - Automation trigger
-7. **Resource** - Shared context
-8. **Artifact** - Versioned outcome
-9. **Thread** - Collaboration context
-10. **Run** - Execution record
+The platform is organized into three explicit layers:
 
-These 10 concepts represent the complete ontology. Resist adding more.
+- **Collaboration and work** - Project, Agent, Skill, Artifact, Thread, Run, Resource, Schedule, Channel
+- **Integration and capability** - Connector, Tool
+- **Runtime records and state** - Event, AgentSession, projected current state
 
-### Why These 10?
-
-- **Project:** Container for execution context
-- **Agent:** First-class execution actor
-- **Tool:** Unified capability model across provider-backed implementations
-- **Skill:** Composition of tools and skills (reusable know-how)
-- **Channel:** Communication interface (send/receive)
-- **Schedule:** Automation trigger (when work happens)
-- **Resource:** Shared context (data, config, credentials)
-- **Artifact:** Durable, versioned outcome (primary deliverable)
-- **Thread:** Collaboration context (discussion history)
-- **Run:** Execution record (who did what, when, why)
+Use the layered architecture instead of forcing everything into one flat list.
 
 ### Principles
 
 1. **Package-first** - Everything is a filesystem YAML package
 2. **Project-centric** - Projects own all work and participants
-3. **Artifact-centric** - Outcomes are first-class (versioned, auditable)
-4. **Minimal ontology** - 10 concepts, zero unnecessary abstractions
-5. **Configuration over abstraction** - YAML config, not code hierarchies
-6. **Convention over invention** - Use established ecosystem patterns and terminology
-7. **Borrow before inventing** - Use proven patterns, only invent when necessary
+3. **Event-primary runtime** - Canonical history is recorded as events and current state is projected
+4. **Artifact-centric** - Outcomes are first-class (versioned, auditable)
+5. **Layered clarity** - Name collaboration concepts, integration bindings, and runtime records separately
+6. **Configuration over abstraction** - YAML config, not code hierarchies
+7. **Convention over invention** - Use established ecosystem patterns and terminology
+8. **Borrow before inventing** - Use proven patterns, only invent when necessary
 
 ---
 
@@ -84,6 +72,8 @@ project/
         skill-name.yaml
       channels/
         channel-name.yaml
+      connectors/
+        connector-name.yaml
   resources/
     resource-name.yaml            # Shared context data
   schedules/
@@ -127,7 +117,7 @@ This keeps everything in one place, version-controlled, portable.
 Every package (agent, tool, skill, project, channel, schedule, resource, and optional sandbox) is a YAML file with metadata:
 
 ```yaml
-kind: agent|tool|skill|project|channel|schedule|resource|sandbox
+kind: agent|tool|skill|project|channel|connector|schedule|resource|sandbox
 id: unique-identifier
 name: Display Name
 version: 1.0.0
@@ -174,6 +164,12 @@ A container for all work: agents, tools, resources, artifacts, threads, runs, sc
 - Threads (conversations)
 - Runs (execution history)
 - Participants (humans and agents)
+- Event history (canonical runtime truth)
+
+**Operational rule:**
+- Persist what happened as events
+- Derive current state as projections
+- Keep agents dormant until schedules or relevant events wake them
 
 ### Agent
 
@@ -229,6 +225,19 @@ Communication interface (Slack, email, webhook, HTTP). Used for:
 - Notifying external systems
 - Publishing artifacts
 
+Channels are inbound surfaces. They receive messages, events, and user interaction into the project.
+
+### Connector
+
+Outbound integration binding for external systems.
+
+Used for:
+- holding OAuth or service authentication
+- binding to MCP servers, SaaS APIs, databases, or enterprise indexes
+- exposing one or more tools the agent may actually invoke
+
+Connectors are outbound surfaces. They are where the AI goes to fetch data or perform work.
+
 ### Schedule
 
 Automation trigger. Defines when work happens:
@@ -271,6 +280,27 @@ Collaboration context for discussion.
 - Can reference artifacts and runs
 - Used for asynchronous collaboration
 
+### Runtime Behavior
+
+Long-running human-agent work in this repository should be understood through three connected ideas:
+
+1. **Persisted collaboration state**
+Persist events, projections, artifacts, runs, threads, and agent-session context so work can survive crashes, handoffs, and multi-day gaps.
+
+2. **Wake-on-event execution**
+Agents should work in bounded runs, stop cleanly, persist what they are waiting for, and resume only when a relevant event, channel input, or schedule wake-up occurs.
+
+3. **Evaluation as a sidecar concern**
+Evaluation may inspect runs, artifacts, and events, but it should remain outside the core execution loop unless a project is explicitly building an evaluation subsystem.
+
+The hiring project is the default mental model:
+
+- recruiters, coordinators, hiring managers, and interviewers participate over time
+- multiple agents draft, revise, summarize, or check policy
+- work stops and starts repeatedly
+- approvals and requests for changes arrive asynchronously
+- the event log preserves the real history of that collaboration
+
 ### Run
 
 Execution record. One Run per:
@@ -294,7 +324,7 @@ Captures:
 ### Adding New Features
 
 **Before adding anything:**
-1. Can it be expressed with the 10 core concepts?
+1. Can it be expressed cleanly within the layered model?
 2. If not, write an ADR (Architecture Decision Record)
 3. If yes, implement it without changing the core model
 
@@ -304,6 +334,7 @@ Captures:
 - New capability? Extend Agent.instructions
 - New output type? Add Artifact type definition
 - New communication? Add a Channel
+- New outbound system binding? Add a Connector
 
 **How to add to a project:**
 - New agent? Create agents/new-agent/agent.yaml
@@ -312,7 +343,7 @@ Captures:
 - New artifact type? Create artifacts/type-name.yaml
 
 **Avoid:**
-- New ontology concepts (without ADR)
+- New top-level architecture concepts (without ADR)
 - New type hierarchies
 - New execution models
 - Hard-coding domain-specific logic in platform code
@@ -385,7 +416,7 @@ class SpecializedTool extends BaseTool { }
 
 ### Do NOT Add New Ontology Concepts
 
-These 10 concepts are complete. Do not add parallel container, execution, or capability concepts that duplicate the existing model.
+Do not add parallel container, execution, or capability concepts that duplicate the existing layered model.
 
 If you need something new, it is usually:
 - a field on an existing package
@@ -397,8 +428,8 @@ If you need something new, it is usually:
 
 Tools are abstracted. Do not add:
 - APIConcept (use Tool with implementation.type = 'http')
-- ConnectorConcept (use Tool with implementation.type = 'connector')
-- MCPServerConcept (use Tool with implementation.type = 'mcp')
+- MCPServerConcept (use a Connector package plus MCP-backed tools)
+- ConnectorConcept as a redundant extra noun (use a first-class Connector package kind instead)
 - FunctionConcept (use Tool with implementation.type = 'function')
 
 ### Do NOT Mix Concerns
@@ -428,13 +459,30 @@ NOT in:
 
 ## Optional Package Kinds
 
-Two optional package kinds exist but are NOT core:
+These package kinds are important but should not be confused with the main collaboration/work concepts:
+
+### Connector
+
+Outbound integration binding (OAuth, service auth, base URLs, MCP server endpoints, enterprise indexes).
+
+- **Not a collaboration/work concept** (it is a first-class package kind for the integration layer)
+- Used to bind agents and tools to external systems
+- Tools should reference connectors when they expose concrete operations through that binding
+
+**When to use:**
+- Binding to SaaS systems like Notion, Salesforce, or ServiceNow
+- Binding to MCP servers that surface many tools
+- Binding to enterprise knowledge connectors or outbound action systems
+
+**When NOT to use:**
+- For inbound communication surfaces (use Channel)
+- For already-ingested in-project data (use Resource)
 
 ### Sandbox
 
 Agent execution configuration (resource limits, allowed operations, environment).
 
-- **Not a core concept** (doesn't represent business value)
+- **Not part of the main collaboration/work layer** (it is execution configuration)
 - Agent configuration: `agent.constraints.sandbox`
 - Can reference sandbox policy if needed
 
@@ -451,8 +499,9 @@ Agent execution configuration (resource limits, allowed operations, environment)
 
 Quality evaluation definition (assess outputs, check quality).
 
-- **Not a core concept** (evaluation is domain-specific)
+- **Not part of the main collaboration/work layer** (evaluation is domain-specific)
 - Future extensibility for evaluation systems
+- Should remain separate from the primary execution, dormancy, and wake-up loop
 - Can be added as optional package kind if needed
 
 **When to use:**
@@ -477,20 +526,20 @@ packages/
 
 docs/
   architecture/        # Architecture specifications and ADRs
-  ARCHITECTURE_V2.md   # Authoritative specification
+  ARCHITECTURE_V3.md   # Authoritative specification
 ```
 
 ### Documentation Files
 
 - **README.md** - Project overview
 - **AGENTS.md** - This file (contributor guide)
-- **docs/architecture/ARCHITECTURE_V2.md** - Authoritative spec
+- **docs/architecture/ARCHITECTURE_V3.md** - Authoritative spec
 - **docs/architecture/adr/README.md** - Architecture Decision Records
 
 ### Authoritative Sources
 
 Trust these (in order):
-1. `docs/architecture/ARCHITECTURE_V2.md` - Authoritative spec
+1. `docs/architecture/ARCHITECTURE_V3.md` - Authoritative spec
 2. `docs/architecture/adr/*.md` - Decision rationale
 3. TypeScript types in `packages/types/` - Code of truth
 4. This file (AGENTS.md) - Contributor guide
@@ -501,7 +550,7 @@ Trust these (in order):
 
 ### Before You Start
 
-1. Read ARCHITECTURE_V2.md
+1. Read ARCHITECTURE_V3.md
 2. Read the relevant ADR (docs/architecture/adr/README.md)
 3. Read this file (AGENTS.md)
 
@@ -509,7 +558,7 @@ Trust these (in order):
 
 The repository is currently strongest in these areas:
 
-- Architecture V2 terminology and documentation consistency
+- Architecture V3 terminology and documentation consistency
 - Example project structure and learning-path docs
 - Visual posters that explain the runtime and package model
 - Basic workspace test wiring (`npm test`)
@@ -525,26 +574,26 @@ The repository is currently weaker in these areas:
 
 If you are deciding what to work on next, prefer this order:
 
-1. Close the gap between `docs/architecture/ARCHITECTURE_V2.md` and the real runtime behavior.
+1. Close the gap between `docs/architecture/ARCHITECTURE_V3.md` and the real runtime behavior.
 2. Strengthen persistence and repository-backed state handling.
 3. Improve loader/schema validation so broken packages fail clearly.
 4. Add integrations and richer provider behavior only after the core execution path is solid.
 
 Avoid spending the next cycle on:
 
-- new ontology concepts
+- new top-level architecture concepts
 - renaming exercises unless they fix real inconsistency
-- additional architecture expansion without corresponding implementation progress
+- architecture reshaping without corresponding implementation progress
 
 ### Architecture Freeze Guidance
 
-Architecture V2 is frozen for normal repository work.
+Architecture V3 is frozen for normal repository work.
 
 Before changing any of the following, stop and confirm with the user unless the change is a small factual correction, typo fix, broken link fix, or consistency cleanup:
 
-- `docs/architecture/ARCHITECTURE_V2.md`
+- `docs/architecture/ARCHITECTURE_V3.md`
 - files under `docs/architecture/adr/`
-- the 10 core concepts
+- the layered architecture model and core terminology
 - core terminology used across the repo
 
 Default behavior should be:
@@ -555,7 +604,7 @@ Default behavior should be:
 
 ### When Adding Features
 
-1. Can it be done with 10 core concepts?
+1. Can it be done cleanly within the layered architecture?
 2. If yes, implement using YAML packages
 3. If no, write an ADR first
 4. Update documentation
@@ -564,7 +613,7 @@ Default behavior should be:
 
 ### When You're Confused
 
-1. Check ARCHITECTURE_V2.md
+1. Check ARCHITECTURE_V3.md
 2. Check the relevant ADR
 3. Check examples in packages/*/examples/
 4. Look at existing implementations
@@ -585,6 +634,7 @@ Default behavior should be:
 | Project | Definition | project.yaml | Container |
 | Agent | Definition | agents/name/agent.yaml | Actor |
 | Tool | Definition | agents/agent/tools/name.yaml | Capability |
+| Connector | Definition | agents/agent/connectors/name.yaml | Outbound system binding |
 | Skill | Definition | agents/agent/skills/name.yaml | Reusable know-how |
 | Channel | Definition | agents/agent/channels/name.yaml | Communication |
 | Schedule | Definition | project/schedules/name.yaml | Automation |
@@ -613,7 +663,7 @@ Artifact (outcome) + Thread (collaboration)
 
 ### The 10-Minute Deep Dive
 
-Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
+Read [ARCHITECTURE_V3.md](docs/architecture/ARCHITECTURE_V3.md)
 
 ### The Complete Picture
 
@@ -634,7 +684,9 @@ All major decisions are documented in Architecture Decision Records (ADRs):
 | [ADR-005](docs/architecture/adr/ADR-005-ARTIFACT-CENTRIC-OUTPUTS.md) | Artifact-Centric Outputs |
 | [ADR-006](docs/architecture/adr/ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) | Tools as Primary Capability |
 | [ADR-007](docs/architecture/adr/ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md) | Channels and Schedules |
-| [ADR-008](docs/architecture/adr/ADR-008-MINIMAL-ONTOLOGY.md) | Minimal Ontology (10 Concepts) |
+| [ADR-008](docs/architecture/adr/ADR-008-MINIMAL-ONTOLOGY.md) | Layered Platform Model |
+| [ADR-010](docs/architecture/adr/ADR-010-EVENT-CANONICAL-RUNTIME.md) | Event-Canonical Runtime |
+| [ADR-011](docs/architecture/adr/ADR-011-CONNECTORS-AS-OUTBOUND-BINDINGS.md) | Connectors as Outbound Bindings |
 | [ADR-009](docs/architecture/adr/ADR-009-BORROW-BEFORE-INVENTING.md) | Borrow Before Inventing |
 
 Each ADR documents the context, decision, consequences, and alternatives considered.
@@ -645,7 +697,7 @@ Each ADR documents the context, decision, consequences, and alternatives conside
 
 1. Read [docs/README.md](docs/README.md) for the canonical learning path
 2. Read this file (AGENTS.md) for repository conventions
-3. Read [ARCHITECTURE_V2.md](docs/architecture/ARCHITECTURE_V2.md)
+3. Read [ARCHITECTURE_V3.md](docs/architecture/ARCHITECTURE_V3.md)
 4. Read one relevant ADR (based on what you'll work on)
 5. Read the code in `packages/` to understand current state
 
@@ -657,6 +709,6 @@ Then start contributing.
 
 All decisions, structure, and conventions are intentional.
 
-When in doubt, refer back to ARCHITECTURE_V2.md and the ADRs.
+When in doubt, refer back to ARCHITECTURE_V3.md and the ADRs.
 
 Good luck.

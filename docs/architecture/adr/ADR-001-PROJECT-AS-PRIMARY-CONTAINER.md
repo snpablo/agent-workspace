@@ -8,7 +8,7 @@
 
 ## Decision Summary
 
-The platform uses **Project** as the single top-level container for configuration, execution context, collaboration, and durable state.
+The platform uses **Project** as the single top-level container for configuration, execution context, collaboration, and persisted runtime state.
 
 ## Context
 
@@ -62,9 +62,9 @@ This keeps configuration, execution, and audit history aligned around one durabl
 ## Related Decisions
 
 - [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md)
-- [ADR-008: Minimal Ontology](ADR-008-MINIMAL-ONTOLOGY.md)
+- [ADR-008: Layered Platform Model](ADR-008-MINIMAL-ONTOLOGY.md)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Runtime Model](../ARCHITECTURE_V2.md#runtime-model)
+- [ARCHITECTURE_V3.md - Runtime Model](../ARCHITECTURE_V3.md#runtime-model)
 - [@awp/runtime README](../../../packages/runtime/README.md)

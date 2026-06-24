@@ -48,9 +48,9 @@ The platform still defines some local structures when needed, such as package me
 
 - [ADR-001: Project as Primary Container](ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md) (borrowed Project term)
 - [ADR-006: Tools as Primary Capability](ADR-006-TOOLS-AS-PRIMARY-CAPABILITY-MODEL.md) (borrowed Tool term)
-- [ADR-008: Minimal Ontology](ADR-008-MINIMAL-ONTOLOGY.md) (enables focused borrowing)
+- [ADR-008: Layered Platform Model](ADR-008-MINIMAL-ONTOLOGY.md) (keeps the model explicit without unnecessary sprawl)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Vision](../ARCHITECTURE_V2.md#vision)
+- [ARCHITECTURE_V3.md - Vision](../ARCHITECTURE_V3.md#vision)
 - Industry alignment documented in various capability documentation

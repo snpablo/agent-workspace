@@ -57,9 +57,9 @@ An artifact can be created by an agent or a human, updated over time, linked to 
 
 - [ADR-001: Project as Primary Container](ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md) (project owns artifacts)
 - [ADR-007: Channels and Schedules as First-Class Concepts](ADR-007-CHANNELS-AND-SCHEDULES-AS-FIRST-CLASS-CONCEPTS.md)
-- [ADR-008: Minimal Ontology](ADR-008-MINIMAL-ONTOLOGY.md)
+- [ADR-008: Layered Platform Model](ADR-008-MINIMAL-ONTOLOGY.md)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Artifact Model](../ARCHITECTURE_V2.md#artifacts-preserve-outcomes)
+- [ARCHITECTURE_V3.md - Artifact Model](../ARCHITECTURE_V3.md#artifacts-preserve-outcomes)
 - [@awp/runtime README](../../../packages/runtime/README.md)

@@ -101,7 +101,9 @@ const valid = validate(myProjectData);
 
 ## Schema Versioning
 
-Schemas evolve by updating the package definitions and runtime structures while preserving a single Architecture V2 vocabulary across the repository.
+Schemas evolve by updating the package definitions and runtime structures while preserving a single Architecture V3 vocabulary across the repository.
+
+Connector schemas describe outbound integration bindings separately from tool schemas, so authentication and system binding can evolve independently from the discrete operations the model is allowed to call.
 
 ## Validation
 

@@ -18,8 +18,17 @@
  * These fields come from the YAML package or are derived from the filesystem
  */
 export interface PackageMetadata {
-  /** Package kind: tool, skill, agent, project, channel, schedule, resource, sandbox */
-  kind: 'tool' | 'skill' | 'agent' | 'project' | 'channel' | 'schedule' | 'resource' | 'sandbox';
+  /** Package kind: tool, skill, agent, project, channel, connector, schedule, resource, sandbox */
+  kind:
+    | 'tool'
+    | 'skill'
+    | 'agent'
+    | 'project'
+    | 'channel'
+    | 'connector'
+    | 'schedule'
+    | 'resource'
+    | 'sandbox';
   /** Unique identifier within scope */
   id: string;
   /** Display name */
@@ -42,6 +51,8 @@ export interface PackageMetadata {
  */
 export interface Tool extends PackageMetadata {
   kind: 'tool';
+  /** Connector binding this tool executes through */
+  connector?: ConnectorReference;
   /** Execution implementation config (API, MCP, connector, function, service) */
   implementation?: Record<string, any>;
   /** Input parameters schema */
@@ -86,6 +97,8 @@ export interface Agent extends PackageMetadata {
   model?: string;
   /** Tool references */
   tools?: ToolReference[];
+  /** Connector references */
+  connectors?: ConnectorReference[];
   /** Skill references */
   skills?: SkillReference[];
   /** Execution constraints */
@@ -110,6 +123,8 @@ export interface Project extends PackageMetadata {
   agents?: AgentReference[];
   /** Resource references */
   resources?: ResourceReference[];
+  /** Connector references */
+  connectors?: ConnectorReference[];
   /** Artifact type definitions */
   artifacts?: ArtifactType[];
   /** Channel references */
@@ -131,6 +146,26 @@ export interface Channel extends PackageMetadata {
   /** Connection configuration */
   config?: Record<string, any>;
   /** Channel metadata */
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Connector package - outbound integration binding
+ * Located at: connectors/connector-name.yaml
+ */
+export interface Connector extends PackageMetadata {
+  kind: 'connector';
+  /** Connector type: notion, slack, mcp, salesforce, graph, etc. */
+  type: string;
+  /** Connector mode: action, knowledge, or hybrid */
+  mode?: 'action' | 'knowledge' | 'hybrid';
+  /** Authentication / authorization binding */
+  auth?: Record<string, any>;
+  /** Connection configuration */
+  config?: Record<string, any>;
+  /** Supported capabilities or scopes */
+  capabilities?: string[];
+  /** Connector metadata */
   metadata?: Record<string, any>;
 }
 
@@ -253,6 +288,17 @@ export interface ChannelReference {
 }
 
 /**
+ * Reference to a connector by id
+ */
+export interface ConnectorReference {
+  id: string;
+  name?: string;
+  type?: string;
+  mode?: 'action' | 'knowledge' | 'hybrid';
+  path?: string;
+}
+
+/**
  * Reference to a schedule by id
  */
 export interface ScheduleReference {
@@ -263,16 +309,7 @@ export interface ScheduleReference {
 }
 
 /**
- * Reference to a policy by id
- */
-export interface PolicyReference {
-  id: string;
-  name?: string;
-  description?: string;
-}
-
-/**
- * Union of supported package definitions
+ * Union of filesystem package kinds
  */
 export type AnyPackage =
   | Tool
@@ -280,10 +317,20 @@ export type AnyPackage =
   | Agent
   | Project
   | Channel
+  | Connector
   | Schedule
   | Resource
   | ArtifactType
   | Sandbox;
+
+/**
+ * Reference to a policy by id
+ */
+export interface PolicyReference {
+  id: string;
+  name?: string;
+  description?: string;
+}
 
 /**
  * Validation result for packages

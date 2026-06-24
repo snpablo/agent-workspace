@@ -1,6 +1,14 @@
 # Hiring Project Example
 
-This example shows how Architecture V2 supports hiring, policy review, and onboarding as one project-centric system.
+This example shows how Architecture V3 supports hiring, policy review, and onboarding as one project-centric system.
+
+It is the clearest example of long-running collaborative work that starts, stops, and resumes over time:
+
+- a recruiter opens the hiring request
+- an agent drafts candidate materials
+- hiring managers and coordinators review asynchronously
+- another agent revises after comments or policy findings
+- approval arrives later through a new event or scheduled review
 
 ## Archetype
 
@@ -15,6 +23,7 @@ hiring-project/
     hr-coordinator/
       agent.yaml
       tools/
+      connectors/
       skills/
     hiring-assistant/
       agent.yaml
@@ -40,15 +49,18 @@ hiring-project/
 
 ## What It Demonstrates
 
-- Human-agent collaboration around hiring work
+- Multi-human and multi-agent collaboration around hiring work
+- Work that pauses and resumes across many events, reviews, and handoffs
+- Canonical event history with queryable current-state projections
 - Policy and compliance resources shared across agents
 - Hiring and onboarding artifacts as durable outcomes
 - Recurring governance and onboarding checks
-- One featured V2 agent package with nested tools and skills
+- Evaluation kept outside the main execution and wake-up loop
+- One featured V3 agent package with nested tools and skills
 
 ## See Also
 
-- [Architecture V2](../../architecture/ARCHITECTURE_V2.md)
+- [Architecture V3](../../architecture/ARCHITECTURE_V3.md)
 - [Project Archetypes](../../project-archetypes/README.md)
 - [Decision Project](../decision-project/README.md)
 - [Finance Project](../finance-project/README.md)

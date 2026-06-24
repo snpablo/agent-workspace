@@ -5,9 +5,9 @@
 import { Project, Agent, Tool, Skill, Run, Artifact, Thread, Resource, ArtifactVersion, Participant, Event, AgentSession, Channel, Schedule } from '@awp/types';
 
 /**
- * ProjectState - mutable runtime state of a project
- * Represents the runtime execution context and collaboration state
- * Wraps the Project definition with runtime data (artifacts, threads, runs, etc.)
+ * ProjectState - runtime state of a project
+ * Event history is canonical; current maps and arrays are derived projections
+ * optimized for query, collaboration, and resume behavior.
  */
 export interface ProjectState {
   /** Project definition and configuration */
@@ -16,25 +16,25 @@ export interface ProjectState {
   /** Active agents in this project */
   agents: AgentInstance[];
 
-  /** Loaded resources available to agents */
+  /** Loaded resources available to agents (event-derived projection) */
   resources: Resource[];
 
-  /** Artifacts created by execution */
+  /** Artifacts created by execution (event-derived projection) */
   artifacts: Map<string, ArtifactRecord>;
 
-  /** Conversation threads for collaboration */
+  /** Conversation threads for collaboration (event-derived projection) */
   threads: Map<string, ThreadRecord>;
 
-  /** Execution records */
+  /** Execution records (event-derived projection) */
   runs: Map<string, Run>;
 
-  /** Agent sessions (long-lived contexts) */
+  /** Agent sessions (event-derived projection) */
   agentSessions: Map<string, AgentSession>;
 
-  /** Participants (humans and agents) */
+  /** Participants (humans and agents, event-derived projection) */
   participants: Map<string, Participant>;
 
-  /** Events emitted during execution */
+  /** Canonical runtime log */
   events: Event[];
 
   /** Active schedules */

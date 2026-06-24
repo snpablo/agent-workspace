@@ -84,6 +84,18 @@ async function loadAgentPackage(agentPath: string) {
   }
   console.log();
 
+  // Print connectors
+  console.log('🔌 Connectors:');
+  const connectors = registries.connectors.getAll();
+  if (connectors.length === 0) {
+    console.log('  (none)');
+  } else {
+    for (const connector of connectors) {
+      console.log(`  - ${connector.id} (${connector.type}${connector.mode ? ` / ${connector.mode}` : ''})`);
+    }
+  }
+  console.log();
+
   // Print schedules
   console.log('⏰ Schedules:');
   const schedules = registries.schedules.getAll();
@@ -118,6 +130,7 @@ async function loadAgentPackage(agentPath: string) {
   console.log(`  Tools: ${summary.toolCount}`);
   console.log(`  Skills: ${summary.skillCount}`);
   console.log(`  Channels: ${summary.channelCount}`);
+  console.log(`  Connectors: ${summary.connectorCount}`);
   console.log(`  Schedules: ${summary.scheduleCount}`);
   console.log(`  Sandboxes: ${summary.sandboxCount}`);
 
@@ -175,6 +188,15 @@ function analyzeCapabilities(agentPath: string, registries: any) {
 
     const httpChannels = registries.channels.getHttpChannels();
     if (httpChannels.length > 0) console.log(`  HTTP: ${httpChannels.length}`);
+  }
+
+  if (registries.connectors.count() > 0) {
+    console.log('\nConnectors by mode:');
+    const actionConnectors = registries.connectors.getActionConnectors();
+    if (actionConnectors.length > 0) console.log(`  Action: ${actionConnectors.length}`);
+
+    const knowledgeConnectors = registries.connectors.getKnowledgeConnectors();
+    if (knowledgeConnectors.length > 0) console.log(`  Knowledge: ${knowledgeConnectors.length}`);
   }
 
   // Schedules by type

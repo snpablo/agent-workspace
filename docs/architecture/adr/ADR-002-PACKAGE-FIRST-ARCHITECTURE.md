@@ -65,6 +65,6 @@ Other systems can support the platform later, but they do not replace the packag
 
 ## References
 
-- [ARCHITECTURE_V2.md - Filesystem Package Model](../ARCHITECTURE_V2.md#filesystem-package-model)
+- [ARCHITECTURE_V3.md - Filesystem Package Model](../ARCHITECTURE_V3.md#filesystem-package-model)
 - [AGENTS.md - Package Structure](../../../AGENTS.md#package-structure)
 - [@awp/loader documentation](../../../packages/loader/README.md)

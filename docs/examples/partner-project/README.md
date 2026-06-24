@@ -1,6 +1,6 @@
 # Partner Project Example
 
-This example shows how Architecture V2 supports contract work, relationship management, and performance tracking in a single project.
+This example shows how Architecture V3 supports contract work, relationship management, and performance tracking in a single project.
 
 ## Archetype
 
@@ -15,6 +15,7 @@ partner-project/
     partner-manager/
       agent.yaml
       tools/
+      connectors/
       skills/
     contract-reviewer/
       agent.yaml
@@ -42,11 +43,11 @@ partner-project/
 - Contract and performance artifacts as first-class outputs
 - Shared partner context and communication guidance
 - Periodic review and planning schedules
-- One featured V2 agent package with nested tools and skills
+- One featured V3 agent package with nested tools and skills
 
 ## See Also
 
-- [Architecture V2](../../architecture/ARCHITECTURE_V2.md)
+- [Architecture V3](../../architecture/ARCHITECTURE_V3.md)
 - [Project Archetypes](../../project-archetypes/README.md)
 - [Decision Project](../decision-project/README.md)
 - [Finance Project](../finance-project/README.md)

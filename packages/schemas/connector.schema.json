@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-platform.dev/schemas/connector.schema.json",
+  "title": "Connector Package",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["kind", "id", "name", "version", "sourcePath", "type"],
+  "properties": {
+    "kind": {
+      "const": "connector"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "sourcePath": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": ["action", "knowledge", "hybrid"]
+    },
+    "auth": {
+      "type": "object"
+    },
+    "config": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object"
+    }
+  }
+}

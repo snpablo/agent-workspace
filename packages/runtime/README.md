@@ -2,7 +2,7 @@
 
 Project-centric runtime for Agent Platform.
 
-Manages project execution, state, and collaboration. **Project is the primary container** for all agents, resources, artifacts, threads, and runs.
+Manages project execution, state, and collaboration. **Project is the primary container** for all agents, resources, artifacts, threads, runs, and canonical runtime events.
 
 ## Core Concept
 
@@ -17,7 +17,18 @@ Project is the **runtime execution context** that owns:
 - **Resources** - Context data available to agents
 - **Schedules** - Automated execution triggers
 - **Participants** - Humans and agents collaborating
-- **Events** - Complete audit trail
+- **Events** - Canonical history of what happened
+
+## Canonical Rule
+
+The runtime records what happened as events, then derives what is true now as projections.
+
+In practice:
+
+- `events` are the source of truth
+- `artifacts`, `threads`, `runs`, `participants`, and `agentSessions` are current-state projections
+- `artifacts` remain durable outputs
+- `threads` remain the human-readable collaboration layer
 
 ## Architecture
 
@@ -58,7 +69,7 @@ const stats = runtime.getProjectStats(projectId);
 
 ### ProjectContext
 
-Runtime state container for a project.
+Runtime state container for a project. Event history is canonical; the mutable collections are query-friendly projections.
 
 ```typescript
 interface ProjectContext {
@@ -69,7 +80,10 @@ interface ProjectContext {
   agents: AgentInstance[];
   schedules: ScheduleInstance[];
 
-  // Outcomes
+  // Canonical history
+  events: Event[];
+
+  // Current projections
   artifacts: Map<string, ArtifactRecord>;
   threads: Map<string, ThreadRecord>;
   runs: Map<string, Run>;
@@ -79,8 +93,6 @@ interface ProjectContext {
   participants: Map<string, Participant>;
   agentSessions: Map<string, AgentSession>;
 
-  // Activity
-  events: Event[];
   metadata?: Record<string, any>;
 }
 ```
@@ -89,7 +101,7 @@ interface ProjectContext {
 
 ### Runs
 
-Runs represent execution of tools, skills, agents, or schedules.
+Runs represent execution of tools, skills, agents, or schedules. They are projected from canonical run events.
 
 ```typescript
 const result = await runtime.executeRun(projectId, {
@@ -127,7 +139,7 @@ for (const agentInstance of context.agents) {
 
 ### Artifacts
 
-Artifacts are versioned, collaborative outcomes.
+Artifacts are versioned, collaborative outcomes. Their current shape is derived from events, while the artifact itself remains a durable work product.
 
 ```typescript
 const artifact = await runtime.createArtifact(projectId, {
@@ -153,7 +165,7 @@ record.lastModified  // Last change time
 
 ### Threads
 
-Threads enable collaboration and discussion.
+Threads enable collaboration and discussion. They explain human intent, requests, approvals, and handoffs in a readable form.
 
 ```typescript
 const thread = await runtime.createThread(projectId, {
@@ -193,6 +205,19 @@ const context = await runtime.initializeProject({
     { id: 'doc-1', type: 'document', ... }
   ],
 });
+```
+
+### Persist Project State
+
+The runtime ships with both in-memory and file-backed repositories. File reload prefers replaying persisted events into projections rather than trusting stored projection maps blindly.
+
+```typescript
+import { FileProjectRepository } from '@awp/runtime';
+
+const repository = new FileProjectRepository('./data/projects');
+await repository.save(context);
+
+const restored = await repository.load(project.id);
 ```
 
 ### Execute Tool

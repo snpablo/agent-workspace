@@ -6,12 +6,14 @@ import {
   Tool,
   Skill,
   Channel,
+  Connector,
   Schedule,
   Sandbox,
   AnyPackage,
   ToolReference,
   SkillReference,
   ChannelReference,
+  ConnectorReference,
   ScheduleReference,
 } from '@awp/types';
 import { PackageRef, PackageKind } from './types';
@@ -266,6 +268,48 @@ export class ChannelRegistry extends BaseRegistry<Channel> {
 }
 
 /**
+ * Registry for Connector packages
+ */
+export class ConnectorRegistry extends BaseRegistry<Connector> {
+  /**
+   * Find connectors by type
+   */
+  getByType(type: string): Connector[] {
+    return this.getAll().filter((connector) => connector.type === type);
+  }
+
+  /**
+   * Find connectors by mode
+   */
+  getByMode(mode: 'action' | 'knowledge' | 'hybrid'): Connector[] {
+    return this.getAll().filter((connector) => connector.mode === mode);
+  }
+
+  /**
+   * Find action-oriented connectors
+   */
+  getActionConnectors(): Connector[] {
+    return this.getByMode('action');
+  }
+
+  /**
+   * Find knowledge-oriented connectors
+   */
+  getKnowledgeConnectors(): Connector[] {
+    return this.getByMode('knowledge');
+  }
+
+  /**
+   * Resolve connector references
+   */
+  resolve(refs: ConnectorReference[]): Connector[] {
+    return refs
+      .map((ref) => this.get(ref.id))
+      .filter((connector): connector is Connector => connector !== undefined);
+  }
+}
+
+/**
  * Registry for Schedule packages
  */
 export class ScheduleRegistry extends BaseRegistry<Schedule> {
@@ -326,6 +370,7 @@ export class AgentCapabilityRegistry {
   tools: ToolRegistry;
   skills: SkillRegistry;
   channels: ChannelRegistry;
+  connectors: ConnectorRegistry;
   schedules: ScheduleRegistry;
   sandboxes: SandboxRegistry;
 
@@ -333,6 +378,7 @@ export class AgentCapabilityRegistry {
     this.tools = new ToolRegistry();
     this.skills = new SkillRegistry(this.tools);
     this.channels = new ChannelRegistry();
+    this.connectors = new ConnectorRegistry();
     this.schedules = new ScheduleRegistry();
     this.sandboxes = new SandboxRegistry();
   }
@@ -345,6 +391,7 @@ export class AgentCapabilityRegistry {
       tools: this.tools.count(),
       skills: this.skills.count(),
       channels: this.channels.count(),
+      connectors: this.connectors.count(),
       schedules: this.schedules.count(),
       sandboxes: this.sandboxes.count(),
     };
@@ -357,6 +404,7 @@ export class AgentCapabilityRegistry {
     this.tools.clear();
     this.skills.clear();
     this.channels.clear();
+    this.connectors.clear();
     this.schedules.clear();
     this.sandboxes.clear();
   }

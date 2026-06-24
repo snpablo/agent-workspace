@@ -2,6 +2,10 @@ sequenceDiagram
     User->>Platform: Open workspace
     Platform->>DefinitionStore: Load WorkspaceDefinition
     DefinitionStore-->>Platform: Definition
-    Platform->>Interpreter: Interpret definition
-    Interpreter->>Runtime: Bind runtime state
+    Platform->>Interpreter: Interpret layered model
+    Interpreter->>Runtime: Bind channels, connectors, and tools
+    Runtime->>EventStore: Replay canonical events
+    EventStore-->>Runtime: Event history
+    Runtime->>ProjectionStore: Rebuild current state
+    ProjectionStore-->>Runtime: Projected workspace state
     Runtime-->>User: Render workspace shell

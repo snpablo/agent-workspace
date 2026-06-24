@@ -1,6 +1,6 @@
 # Project Archetypes
 
-These four archetypes preserve the same dashboard composition while updating terminology to Architecture V2.
+These four archetypes preserve the same dashboard composition while updating terminology to Architecture V3.
 
 They are the domain-facing view of the platform: the images show how a Project feels in practice, while the example projects show how that same shape is expressed in YAML packages.
 

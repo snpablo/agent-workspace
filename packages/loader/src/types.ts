@@ -8,6 +8,7 @@ import {
   Agent,
   Project,
   Channel,
+  Connector,
   Schedule,
   Resource,
   Sandbox,
@@ -17,12 +18,32 @@ import {
 /**
  * Kind of package that can be loaded
  */
-export type PackageKind = 'project' | 'agent' | 'tool' | 'skill' | 'schedule' | 'resource' | 'artifact' | 'channel' | 'sandbox';
+export type PackageKind =
+  | 'project'
+  | 'agent'
+  | 'tool'
+  | 'skill'
+  | 'schedule'
+  | 'resource'
+  | 'artifact'
+  | 'channel'
+  | 'connector'
+  | 'sandbox';
 
 /**
  * Union of all package types
  */
-export type AnyPackage = Project | Agent | Tool | Skill | Schedule | Resource | ArtifactType | Channel | Sandbox;
+export type AnyPackage =
+  | Project
+  | Agent
+  | Tool
+  | Skill
+  | Schedule
+  | Resource
+  | ArtifactType
+  | Channel
+  | Connector
+  | Sandbox;
 
 /**
  * Options for package loading

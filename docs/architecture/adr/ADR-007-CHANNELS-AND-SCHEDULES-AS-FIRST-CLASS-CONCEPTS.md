@@ -60,9 +60,9 @@ Schedules are project-level. Multiple agents can reference or be triggered by th
 
 - [ADR-001: Project as Primary Container](ADR-001-PROJECT-AS-PRIMARY-CONTAINER.md) (project owns channels/schedules)
 - [ADR-002: Package-First Architecture](ADR-002-PACKAGE-FIRST-ARCHITECTURE.md) (channels/schedules are packages)
-- [ADR-008: Minimal Ontology](ADR-008-MINIMAL-ONTOLOGY.md)
+- [ADR-008: Layered Platform Model](ADR-008-MINIMAL-ONTOLOGY.md)
 
 ## References
 
-- [ARCHITECTURE_V2.md - Core Vocabulary](../ARCHITECTURE_V2.md#core-vocabulary)
+- [ARCHITECTURE_V3.md - Layered Vocabulary](../ARCHITECTURE_V3.md#layered-vocabulary)
 - [AGENTS.md - Package Structure](../../../AGENTS.md#package-structure)

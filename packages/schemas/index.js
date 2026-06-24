@@ -14,6 +14,7 @@ module.exports = {
   agentDefinition: require('./agent-definition.schema.json'),
   skillDefinition: require('./skill-definition.schema.json'),
   toolDefinition: require('./tool-definition.schema.json'),
+  connectorDefinition: require('./connector.schema.json'),
 
   // Runtime schemas
   workspaceInstance: require('./workspace-instance.schema.json'),

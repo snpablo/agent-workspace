@@ -5,6 +5,7 @@
 import { ProjectRuntime } from '../src/project-runtime';
 import { PackageRegistry } from '@awp/loader';
 import { Project, Agent, Tool, Skill, Participant, Resource, Artifact, Thread } from '@awp/types';
+import { replayProjectEvents } from '../src/event-projection';
 
 describe('ProjectRuntime', () => {
   let runtime: ProjectRuntime;
@@ -450,6 +451,182 @@ describe('ProjectRuntime', () => {
 
       expect(statsAfter.runCount).toBe(statsBefore.runCount + 1);
       expect(statsAfter.eventCount).toBeGreaterThan(statsBefore.eventCount);
+    });
+  });
+
+  describe('event-primary hiring workflow', () => {
+    let projectId: string;
+
+    beforeEach(async () => {
+      const context = await runtime.initializeProject({
+        project: testProject,
+      });
+      projectId = context.project.id;
+    });
+
+    it('keeps projection state aligned with canonical events', async () => {
+      const recruiter: Participant = {
+        id: 'recruiter-001',
+        type: 'human',
+        projectId,
+        role: 'owner',
+        name: 'Recruiter',
+        joinedAt: new Date().toISOString(),
+      };
+
+      const hiringManager: Participant = {
+        id: 'manager-001',
+        type: 'human',
+        projectId,
+        role: 'reviewer',
+        name: 'Hiring Manager',
+        joinedAt: new Date().toISOString(),
+      };
+
+      const thread: Thread = {
+        id: 'candidate-thread-001',
+        projectId,
+        status: 'active',
+        messages: [],
+        createdBy: 'recruiter-001',
+        createdAt: new Date().toISOString(),
+        participants: ['recruiter-001', 'manager-001', 'test-agent'],
+        metadata: {
+          nextActionOwner: 'manager-001',
+          nextActionType: 'review-candidate-packet',
+        },
+      };
+
+      const artifact: Artifact = {
+        id: 'candidate-packet-001',
+        projectId,
+        type: 'hiring-packet',
+        status: 'draft',
+        title: 'Candidate Packet',
+        content: {
+          candidateId: 'candidate-123',
+          scorecard: { communication: 'strong', leadership: 'emerging' },
+          status: 'waiting-for-human-review',
+        },
+        createdBy: 'test-agent',
+        version: 1,
+        createdAt: new Date().toISOString(),
+        metadata: {
+          waitingFor: ['manager-001'],
+        },
+      };
+
+      runtime.addParticipant(projectId, recruiter);
+      runtime.addParticipant(projectId, hiringManager);
+      await runtime.createThread(projectId, thread);
+      await runtime.createArtifact(projectId, artifact);
+      await runtime.executeRun(projectId, {
+        targetKind: 'agent',
+        targetId: 'test-agent',
+        triggeredBy: 'recruiter-001',
+        input: { task: 'Assemble candidate packet for review' },
+      });
+
+      const state = runtime.getProjectState(projectId);
+      expect(state).toBeDefined();
+
+      expect(state?.participants.get('manager-001')?.role).toBe('reviewer');
+      expect(state?.threads.get('candidate-thread-001')?.thread.metadata?.nextActionType).toBe(
+        'review-candidate-packet',
+      );
+      expect(state?.artifacts.get('candidate-packet-001')?.artifact.content).toEqual({
+        candidateId: 'candidate-123',
+        scorecard: { communication: 'strong', leadership: 'emerging' },
+        status: 'waiting-for-human-review',
+      });
+      expect(Array.from(state?.runs.values() || [])).toHaveLength(1);
+    });
+
+    it('reconstructs hiring workflow state from canonical events alone', async () => {
+      const recruiter: Participant = {
+        id: 'recruiter-001',
+        type: 'human',
+        projectId,
+        role: 'owner',
+        name: 'Recruiter',
+        joinedAt: new Date().toISOString(),
+      };
+
+      const hiringManager: Participant = {
+        id: 'manager-001',
+        type: 'human',
+        projectId,
+        role: 'reviewer',
+        name: 'Hiring Manager',
+        joinedAt: new Date().toISOString(),
+      };
+
+      const thread: Thread = {
+        id: 'candidate-thread-001',
+        projectId,
+        status: 'active',
+        messages: [],
+        createdBy: 'recruiter-001',
+        createdAt: new Date().toISOString(),
+        participants: ['recruiter-001', 'manager-001', 'test-agent'],
+        metadata: {
+          nextActionOwner: 'manager-001',
+          nextActionType: 'review-candidate-packet',
+        },
+      };
+
+      const artifact: Artifact = {
+        id: 'candidate-packet-001',
+        projectId,
+        type: 'hiring-packet',
+        status: 'draft',
+        title: 'Candidate Packet',
+        content: {
+          candidateId: 'candidate-123',
+          scorecard: { communication: 'strong', leadership: 'emerging' },
+          status: 'waiting-for-human-review',
+        },
+        createdBy: 'test-agent',
+        version: 1,
+        createdAt: new Date().toISOString(),
+        metadata: {
+          waitingFor: ['manager-001'],
+        },
+      };
+
+      runtime.addParticipant(projectId, recruiter);
+      runtime.addParticipant(projectId, hiringManager);
+      await runtime.createThread(projectId, thread);
+      await runtime.createArtifact(projectId, artifact);
+      await runtime.executeRun(projectId, {
+        targetKind: 'agent',
+        targetId: 'test-agent',
+        triggeredBy: 'recruiter-001',
+        input: { task: 'Assemble candidate packet for review' },
+      });
+
+      const state = runtime.getProjectState(projectId);
+      const projection = replayProjectEvents(state?.events || []);
+
+      expect(projection.participants.get('manager-001')?.role).toBe('reviewer');
+      expect(projection.threads.get('candidate-thread-001')?.thread.participants).toEqual([
+        'recruiter-001',
+        'manager-001',
+        'test-agent',
+      ]);
+      expect(projection.artifacts.get('candidate-packet-001')?.artifact.content).toEqual({
+        candidateId: 'candidate-123',
+        scorecard: { communication: 'strong', leadership: 'emerging' },
+        status: 'waiting-for-human-review',
+      });
+      expect(projection.runs.size).toBe(1);
+      expect(projection.runs.values().next().value?.metadata?.triggeredBy).toBe('recruiter-001');
+      expect(projection.artifacts.get('candidate-packet-001')).toEqual(
+        state?.artifacts.get('candidate-packet-001'),
+      );
+      expect(projection.threads.get('candidate-thread-001')).toEqual(
+        state?.threads.get('candidate-thread-001'),
+      );
     });
   });
 });
